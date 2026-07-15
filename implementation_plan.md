@@ -1,6 +1,8 @@
 # Kingdom Quest — Implementation Plan
 
-> A Multi-Church Youth Ministry Mobile Application
+> A Multi-Church Youth Ministry Platform · Flutter Mobile + Next.js Web App
+
+---
 
 ## 1. Brand Design System (Extracted from Guidelines)
 
@@ -52,93 +54,104 @@
 
 ---
 
-## 2. Architecture Overview
+## 2. Delivery Strategy
+
+> [!IMPORTANT]
+> **Why both a Flutter app AND a web app?**
+> iOS App Store distribution requires Apple Developer membership ($99/yr). As an alternative for iOS users, the **Next.js web app** (installable as a PWA on iOS via Safari "Add to Home Screen") provides the same feature set without the App Store requirement.
+>
+> Both surfaces share the **exact same Supabase project** — same database, same auth, same storage, same realtime. No data duplication, no syncing required.
+
+| Surface | Tech | Who Uses It |
+|---------|------|-------------|
+| Mobile App | Flutter (Android native) | Android users & future iOS if enrolled in Apple Dev |
+| Web App (PWA) | Next.js + TypeScript | iOS users (Safari PWA) + desktop browsers |
+| Admin Panel | Built into Next.js web app (admin role) | Church admins & pastors |
+
+---
+
+## 3. Unified Architecture
 
 ```mermaid
 graph TB
-    subgraph "Mobile App (Flutter)"
-        A[Splash Screen] --> B[Auth Flow]
-        B --> C[Home Dashboard]
-        C --> D[Prayer Requests]
-        C --> E[Petitions]
-        C --> F[Advice Center]
-        C --> G[Daily Inspiration]
-        C --> H[Community Forum]
-        C --> I[Events Calendar]
-        C --> J[Notifications]
-        C --> K[Profile / Settings]
-        C --> L[Admin Dashboard]
+    subgraph "Client Layer"
+        A["Flutter App (Android)"]
+        B["Next.js Web App (iOS PWA + Desktop)"]
     end
 
-    subgraph "Backend (NestJS)"
-        M[REST API] --> N[Auth Service]
-        M --> O[Prayer Service]
-        M --> P[Petition Service]
-        M --> Q[Advice Service]
-        M --> R[Inspiration Service]
-        M --> S[Forum Service]
-        M --> T[Events Service]
-        M --> U[Notification Service]
-        M --> V[Admin Service]
+    subgraph "Supabase (Single Backend)"
+        C[Supabase Auth]
+        D["PostgreSQL DB (via Supabase)"]
+        E[Supabase Storage]
+        F[Supabase Realtime]
+        G[Supabase Edge Functions]
     end
 
-    subgraph "Infrastructure"
-        W[Supabase - PostgreSQL]
-        X[Firebase Cloud Messaging]
-        Y[Cloud Storage]
-        Z[WebSocket Server]
+    subgraph "External Services"
+        H[Firebase Cloud Messaging]
+        I[OpenAI API - optional]
     end
 
-    C -.-> M
-    M --> W
-    U --> X
-    R --> Y
-    S --> Z
+    A -->|Supabase Dart SDK| C
+    A -->|Supabase Dart SDK| D
+    A -->|Supabase Dart SDK| E
+    A -->|Supabase Dart SDK| F
+
+    B -->|Supabase JS SDK| C
+    B -->|Supabase JS SDK| D
+    B -->|Supabase JS SDK| E
+    B -->|Supabase JS SDK| F
+
+    G -->|server-side logic| D
+    G --> H
+    G --> I
 ```
+
+> [!NOTE]
+> There is **no separate NestJS API server**. Supabase replaces it entirely:
+> - **Auth** → Supabase Auth (email/password, Google OAuth, magic links)
+> - **Database** → PostgreSQL built into Supabase (no separate Postgres install)
+> - **API** → Supabase auto-generates REST + GraphQL APIs from your schema, with Row-Level Security enforcing access
+> - **Real-time** → Supabase Realtime (WebSocket subscriptions)
+> - **Storage** → Supabase Storage (avatars, media)
+> - **Server logic** → Supabase Edge Functions (Deno/TypeScript, for FCM push, moderation, etc.)
 
 ---
 
-## 3. Tech Stack
+## 4. Tech Stack
 
-| Layer | Technology |
-|-------|-----------|
-| Mobile Frontend | Flutter 3.x + Dart |
-| State Management | Riverpod 2.x |
-| Navigation | GoRouter |
-| Backend | NestJS (TypeScript) |
-| Admin Panel | Nuxt 3 (Vue.js) |
-| Database | Supabase (PostgreSQL + Row-Level Security) |
-| Auth | Supabase Auth + JWT |
-| Push Notifications | Firebase Cloud Messaging |
-| Real-time | Supabase Realtime (WebSockets) |
-| Media Storage | Supabase Storage |
-| AI Scripture | OpenAI API |
+| Layer | Technology | Notes |
+|-------|------------|-------|
+| Mobile App | Flutter 3.x + Dart | Android (primary), future iOS |
+| Web App | Next.js 14 + TypeScript | iOS PWA + desktop + admin panel |
+| State Management (Mobile) | Riverpod 3.x | `NotifierProvider` pattern |
+| State Management (Web) | Zustand or React Context | Lightweight, server-component friendly |
+| Navigation (Mobile) | GoRouter | |
+| Navigation (Web) | Next.js App Router | |
+| Backend / Database | **Supabase** | Auth + PostgreSQL + Storage + Realtime + Edge Functions |
+| Supabase SDK (Mobile) | `supabase_flutter` Dart package | |
+| Supabase SDK (Web) | `@supabase/supabase-js` | |
+| Push Notifications | Firebase Cloud Messaging | Triggered via Supabase Edge Functions |
+| Styling (Web) | Tailwind CSS | Matches brand tokens |
+| Hosting (Web) | Vercel | Next.js native deployment |
+| Real-time | Supabase Realtime | WebSocket channels |
+| Media Storage | Supabase Storage | Avatars, inspiration images |
 
 ---
 
-## 4. Flutter Project Structure
+## 5. Flutter Project Structure
 
 ```
-kingdom_quest/
+kingdom_quest/                          ← Flutter Mobile App
 ├── lib/
 │   ├── main.dart
-│   ├── app.dart
 │   ├── core/
-│   │   ├── theme/
-│   │   │   ├── app_colors.dart
-│   │   │   ├── app_typography.dart
-│   │   │   ├── app_theme.dart
-│   │   │   └── app_spacing.dart
-│   │   ├── constants/
-│   │   ├── utils/
-│   │   ├── extensions/
-│   │   └── router/
-│   │       └── app_router.dart
+│   │   ├── theme/                      ← Design system
+│   │   ├── providers/                  ← Riverpod providers
+│   │   ├── router/                     ← GoRouter
+│   │   └── supabase/                   ← Supabase client init
 │   ├── features/
 │   │   ├── auth/
-│   │   │   ├── data/
-│   │   │   ├── domain/
-│   │   │   └── presentation/
 │   │   ├── dashboard/
 │   │   ├── prayer_requests/
 │   │   ├── petitions/
@@ -150,46 +163,77 @@ kingdom_quest/
 │   │   ├── profile/
 │   │   ├── settings/
 │   │   └── admin/
-│   ├── shared/
-│   │   ├── widgets/
-│   │   ├── models/
-│   │   └── services/
-│   └── l10n/
+│   └── shared/
+│       ├── widgets/
+│       ├── models/                     ← Shared with web via same Supabase schema
+│       └── services/
 ├── assets/
-│   ├── fonts/
-│   ├── images/
-│   └── icons/
-├── test/
 └── pubspec.yaml
 ```
 
 ---
 
-## 5. Database Schema (PostgreSQL via Supabase)
+## 6. Next.js Web App Structure
+
+```
+kingdom-quest-web/                      ← Next.js Web App (separate repo or monorepo)
+├── app/
+│   ├── (auth)/
+│   │   ├── login/
+│   │   └── register/
+│   ├── (main)/
+│   │   ├── home/
+│   │   ├── prayer-requests/
+│   │   ├── petitions/
+│   │   ├── advice/
+│   │   ├── inspiration/
+│   │   ├── forum/
+│   │   ├── events/
+│   │   ├── notifications/
+│   │   └── profile/
+│   └── (admin)/
+│       ├── dashboard/
+│       ├── users/
+│       ├── content/
+│       └── analytics/
+├── components/
+│   ├── ui/                             ← Shared design system components
+│   └── features/
+├── lib/
+│   ├── supabase/                       ← Supabase client (browser + server)
+│   └── types/                          ← TypeScript types (mirrors Dart models)
+├── public/
+│   └── manifest.json                   ← PWA manifest
+└── next.config.ts
+```
+
+---
+
+## 7. Supabase Database Schema (shared by both apps)
 
 ### Core Tables
-- `users` — id, email, phone, display_name, avatar_url, role, church_id, created_at
-- `churches` — id, name, logo_url, theme_config, created_at
-- `profiles` — user_id FK, bio, gender, date_of_birth, preferences
+- `users` (Supabase Auth `auth.users` extended via trigger)
+- `profiles` — user_id FK, display_name, avatar_url, bio, gender, role (`member`/`admin`), church_id, created_at
+- `churches` — id, name, logo_url, theme_color, created_at
 
 ### Prayer Requests
-- `prayer_requests` — id, user_id FK (nullable for anon), church_id, title, description, category, is_anonymous, status, created_at
+- `prayer_requests` — id, user_id FK (nullable for anon), church_id, title, description, category, is_anonymous, display_name, status, prayer_count, created_at
 - `prayer_responses` — id, prayer_request_id FK, admin_id FK, message, created_at
 
 ### Petitions
-- `petitions` — id, user_id FK (nullable), church_id, subject, description, is_anonymous, status (pending/under_review/resolved), created_at
+- `petitions` — id, user_id FK (nullable), church_id, subject, description, is_anonymous, display_name, status (`pending`/`under_review`/`resolved`), created_at, updated_at
 
 ### Advice
-- `advice_requests` — id, user_id FK (nullable), church_id, title, description, is_anonymous, status, created_at
-- `advice_responses` — id, advice_request_id FK, admin_id FK, message, bible_references, created_at
+- `advice_requests` — id, user_id FK (nullable), church_id, title, description, is_anonymous, display_name, status, created_at
+- `advice_responses` — id, advice_request_id FK, admin_id FK, message, bible_references (text[]), created_at
 
 ### Daily Inspiration
-- `inspirations` — id, admin_id FK, church_id, title, content, type (motivation/devotional/verse/challenge), media_urls, scheduled_at, published_at
-- `inspiration_reactions` — id, inspiration_id FK, user_id FK, reaction_type
+- `inspirations` — id, admin_id FK, church_id, title, content, type, bible_reference, media_url, scheduled_at, published_at, like_count, comment_count, created_at
+- `inspiration_reactions` — id, inspiration_id FK, user_id FK, reaction_type, created_at
 - `inspiration_comments` — id, inspiration_id FK, user_id FK, content, created_at
 
 ### Community Forum (Privacy-Preserving)
-- `forum_posts` — id, anonymous_token (hashed), church_id, title, content, display_name (Anonymous Member/Sister/Brother), created_at
+- `forum_posts` — id, anonymous_token (hashed SHA-256), church_id, title, content, display_name, vote_score, like_count, comment_count, created_at
 - `forum_comments` — id, post_id FK, anonymous_token, content, display_name, created_at
 - `forum_votes` — id, post_id FK, anonymous_token, vote_type
 - `forum_reports` — id, post_id FK, comment_id FK (nullable), reason, reporter_token, created_at
@@ -197,83 +241,121 @@ kingdom_quest/
 > [!IMPORTANT]
 > Anonymous forum posts use a one-way hashed token derived from user_id + salt. Admins CANNOT reverse-lookup identities. Moderation is content-based only.
 
-### Events
-- `events` — id, church_id, title, description, location, start_time, end_time, recurring, created_by FK
+### Events & Announcements
+- `events` — id, church_id, title, description, location, start_time, end_time, is_recurring, recurring_pattern, created_by FK, registration_count, created_at
 - `event_registrations` — id, event_id FK, user_id FK, created_at
-
-### Announcements
-- `announcements` — id, church_id, admin_id FK, title, content, media_urls, priority, created_at
+- `announcements` — id, church_id, admin_id FK, title, content, media_urls (text[]), is_pinned, created_at
 
 ### Notifications
-- `notifications` — id, user_id FK, type, title, body, data_payload, read, created_at
-- `fcm_tokens` — id, user_id FK, token, platform, created_at
+- `notifications` — id, user_id FK, type, title, body, data (jsonb), is_read, created_at
+- `fcm_tokens` — id, user_id FK, token, platform (`android`/`ios`/`web`), created_at
 
 ---
 
-## 6. Phased Delivery Roadmap
+## 8. Row-Level Security (RLS) Strategy
 
-### Phase 1 — Foundation (Current Session)
+| Table | Read | Insert | Update | Delete |
+|-------|------|--------|--------|--------|
+| `profiles` | own row | own row | own row | ✗ |
+| `prayer_requests` | church members | authenticated | ✗ | own row |
+| `petitions` | church members | authenticated | ✗ | own row |
+| `inspirations` | church members | admin only | admin only | admin only |
+| `forum_posts` | church members | authenticated | ✗ | admin only |
+| `events` | church members | admin only | admin only | admin only |
+| `notifications` | own rows | Edge Fn only | own row | own row |
+| `churches` | authenticated | ✗ | admin only | ✗ |
+
+---
+
+## 9. Phased Delivery Roadmap
+
+### Phase 1 — Foundation ✅
 - [x] Create implementation plan
-- [ ] Scaffold Flutter project
-- [ ] Implement design system (colors, typography, spacing, theme)
-- [ ] Splash screen with brand animation
-- [ ] Auth screens (login, register, forgot password)
-- [ ] Home dashboard with verse of the day, quick actions
-- [ ] Bottom navigation shell
-- [ ] Profile & settings screens
+- [x] Scaffold Flutter project
+- [x] Implement design system (colors, typography, spacing, theme)
+- [x] Splash screen with brand animation
+- [x] Auth screens (login, register)
+- [x] Home dashboard with verse of the day, quick actions
+- [x] Bottom navigation shell
+- [x] Wire up main.dart (ProviderScope, GoRouter, ThemeMode)
+- [x] Migrate providers to Riverpod 3 (NotifierProvider)
+- [x] Profile screen (avatar, stats, activity feed)
+- [x] Settings screen (theme switcher, notifications, account, sign-out)
 
-### Phase 2 — Core Modules
-- [ ] Prayer request submission & listing
-- [ ] Petition submission & tracking
-- [ ] Advice center
-- [ ] Daily inspiration feed
+### Phase 2 — Core Modules ✅
+- [x] Prayer request submission & listing
+- [x] Petition submission & tracking
+- [x] Advice center
+- [x] Daily inspiration feed
 
-### Phase 3 — Community & Events
-- [ ] Anonymous community forum
-- [ ] Church announcements
-- [ ] Events calendar
-- [ ] Notification center
+### Phase 3 — Community & Events ✅
+- [x] Anonymous community forum
+- [x] Church announcements (Announcements tab in Events screen)
+- [x] Events calendar (Events tab with registration toggle)
+- [x] Notification center (mark-read, type-specific icons)
 
-### Phase 4 — Admin & Analytics
-- [ ] Admin dashboard
-- [ ] User management
-- [ ] Content moderation
-- [ ] Analytics & metrics
+### Phase 4 — Admin Dashboard (Flutter)
+- [ ] Admin home with stats overview
+- [ ] Prayer request management (view, respond, mark answered)
+- [ ] Petition management (view, update status, respond)
+- [ ] Advice center moderation (respond, close)
+- [ ] Inspiration publisher (create, schedule, publish)
+- [ ] Forum moderation (view reports, remove posts)
+- [ ] User management (view members, assign roles)
 
-### Phase 5 — Backend & Deployment
-- [ ] NestJS API setup
-- [ ] Supabase schema & RLS policies
-- [ ] Firebase Cloud Messaging integration
-- [ ] Nuxt admin panel
-- [ ] Deployment configuration
+### Phase 5 — Supabase Backend Integration
+- [ ] Supabase project setup & environment config
+- [ ] Apply full database schema + RLS policies
+- [ ] Supabase Auth integration (Flutter: `supabase_flutter`)
+- [ ] Replace all mock data with Supabase queries (Flutter)
+- [ ] Supabase Realtime subscriptions (forum, notifications)
+- [ ] Supabase Storage (avatar upload, inspiration images)
+- [ ] Edge Functions: push notification dispatch (FCM), anonymous token hashing
+
+### Phase 6 — Next.js Web App (iOS PWA + Admin Panel)
+- [ ] Scaffold Next.js 14 project with TypeScript + Tailwind
+- [ ] Supabase JS SDK integration (browser + server components)
+- [ ] PWA setup (manifest, service worker, install prompt)
+- [ ] Shared design tokens (match Flutter brand colors)
+- [ ] Auth pages (login, register, OAuth)
+- [ ] All member-facing feature pages (mirrors Flutter screens)
+- [ ] Admin panel (built-in, role-gated)
+- [ ] Deploy to Vercel
+
+### Phase 7 — Cross-Platform Polish & Deployment
+- [ ] Firebase Cloud Messaging (mobile + web push)
+- [ ] End-to-end testing (Flutter integration tests, Playwright for web)
+- [ ] App icon, splash assets, PWA icon set
+- [ ] Android Play Store build & submission
 
 ---
 
-## 7. Security Architecture
+## 10. Security Architecture
 
-- **Auth**: Supabase Auth (email/password, Google, phone) → JWT tokens
-- **API**: Bearer token validation on every request
-- **RLS**: PostgreSQL Row-Level Security on all tables
+- **Auth**: Supabase Auth — email/password, Google OAuth, magic link → JWT
+- **RLS**: PostgreSQL Row-Level Security on ALL tables — no data leaks possible
 - **Anonymity**: One-way SHA-256 hash for forum tokens; salt rotated monthly
-- **Encryption**: TLS in transit; AES-256 for sensitive fields at rest
-- **Rate Limiting**: Per-user API throttling
-- **Content Filtering**: AI-based moderation + manual review queue
-- **Audit Logs**: All admin actions logged with timestamp and actor
+- **Edge Functions**: Only server-side code can write to `notifications` and `fcm_tokens`
+- **Encryption**: TLS in transit (Supabase handles this); `pgcrypto` for sensitive fields
+- **Rate Limiting**: Supabase built-in + Vercel edge middleware for web
+- **Content Filtering**: Manual admin review queue + optional OpenAI moderation API
 
 ---
 
-## 8. Key Screens (13 total)
+## 11. Key Screens — Both Platforms
 
-1. **Splash Screen** — Brand mark animation on gradient
-2. **Login / Register** — Tabbed auth with social sign-in
-3. **Home Dashboard** — Greeting, verse, events, quick actions
-4. **Prayer Requests** — Submission form + categorized list
-5. **Petitions** — Ticket-style submission + status tracker
-6. **Advice Center** — Q&A format with admin responses
-7. **Daily Inspiration** — Card feed with reactions/comments
-8. **Community Forum** — Anonymous discussion threads
-9. **Events Calendar** — Calendar view + registration
-10. **Notifications** — Push notification history
-11. **User Profile** — Avatar, bio, activity stats
-12. **Settings** — Theme toggle, language, privacy
-13. **Admin Dashboard** — Users, content, analytics panels
+| # | Screen | Flutter (Mobile) | Next.js (Web/PWA) |
+|---|--------|-----------------|-------------------|
+| 1 | Splash | ✅ Done | Loading state on root |
+| 2 | Login / Register | ✅ Done | ⏳ To build |
+| 3 | Home Dashboard | ✅ Done | ⏳ To build |
+| 4 | Prayer Requests | ✅ Done | ⏳ To build |
+| 5 | Petitions | ✅ Done | ⏳ To build |
+| 6 | Advice Center | ✅ Done | ⏳ To build |
+| 7 | Daily Inspiration | ✅ Done | ⏳ To build |
+| 8 | Community Forum | ✅ Done | ⏳ To build |
+| 9 | Events & Announcements | ✅ Done | ⏳ To build |
+| 10 | Notifications | ✅ Done | ⏳ To build |
+| 11 | User Profile | ✅ Done | ⏳ To build |
+| 12 | Settings | ✅ Done | ⏳ To build |
+| 13 | Admin Dashboard | ⏳ To build | ⏳ To build (primary) |
