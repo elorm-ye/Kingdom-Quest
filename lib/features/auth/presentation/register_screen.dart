@@ -95,7 +95,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 decoration: BoxDecoration(color: card, borderRadius: BorderRadius.circular(AppSpacing.radiusChip)),
                 padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
                 child: DropdownButtonFormField<String>(
-                  value: _gender,
+                  initialValue: _gender,
                   decoration: const InputDecoration(border: InputBorder.none, enabledBorder: InputBorder.none, focusedBorder: InputBorder.none, fillColor: Colors.transparent),
                   dropdownColor: card,
                   items: const [

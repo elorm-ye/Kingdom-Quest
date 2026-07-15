@@ -1,5 +1,5 @@
-/// Kingdom Quest Design System — Spacing & Sizing
-/// Based on 4px base grid (Tailwind scale).
+// Kingdom Quest Design System — Spacing & Sizing
+// Based on 4px base grid (Tailwind scale).
 
 class AppSpacing {
   AppSpacing._();

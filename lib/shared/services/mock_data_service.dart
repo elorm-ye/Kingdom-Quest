@@ -1,12 +1,9 @@
-import 'dart:math';
 import '../models/models.dart';
 
 /// Mock data service providing realistic sample data for all modules.
 /// This will be replaced with actual Supabase API calls in production.
 
 class MockDataService {
-  static final _random = Random();
-
   // ─────────────────────────────────────────────
   // BIBLE VERSES
   // ─────────────────────────────────────────────

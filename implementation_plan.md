@@ -294,14 +294,14 @@ kingdom-quest-web/                      ← Next.js Web App (separate repo or mo
 - [x] Events calendar (Events tab with registration toggle)
 - [x] Notification center (mark-read, type-specific icons)
 
-### Phase 4 — Admin Dashboard (Flutter)
-- [ ] Admin home with stats overview
-- [ ] Prayer request management (view, respond, mark answered)
-- [ ] Petition management (view, update status, respond)
-- [ ] Advice center moderation (respond, close)
-- [ ] Inspiration publisher (create, schedule, publish)
-- [ ] Forum moderation (view reports, remove posts)
-- [ ] User management (view members, assign roles)
+### Phase 4 — Admin Dashboard (Flutter) ✅
+- [x] Admin home with stats overview
+- [x] Prayer request management (view, respond, mark answered)
+- [x] Petition management (view, update status, respond)
+- [x] Advice center moderation (respond, close)
+- [x] Inspiration publisher (create, schedule, publish)
+- [x] Forum moderation (view reports, remove posts)
+- [x] User management (view members, assign roles)
 
 ### Phase 5 — Supabase Backend Integration
 - [ ] Supabase project setup & environment config
@@ -358,4 +358,4 @@ kingdom-quest-web/                      ← Next.js Web App (separate repo or mo
 | 10 | Notifications | ✅ Done | ⏳ To build |
 | 11 | User Profile | ✅ Done | ⏳ To build |
 | 12 | Settings | ✅ Done | ⏳ To build |
-| 13 | Admin Dashboard | ⏳ To build | ⏳ To build (primary) |
+| 13 | Admin Dashboard | ✅ Done | ⏳ To build (primary) |
