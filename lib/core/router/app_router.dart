@@ -21,14 +21,27 @@ import '../../features/notifications/presentation/notifications_screen.dart';
 import '../../features/profile/presentation/profile_screen.dart';
 import '../../features/settings/presentation/settings_screen.dart';
 
+// Admin
+import '../../features/admin/presentation/admin_shell.dart';
+import '../../features/admin/presentation/admin_home_screen.dart';
+import '../../features/admin/presentation/admin_prayers_screen.dart';
+import '../../features/admin/presentation/admin_petitions_screen.dart';
+import '../../features/admin/presentation/admin_users_screen.dart';
+import '../../features/admin/presentation/admin_more_screen.dart';
+import '../../features/admin/presentation/admin_advice_screen.dart';
+import '../../features/admin/presentation/admin_inspiration_screen.dart';
+import '../../features/admin/presentation/admin_forum_screen.dart';
+
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 final _shellNavigatorKey = GlobalKey<NavigatorState>();
+final _adminNavigatorKey = GlobalKey<NavigatorState>();
 
 final routerProvider = Provider<GoRouter>((ref) {
   return GoRouter(
     navigatorKey: _rootNavigatorKey,
     initialLocation: '/splash',
     routes: [
+      // ── AUTH FLOW ──
       GoRoute(
         path: '/splash',
         builder: (context, state) => const SplashScreen(),
@@ -41,78 +54,78 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/register',
         builder: (context, state) => const RegisterScreen(),
       ),
+
+      // ── MEMBER SHELL ──
       ShellRoute(
         navigatorKey: _shellNavigatorKey,
         builder: (context, state, child) => MainShell(child: child),
         routes: [
           GoRoute(
             path: '/home',
-            pageBuilder: (context, state) => const NoTransitionPage(
-              child: HomeScreen(),
-            ),
+            pageBuilder: (context, state) => const NoTransitionPage(child: HomeScreen()),
           ),
           GoRoute(
             path: '/community',
-            pageBuilder: (context, state) => const NoTransitionPage(
-              child: ForumScreen(),
-            ),
+            pageBuilder: (context, state) => const NoTransitionPage(child: ForumScreen()),
           ),
           GoRoute(
             path: '/inspiration',
-            pageBuilder: (context, state) => const NoTransitionPage(
-              child: InspirationScreen(),
-            ),
+            pageBuilder: (context, state) => const NoTransitionPage(child: InspirationScreen()),
           ),
           GoRoute(
             path: '/events',
-            pageBuilder: (context, state) => const NoTransitionPage(
-              child: EventsScreen(),
-            ),
+            pageBuilder: (context, state) => const NoTransitionPage(child: EventsScreen()),
           ),
           GoRoute(
             path: '/profile',
-            pageBuilder: (context, state) => const NoTransitionPage(
-              child: ProfileScreen(),
-            ),
+            pageBuilder: (context, state) => const NoTransitionPage(child: ProfileScreen()),
           ),
         ],
       ),
-      GoRoute(
-        path: '/prayer-requests',
-        builder: (context, state) => const PrayerRequestsScreen(),
+
+      // ── MEMBER FULL-SCREEN ROUTES ──
+      GoRoute(path: '/prayer-requests', builder: (c, s) => const PrayerRequestsScreen()),
+      GoRoute(path: '/submit-prayer', builder: (c, s) => const SubmitPrayerScreen()),
+      GoRoute(path: '/petitions', builder: (c, s) => const PetitionsScreen()),
+      GoRoute(path: '/submit-petition', builder: (c, s) => const SubmitPetitionScreen()),
+      GoRoute(path: '/advice', builder: (c, s) => const AdviceScreen()),
+      GoRoute(path: '/submit-advice', builder: (c, s) => const SubmitAdviceScreen()),
+      GoRoute(path: '/create-post', builder: (c, s) => const CreatePostScreen()),
+      GoRoute(path: '/notifications', builder: (c, s) => const NotificationsScreen()),
+      GoRoute(path: '/settings', builder: (c, s) => const SettingsScreen()),
+
+      // ── ADMIN SHELL ──
+      ShellRoute(
+        navigatorKey: _adminNavigatorKey,
+        builder: (context, state, child) => AdminShell(child: child),
+        routes: [
+          GoRoute(
+            path: '/admin',
+            pageBuilder: (context, state) => const NoTransitionPage(child: AdminHomeScreen()),
+          ),
+          GoRoute(
+            path: '/admin/prayers',
+            pageBuilder: (context, state) => const NoTransitionPage(child: AdminPrayersScreen()),
+          ),
+          GoRoute(
+            path: '/admin/petitions',
+            pageBuilder: (context, state) => const NoTransitionPage(child: AdminPetitionsScreen()),
+          ),
+          GoRoute(
+            path: '/admin/users',
+            pageBuilder: (context, state) => const NoTransitionPage(child: AdminUsersScreen()),
+          ),
+          GoRoute(
+            path: '/admin/more',
+            pageBuilder: (context, state) => const NoTransitionPage(child: AdminMoreScreen()),
+          ),
+        ],
       ),
-      GoRoute(
-        path: '/submit-prayer',
-        builder: (context, state) => const SubmitPrayerScreen(),
-      ),
-      GoRoute(
-        path: '/petitions',
-        builder: (context, state) => const PetitionsScreen(),
-      ),
-      GoRoute(
-        path: '/submit-petition',
-        builder: (context, state) => const SubmitPetitionScreen(),
-      ),
-      GoRoute(
-        path: '/advice',
-        builder: (context, state) => const AdviceScreen(),
-      ),
-      GoRoute(
-        path: '/submit-advice',
-        builder: (context, state) => const SubmitAdviceScreen(),
-      ),
-      GoRoute(
-        path: '/create-post',
-        builder: (context, state) => const CreatePostScreen(),
-      ),
-      GoRoute(
-        path: '/notifications',
-        builder: (context, state) => const NotificationsScreen(),
-      ),
-      GoRoute(
-        path: '/settings',
-        builder: (context, state) => const SettingsScreen(),
-      ),
+
+      // ── ADMIN FULL-SCREEN ROUTES (no admin shell nav) ──
+      GoRoute(path: '/admin/advice', builder: (c, s) => const AdminAdviceScreen()),
+      GoRoute(path: '/admin/inspiration', builder: (c, s) => const AdminInspirationScreen()),
+      GoRoute(path: '/admin/forum', builder: (c, s) => const AdminForumScreen()),
     ],
   );
 });

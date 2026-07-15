@@ -4,7 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
+import 'package:go_router/go_router.dart';
 import '../../../core/providers/app_providers.dart';
+import '../../../shared/services/mock_data_service.dart';
 
 /// Settings screen — theme, account, privacy, about.
 class SettingsScreen extends ConsumerStatefulWidget {
@@ -155,6 +157,22 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               ],
             ),
           ).animate(delay: 180.ms).fadeIn(duration: 350.ms).slideY(begin: 0.05, end: 0),
+
+          // ── ADMIN PANEL (admin-role only) ──
+          if (MockDataService.currentUser.isAdmin) ...[  
+            sectionHeader('Admin').animate(delay: 200.ms).fadeIn(duration: 300.ms),
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+              decoration: BoxDecoration(color: surface, borderRadius: BorderRadius.circular(AppSpacing.radiusCard)),
+              child: settingTile(
+                icon: Icons.admin_panel_settings_rounded,
+                iconColor: AppColors.sage,
+                title: 'Admin Dashboard',
+                subtitle: 'Manage content, users & church settings',
+                onTap: () => context.go('/admin'),
+              ),
+            ).animate(delay: 210.ms).fadeIn(duration: 350.ms).slideY(begin: 0.05, end: 0),
+          ],
 
           // ── PRIVACY ──
           sectionHeader('Privacy & Security').animate(delay: 220.ms).fadeIn(duration: 300.ms),
