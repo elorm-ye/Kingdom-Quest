@@ -4,7 +4,7 @@ A comprehensive, cross-platform youth ministry solution built with **Flutter (Mo
 
 ---
 
-## 📱 Platform Architecture
+## Platform Architecture
 
 The Kingdom Quest platform consists of three main components:
 
@@ -12,7 +12,7 @@ The Kingdom Quest platform consists of three main components:
 2. **Web App & Admin Panel (`/kingdom-quest-web/`)**: Built with Next.js 15, React, and Tailwind CSS. Acts as a member-facing PWA and a role-gated admin management portal.
 3. **Backend**: Powered by Supabase (PostgreSQL, Auth, Realtime, Storage, Edge Functions).
 
-## ✨ Key Features
+## Key Features
 
 ### For Youth & Members
 - **Authentication**: Email/password and Google OAuth support.
@@ -31,7 +31,7 @@ The Kingdom Quest platform consists of three main components:
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 - **Flutter SDK**: [Install Flutter](https://docs.flutter.dev/get-started/install)
@@ -75,7 +75,7 @@ Open `http://localhost:3000` in your browser.
 
 ---
 
-## 🎨 Design System
+## Design System
 
 Both the Mobile and Web apps share a unified design token system to ensure strict brand continuity.
 
@@ -91,14 +91,14 @@ Both the Mobile and Web apps share a unified design token system to ensure stric
 
 ---
 
-## 🔒 Security & Privacy
+## Security & Privacy
 
 - **Row-Level Security (RLS)**: Strictly enforced on every PostgreSQL table via Supabase to prevent data leaks.
 - **Anonymity**: Forum identity is preserved using a one-way SHA-256 hash (User ID + Server Salt) which rotates monthly, protecting users while preventing ban-evasion.
 
 ---
 
-## 🛠 Tech Stack Details
+## Tech Stack Details
 
 - **Mobile**: Flutter, Dart, Riverpod (State), GoRouter (Navigation), supabase_flutter.
 - **Web**: Next.js (App Router), React, Tailwind CSS, @supabase/ssr.
