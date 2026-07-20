@@ -1,7 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { X, Download } from 'lucide-react'
+import { HugeiconsIcon } from '@hugeicons/react';
+import { Cancel01Icon, Download01Icon } from '@hugeicons/core-free-icons';
 
 export function PWAInstallPrompt() {
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null)
@@ -70,10 +71,10 @@ export function PWAInstallPrompt() {
         </div>
         <div className="flex items-center gap-2">
           <button onClick={handleInstallClick} className="kq-btn kq-btn-primary p-2 h-auto text-xs flex items-center gap-1">
-            <Download size={14} /> Install
+            <HugeiconsIcon icon={Download01Icon} size={14} /> Install
           </button>
           <button onClick={() => setShowPrompt(false)} className="p-1 rounded-full hover:bg-black/5" style={{ color: 'var(--text-muted)' }}>
-            <X size={16} />
+            <HugeiconsIcon icon={Cancel01Icon} size={16} />
           </button>
         </div>
       </div>

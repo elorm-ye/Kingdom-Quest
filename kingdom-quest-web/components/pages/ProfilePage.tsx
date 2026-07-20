@@ -1,7 +1,8 @@
 'use client'
 
 import { useAuth } from '@/components/providers/AuthProvider'
-import { User, LogOut } from 'lucide-react'
+import { HugeiconsIcon } from '@hugeicons/react';
+import { UserIcon, Logout01Icon } from '@hugeicons/core-free-icons';
 
 export default function ProfilePage() {
   const { user, profile, loading, signOut } = useAuth()
@@ -53,10 +54,10 @@ export default function ProfilePage() {
 
       <div className="kq-card p-4 space-y-2">
         <button className="w-full flex items-center justify-between p-4 rounded-lg hover:bg-black/5 transition-colors text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
-          <div className="flex items-center gap-3"><User size={18} /> Edit Profile Info</div>
+          <div className="flex items-center gap-3"><HugeiconsIcon icon={UserIcon} size={18} /> Edit Profile Info</div>
         </button>
         <button onClick={signOut} className="w-full flex items-center justify-between p-4 rounded-lg hover:bg-red-50 transition-colors text-sm font-medium" style={{ color: 'var(--alert)' }}>
-          <div className="flex items-center gap-3"><LogOut size={18} /> Sign Out</div>
+          <div className="flex items-center gap-3"><HugeiconsIcon icon={Logout01Icon} size={18} /> Sign Out</div>
         </button>
       </div>
     </div>

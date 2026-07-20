@@ -3,7 +3,8 @@
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import type { Announcement, ChurchEvent, Inspiration } from '@/lib/types'
-import { Calendar, Lightbulb, Megaphone } from 'lucide-react'
+import { HugeiconsIcon } from '@hugeicons/react';
+import { Megaphone01Icon, Calendar01Icon, Sun01Icon } from '@hugeicons/core-free-icons';
 import Link from 'next/link'
 
 export default function HomePage() {
@@ -67,7 +68,7 @@ export default function HomePage() {
       {/* Announcements */}
       <section>
         <div className="flex items-center gap-2 mb-4">
-          <Megaphone size={20} style={{ color: 'var(--primary)' }} />
+          <HugeiconsIcon icon={Megaphone01Icon} size={20} style={{ color: 'var(--primary)' }} />
           <h2 className="text-xl font-bold font-display">Latest Announcements</h2>
         </div>
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -98,7 +99,7 @@ export default function HomePage() {
       <section>
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
-            <Lightbulb size={20} style={{ color: 'var(--primary)' }} />
+            <HugeiconsIcon icon={Sun01Icon} size={20} style={{ color: 'var(--primary)' }} />
             <h2 className="text-xl font-bold font-display">Daily Inspiration</h2>
           </div>
           <Link href="/inspiration" className="text-sm font-semibold hover:underline" style={{ color: 'var(--primary)' }}>View All</Link>
@@ -128,7 +129,7 @@ export default function HomePage() {
       <section>
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
-            <Calendar size={20} style={{ color: 'var(--primary)' }} />
+            <HugeiconsIcon icon={Calendar01Icon} size={20} style={{ color: 'var(--primary)' }} />
             <h2 className="text-xl font-bold font-display">Upcoming Events</h2>
           </div>
           <Link href="/events" className="text-sm font-semibold hover:underline" style={{ color: 'var(--primary)' }}>View Calendar</Link>

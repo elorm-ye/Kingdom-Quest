@@ -3,7 +3,8 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { Eye, EyeOff, Loader2, ArrowLeft } from 'lucide-react'
+import { HugeiconsIcon } from '@hugeicons/react';
+import { ViewIcon, ViewOffIcon, ArrowLeft01Icon, Loading01Icon } from '@hugeicons/core-free-icons';
 import { createClient } from '@/lib/supabase/client'
 
 export default function RegisterPage() {
@@ -62,7 +63,7 @@ export default function RegisterPage() {
         <div className="mb-8">
           <Link href="/login" className="inline-flex items-center gap-2 mb-6 text-sm"
             style={{ color: 'var(--text-muted)' }}>
-            <ArrowLeft size={16} /> Back to Sign In
+            <HugeiconsIcon icon={ArrowLeft01Icon} size={16} /> Back to Sign In
           </Link>
           <h1 className="font-display text-3xl font-bold" style={{ color: 'var(--text-primary)' }}>
             Join Kingdom Quest
@@ -112,7 +113,7 @@ export default function RegisterPage() {
               <button type="button" onClick={() => setShowPass(!showPass)}
                 className="absolute right-3 top-1/2 -translate-y-1/2 p-1"
                 style={{ color: 'var(--text-muted)' }}>
-                {showPass ? <EyeOff size={18} /> : <Eye size={18} />}
+                {showPass ? <HugeiconsIcon icon={ViewOffIcon} size={18} /> : <HugeiconsIcon icon={ViewIcon} size={18} />}
               </button>
             </div>
           </div>
@@ -125,7 +126,7 @@ export default function RegisterPage() {
 
           <button id="reg-submit" type="submit" disabled={loading}
             className="kq-btn kq-btn-primary w-full h-13 text-base mt-2">
-            {loading ? <Loader2 size={20} className="animate-spin" /> : 'Create Account'}
+            {loading ? <HugeiconsIcon icon={Loading01Icon} size={20} className="animate-spin" /> : 'Create Account'}
           </button>
         </form>
 
