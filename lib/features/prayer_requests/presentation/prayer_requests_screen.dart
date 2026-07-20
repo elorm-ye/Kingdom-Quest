@@ -236,7 +236,7 @@ class _PrayerRequestsScreenState extends State<PrayerRequestsScreen> {
             Row(
               children: [
                 HugeIcon(
-                  icon: HugeIcons.strokeRoundedReply,
+                  icon: HugeIcons.strokeRoundedArrowTurnBackward,
                   size: 14,
                   color: isDark
                       ? AppColors.accentLinkDark

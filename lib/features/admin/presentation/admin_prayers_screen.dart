@@ -481,7 +481,7 @@ class _PrayerAdminCard extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               HugeIcon(
-                                icon: HugeIcons.strokeRoundedReply,
+                                icon: HugeIcons.strokeRoundedArrowTurnBackward,
                                 size: 14,
                                 color: primary,
                               ),

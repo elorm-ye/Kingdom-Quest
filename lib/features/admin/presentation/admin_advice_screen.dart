@@ -324,7 +324,7 @@ class _AdminAdviceScreenState extends State<AdminAdviceScreen> {
                                 textMuted,
                               ),
                               icon: const HugeIcon(
-                                icon: HugeIcons.strokeRoundedReply,
+                                icon: HugeIcons.strokeRoundedArrowTurnBackward,
                                 size: 14,
                               ),
                               label: Text(
