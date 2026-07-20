@@ -30,7 +30,9 @@ class ProfileNotifier extends Notifier<AsyncValue<UserModel?>> {
 
     state = const AsyncValue.loading();
     try {
-      await ref.read(authServiceProvider).updateProfile(
+      await ref
+          .read(authServiceProvider)
+          .updateProfile(
             userId: currentUser.id,
             displayName: displayName,
             bio: bio,
@@ -49,14 +51,12 @@ class ProfileNotifier extends Notifier<AsyncValue<UserModel?>> {
 
     state = const AsyncValue.loading();
     try {
-      final url = await ref.read(storageServiceProvider).uploadAvatar(
-            userId: currentUser.id,
-            file: imageFile,
-          );
-      await ref.read(authServiceProvider).updateProfile(
-            userId: currentUser.id,
-            avatarUrl: url,
-          );
+      final url = await ref
+          .read(storageServiceProvider)
+          .uploadAvatar(userId: currentUser.id, file: imageFile);
+      await ref
+          .read(authServiceProvider)
+          .updateProfile(userId: currentUser.id, avatarUrl: url);
       await _load();
     } catch (e, st) {
       state = AsyncValue.error(e, st);
@@ -67,4 +67,6 @@ class ProfileNotifier extends Notifier<AsyncValue<UserModel?>> {
 }
 
 final profileNotifierProvider =
-    NotifierProvider<ProfileNotifier, AsyncValue<UserModel?>>(ProfileNotifier.new);
+    NotifierProvider<ProfileNotifier, AsyncValue<UserModel?>>(
+      ProfileNotifier.new,
+    );

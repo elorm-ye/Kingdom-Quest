@@ -14,7 +14,8 @@ class AppTypography {
   // FONT FAMILIES
   // ─────────────────────────────────────────────
 
-  static String get displayFamily => GoogleFonts.bricolageGrotesque().fontFamily!;
+  static String get displayFamily =>
+      GoogleFonts.bricolageGrotesque().fontFamily!;
   static String get bodyFamily => GoogleFonts.schibstedGrotesk().fontFamily!;
 
   // ─────────────────────────────────────────────

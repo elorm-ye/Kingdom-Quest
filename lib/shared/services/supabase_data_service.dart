@@ -17,18 +17,49 @@ class SupabaseDataService {
   // ─────────────────────────────────────────────────────────────────────────
 
   static const List<Map<String, String>> _bibleVerses = [
-    {'text': '"Seek first his kingdom, and all these things will be given to you."', 'reference': 'Matthew 6:33'},
-    {'text': '"For I know the plans I have for you, declares the Lord, plans to prosper you."', 'reference': 'Jeremiah 29:11'},
-    {'text': '"I can do all things through Christ who strengthens me."', 'reference': 'Philippians 4:13'},
-    {'text': '"The Lord is my shepherd; I shall not want."', 'reference': 'Psalm 23:1'},
-    {'text': '"Trust in the Lord with all your heart and lean not on your own understanding."', 'reference': 'Proverbs 3:5'},
-    {'text': '"Be strong and courageous. Do not be afraid; for the Lord your God will be with you."', 'reference': 'Joshua 1:9'},
-    {'text': '"Cast all your anxiety on him because he cares for you."', 'reference': '1 Peter 5:7'},
-    {'text': '"The Lord is close to the brokenhearted and saves those who are crushed in spirit."', 'reference': 'Psalm 34:18'},
+    {
+      'text':
+          '"Seek first his kingdom, and all these things will be given to you."',
+      'reference': 'Matthew 6:33',
+    },
+    {
+      'text':
+          '"For I know the plans I have for you, declares the Lord, plans to prosper you."',
+      'reference': 'Jeremiah 29:11',
+    },
+    {
+      'text': '"I can do all things through Christ who strengthens me."',
+      'reference': 'Philippians 4:13',
+    },
+    {
+      'text': '"The Lord is my shepherd; I shall not want."',
+      'reference': 'Psalm 23:1',
+    },
+    {
+      'text':
+          '"Trust in the Lord with all your heart and lean not on your own understanding."',
+      'reference': 'Proverbs 3:5',
+    },
+    {
+      'text':
+          '"Be strong and courageous. Do not be afraid; for the Lord your God will be with you."',
+      'reference': 'Joshua 1:9',
+    },
+    {
+      'text': '"Cast all your anxiety on him because he cares for you."',
+      'reference': '1 Peter 5:7',
+    },
+    {
+      'text':
+          '"The Lord is close to the brokenhearted and saves those who are crushed in spirit."',
+      'reference': 'Psalm 34:18',
+    },
   ];
 
   Map<String, String> getDailyVerse() {
-    final dayOfYear = DateTime.now().difference(DateTime(DateTime.now().year)).inDays;
+    final dayOfYear = DateTime.now()
+        .difference(DateTime(DateTime.now().year))
+        .inDays;
     return _bibleVerses[dayOfYear % _bibleVerses.length];
   }
 
@@ -97,7 +128,10 @@ class SupabaseDataService {
   }
 
   Future<void> incrementPrayerCount(String prayerRequestId) async {
-    await _client.rpc('increment_prayer_count', params: {'request_id': prayerRequestId});
+    await _client.rpc(
+      'increment_prayer_count',
+      params: {'request_id': prayerRequestId},
+    );
   }
 
   // ─────────────────────────────────────────────────────────────────────────
@@ -144,7 +178,10 @@ class SupabaseDataService {
   }) async {
     await _client
         .from('petitions')
-        .update({'status': status, 'updated_at': DateTime.now().toIso8601String()})
+        .update({
+          'status': status,
+          'updated_at': DateTime.now().toIso8601String(),
+        })
         .eq('id', petitionId);
   }
 
@@ -271,14 +308,20 @@ class SupabaseDataService {
           .delete()
           .eq('inspiration_id', inspirationId)
           .eq('user_id', userId);
-      await _client.rpc('decrement_inspiration_likes', params: {'insp_id': inspirationId});
+      await _client.rpc(
+        'decrement_inspiration_likes',
+        params: {'insp_id': inspirationId},
+      );
     } else {
       await _client.from('inspiration_reactions').insert({
         'inspiration_id': inspirationId,
         'user_id': userId,
         'reaction_type': 'like',
       });
-      await _client.rpc('increment_inspiration_likes', params: {'insp_id': inspirationId});
+      await _client.rpc(
+        'increment_inspiration_likes',
+        params: {'insp_id': inspirationId},
+      );
     }
   }
 
@@ -344,13 +387,13 @@ class SupabaseDataService {
   }
 
   Future<void> dismissForumReport(String postId) async {
-    await _client
-        .from('forum_reports')
-        .delete()
-        .eq('post_id', postId);
+    await _client.from('forum_reports').delete().eq('post_id', postId);
   }
 
-  Future<void> reportForumPost({required String postId, required String reason}) async {
+  Future<void> reportForumPost({
+    required String postId,
+    required String reason,
+  }) async {
     final userId = _client.auth.currentUser!.id;
     final token = _generateAnonymousToken(userId);
     await _client.from('forum_reports').insert({
@@ -423,13 +466,19 @@ class SupabaseDataService {
           .delete()
           .eq('event_id', eventId)
           .eq('user_id', userId);
-      await _client.rpc('decrement_event_registration', params: {'ev_id': eventId});
+      await _client.rpc(
+        'decrement_event_registration',
+        params: {'ev_id': eventId},
+      );
     } else {
       await _client.from('event_registrations').insert({
         'event_id': eventId,
         'user_id': userId,
       });
-      await _client.rpc('increment_event_registration', params: {'ev_id': eventId});
+      await _client.rpc(
+        'increment_event_registration',
+        params: {'ev_id': eventId},
+      );
     }
   }
 
@@ -594,8 +643,12 @@ class SupabaseDataService {
       description: m['description'],
       category: _parsePrayerCategory(categoryStr),
       isAnonymous: m['is_anonymous'] as bool? ?? false,
-      submitterName: m['is_anonymous'] == false ? m['display_name'] as String? : null,
-      anonymousDisplayName: m['is_anonymous'] == true ? m['display_name'] as String? : null,
+      submitterName: m['is_anonymous'] == false
+          ? m['display_name'] as String?
+          : null,
+      anonymousDisplayName: m['is_anonymous'] == true
+          ? m['display_name'] as String?
+          : null,
       status: _parsePrayerStatus(statusStr),
       prayerCount: m['prayer_count'] as int? ?? 0,
       createdAt: DateTime.parse(m['created_at']),
@@ -611,10 +664,14 @@ class SupabaseDataService {
       description: m['description'],
       isAnonymous: m['is_anonymous'] as bool? ?? false,
       submitterName: m['is_anonymous'] == false ? m['display_name'] : null,
-      anonymousDisplayName: m['is_anonymous'] == true ? m['display_name'] : null,
+      anonymousDisplayName: m['is_anonymous'] == true
+          ? m['display_name']
+          : null,
       status: _parsePetitionStatus(m['status'] as String? ?? 'pending'),
       createdAt: DateTime.parse(m['created_at']),
-      updatedAt: m['updated_at'] != null ? DateTime.parse(m['updated_at']) : null,
+      updatedAt: m['updated_at'] != null
+          ? DateTime.parse(m['updated_at'])
+          : null,
     );
   }
 
@@ -637,7 +694,9 @@ class SupabaseDataService {
       title: m['title'],
       description: m['description'],
       isAnonymous: m['is_anonymous'] as bool? ?? false,
-      anonymousDisplayName: m['is_anonymous'] == true ? m['display_name'] : null,
+      anonymousDisplayName: m['is_anonymous'] == true
+          ? m['display_name']
+          : null,
       status: _parseAdviceStatus(m['status'] as String? ?? 'pending'),
       createdAt: DateTime.parse(m['created_at']),
       responses: responses,
@@ -655,7 +714,9 @@ class SupabaseDataService {
       type: _parseInspirationType(m['type'] as String? ?? 'motivation'),
       bibleReference: m['bible_reference'],
       mediaUrls: mediaUrl != null ? [mediaUrl] : const [],
-      publishedAt: m['published_at'] != null ? DateTime.parse(m['published_at']) : null,
+      publishedAt: m['published_at'] != null
+          ? DateTime.parse(m['published_at'])
+          : null,
       likeCount: m['like_count'] as int? ?? 0,
       commentCount: m['comment_count'] as int? ?? 0,
       isLikedByUser: isLiked,
@@ -732,8 +793,8 @@ class SupabaseDataService {
       gender: genderStr == 'male'
           ? Gender.male
           : genderStr == 'female'
-              ? Gender.female
-              : Gender.preferNotToSay,
+          ? Gender.female
+          : Gender.preferNotToSay,
       createdAt: DateTime.parse(data['created_at'] as String),
     );
   }

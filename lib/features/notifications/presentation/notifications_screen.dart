@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hugeicons/hugeicons.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/theme/app_colors.dart';
@@ -25,11 +26,20 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
 
   void _markAllRead() {
     setState(() {
-      _notifications = _notifications.map((n) => AppNotification(
-        id: n.id, userId: n.userId, type: n.type,
-        title: n.title, body: n.body, data: n.data,
-        isRead: true, createdAt: n.createdAt,
-      )).toList();
+      _notifications = _notifications
+          .map(
+            (n) => AppNotification(
+              id: n.id,
+              userId: n.userId,
+              type: n.type,
+              title: n.title,
+              body: n.body,
+              data: n.data,
+              isRead: true,
+              createdAt: n.createdAt,
+            ),
+          )
+          .toList();
     });
   }
 
@@ -37,31 +47,47 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     final n = _notifications[index];
     setState(() {
       _notifications[index] = AppNotification(
-        id: n.id, userId: n.userId, type: n.type,
-        title: n.title, body: n.body, data: n.data,
-        isRead: true, createdAt: n.createdAt,
+        id: n.id,
+        userId: n.userId,
+        type: n.type,
+        title: n.title,
+        body: n.body,
+        data: n.data,
+        isRead: true,
+        createdAt: n.createdAt,
       );
     });
   }
 
   IconData _iconForType(String type) {
     switch (type) {
-      case 'prayer_response': return Icons.volunteer_activism_rounded;
-      case 'inspiration': return Icons.auto_awesome_rounded;
-      case 'announcement': return Icons.campaign_rounded;
-      case 'event_reminder': return Icons.event_rounded;
-      case 'petition_update': return Icons.mail_outline_rounded;
-      default: return Icons.notifications_rounded;
+      case 'prayer_response':
+        return Icons.volunteer_activism_rounded;
+      case 'inspiration':
+        return Icons.auto_awesome_rounded;
+      case 'announcement':
+        return Icons.campaign_rounded;
+      case 'event_reminder':
+        return Icons.event_rounded;
+      case 'petition_update':
+        return Icons.mail_outline_rounded;
+      default:
+        return Icons.notifications_rounded;
     }
   }
 
   Color _colorForType(String type, Color primary) {
     switch (type) {
-      case 'prayer_response': return AppColors.sage;
-      case 'inspiration': return AppColors.burntAmber;
-      case 'announcement': return primary;
-      case 'event_reminder': return const Color(0xFF6B7FD4);
-      default: return primary;
+      case 'prayer_response':
+        return AppColors.sage;
+      case 'inspiration':
+        return AppColors.burntAmber;
+      case 'announcement':
+        return primary;
+      case 'event_reminder':
+        return const Color(0xFF6B7FD4);
+      default:
+        return primary;
     }
   }
 
@@ -90,7 +116,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         title: Text(
           'Notifications',
           style: GoogleFonts.bricolageGrotesque(
-            fontSize: 22, fontWeight: FontWeight.w700, color: textPrimary,
+            fontSize: 22,
+            fontWeight: FontWeight.w700,
+            color: textPrimary,
           ),
         ),
         actions: [
@@ -100,7 +128,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
               child: Text(
                 'Mark all read',
                 style: GoogleFonts.schibstedGrotesk(
-                  fontSize: 13, fontWeight: FontWeight.w600, color: primary,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: primary,
                 ),
               ),
             ),
@@ -111,9 +141,20 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.notifications_off_outlined, size: 64, color: textMuted),
+                  HugeIcon(
+                    icon: HugeIcons.strokeRoundedNotificationOff01,
+                    size: 64,
+                    color: textMuted,
+                  ),
                   const SizedBox(height: 16),
-                  Text('No notifications yet', style: GoogleFonts.bricolageGrotesque(fontSize: 18, fontWeight: FontWeight.w600, color: textMuted)),
+                  Text(
+                    'No notifications yet',
+                    style: GoogleFonts.bricolageGrotesque(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                      color: textMuted,
+                    ),
+                  ),
                 ],
               ),
             )
@@ -125,81 +166,112 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                 final typeColor = _colorForType(n.type, primary);
 
                 return GestureDetector(
-                  onTap: () => _markRead(i),
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 300),
-                    margin: const EdgeInsets.only(bottom: AppSpacing.sm),
-                    padding: const EdgeInsets.all(AppSpacing.md),
-                    decoration: BoxDecoration(
-                      color: n.isRead
-                          ? surface
-                          : surface.withValues(alpha: 0.95),
-                      borderRadius: BorderRadius.circular(AppSpacing.radiusCard),
-                      border: n.isRead
-                          ? null
-                          : Border.all(color: primary.withValues(alpha: 0.25), width: 1),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: n.isRead ? 0.04 : (isDark ? 0.3 : 0.08)),
-                          blurRadius: n.isRead ? 8 : 16,
-                          offset: const Offset(0, 3),
-                        ),
-                      ],
-                    ),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          width: 44,
-                          height: 44,
-                          decoration: BoxDecoration(
-                            color: typeColor.withValues(alpha: 0.15),
-                            shape: BoxShape.circle,
+                      onTap: () => _markRead(i),
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 300),
+                        margin: const EdgeInsets.only(bottom: AppSpacing.sm),
+                        padding: const EdgeInsets.all(AppSpacing.md),
+                        decoration: BoxDecoration(
+                          color: n.isRead
+                              ? surface
+                              : surface.withValues(alpha: 0.95),
+                          borderRadius: BorderRadius.circular(
+                            AppSpacing.radiusCard,
                           ),
-                          child: Icon(_iconForType(n.type), size: 20, color: typeColor),
+                          border: n.isRead
+                              ? null
+                              : Border.all(
+                                  color: primary.withValues(alpha: 0.25),
+                                  width: 1,
+                                ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(
+                                alpha: n.isRead ? 0.04 : (isDark ? 0.3 : 0.08),
+                              ),
+                              blurRadius: n.isRead ? 8 : 16,
+                              offset: const Offset(0, 3),
+                            ),
+                          ],
                         ),
-                        const SizedBox(width: AppSpacing.md),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              width: 44,
+                              height: 44,
+                              decoration: BoxDecoration(
+                                color: typeColor.withValues(alpha: 0.15),
+                                shape: BoxShape.circle,
+                              ),
+                              child: Icon(
+                                _iconForType(n.type),
+                                size: 20,
+                                color: typeColor,
+                              ),
+                            ),
+                            const SizedBox(width: AppSpacing.md),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Expanded(
-                                    child: Text(
-                                      n.title,
-                                      style: GoogleFonts.schibstedGrotesk(
-                                        fontSize: 14,
-                                        fontWeight: n.isRead ? FontWeight.w500 : FontWeight.w700,
-                                        color: textPrimary,
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: Text(
+                                          n.title,
+                                          style: GoogleFonts.schibstedGrotesk(
+                                            fontSize: 14,
+                                            fontWeight: n.isRead
+                                                ? FontWeight.w500
+                                                : FontWeight.w700,
+                                            color: textPrimary,
+                                          ),
+                                        ),
                                       ),
+                                      if (!n.isRead)
+                                        Container(
+                                          width: 8,
+                                          height: 8,
+                                          margin: const EdgeInsets.only(
+                                            left: 8,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: primary,
+                                            shape: BoxShape.circle,
+                                          ),
+                                        ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    n.body,
+                                    style: GoogleFonts.schibstedGrotesk(
+                                      fontSize: 13,
+                                      color: textMuted,
+                                      height: 1.4,
+                                    ),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  const SizedBox(height: 6),
+                                  Text(
+                                    _timeAgo(n.createdAt),
+                                    style: GoogleFonts.schibstedGrotesk(
+                                      fontSize: 11,
+                                      color: textMuted,
                                     ),
                                   ),
-                                  if (!n.isRead)
-                                    Container(
-                                      width: 8,
-                                      height: 8,
-                                      margin: const EdgeInsets.only(left: 8),
-                                      decoration: BoxDecoration(color: primary, shape: BoxShape.circle),
-                                    ),
                                 ],
                               ),
-                              const SizedBox(height: 4),
-                              Text(
-                                n.body,
-                                style: GoogleFonts.schibstedGrotesk(fontSize: 13, color: textMuted, height: 1.4),
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              const SizedBox(height: 6),
-                              Text(_timeAgo(n.createdAt), style: GoogleFonts.schibstedGrotesk(fontSize: 11, color: textMuted)),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                  ),
-                ).animate(delay: Duration(milliseconds: i * 60)).fadeIn(duration: 350.ms).slideX(begin: 0.05, end: 0, curve: Curves.easeOut);
+                      ),
+                    )
+                    .animate(delay: Duration(milliseconds: i * 60))
+                    .fadeIn(duration: 350.ms)
+                    .slideX(begin: 0.05, end: 0, curve: Curves.easeOut);
               },
             ),
     );

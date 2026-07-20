@@ -90,11 +90,7 @@ class AppColors {
   static const LinearGradient splashGradient = LinearGradient(
     begin: Alignment.topCenter,
     end: Alignment.bottomCenter,
-    colors: [
-      Color(0xFFC7784E),
-      Color(0xFFB8614A),
-      Color(0xFF8B4332),
-    ],
+    colors: [Color(0xFFC7784E), Color(0xFFB8614A), Color(0xFF8B4332)],
   );
 
   // ─────────────────────────────────────────────

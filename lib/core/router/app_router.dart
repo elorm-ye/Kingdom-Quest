@@ -73,10 +73,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/splash',
         builder: (context, state) => const SplashScreen(),
       ),
-      GoRoute(
-        path: '/login',
-        builder: (context, state) => const LoginScreen(),
-      ),
+      GoRoute(path: '/login', builder: (context, state) => const LoginScreen()),
       GoRoute(
         path: '/register',
         builder: (context, state) => const RegisterScreen(),
@@ -89,36 +86,59 @@ final routerProvider = Provider<GoRouter>((ref) {
         routes: [
           GoRoute(
             path: '/home',
-            pageBuilder: (context, state) => const NoTransitionPage(child: HomeScreen()),
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: HomeScreen()),
           ),
           GoRoute(
             path: '/community',
-            pageBuilder: (context, state) => const NoTransitionPage(child: ForumScreen()),
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: ForumScreen()),
           ),
           GoRoute(
             path: '/inspiration',
-            pageBuilder: (context, state) => const NoTransitionPage(child: InspirationScreen()),
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: InspirationScreen()),
           ),
           GoRoute(
             path: '/events',
-            pageBuilder: (context, state) => const NoTransitionPage(child: EventsScreen()),
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: EventsScreen()),
           ),
           GoRoute(
             path: '/profile',
-            pageBuilder: (context, state) => const NoTransitionPage(child: ProfileScreen()),
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: ProfileScreen()),
           ),
         ],
       ),
 
       // ── MEMBER FULL-SCREEN ROUTES ──────────────────────────────────────
-      GoRoute(path: '/prayer-requests', builder: (c, s) => const PrayerRequestsScreen()),
-      GoRoute(path: '/submit-prayer', builder: (c, s) => const SubmitPrayerScreen()),
+      GoRoute(
+        path: '/prayer-requests',
+        builder: (c, s) => const PrayerRequestsScreen(),
+      ),
+      GoRoute(
+        path: '/submit-prayer',
+        builder: (c, s) => const SubmitPrayerScreen(),
+      ),
       GoRoute(path: '/petitions', builder: (c, s) => const PetitionsScreen()),
-      GoRoute(path: '/submit-petition', builder: (c, s) => const SubmitPetitionScreen()),
+      GoRoute(
+        path: '/submit-petition',
+        builder: (c, s) => const SubmitPetitionScreen(),
+      ),
       GoRoute(path: '/advice', builder: (c, s) => const AdviceScreen()),
-      GoRoute(path: '/submit-advice', builder: (c, s) => const SubmitAdviceScreen()),
-      GoRoute(path: '/create-post', builder: (c, s) => const CreatePostScreen()),
-      GoRoute(path: '/notifications', builder: (c, s) => const NotificationsScreen()),
+      GoRoute(
+        path: '/submit-advice',
+        builder: (c, s) => const SubmitAdviceScreen(),
+      ),
+      GoRoute(
+        path: '/create-post',
+        builder: (c, s) => const CreatePostScreen(),
+      ),
+      GoRoute(
+        path: '/notifications',
+        builder: (c, s) => const NotificationsScreen(),
+      ),
       GoRoute(path: '/settings', builder: (c, s) => const SettingsScreen()),
 
       // ── ADMIN SHELL ────────────────────────────────────────────────────
@@ -128,31 +148,45 @@ final routerProvider = Provider<GoRouter>((ref) {
         routes: [
           GoRoute(
             path: '/admin',
-            pageBuilder: (context, state) => const NoTransitionPage(child: AdminHomeScreen()),
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: AdminHomeScreen()),
           ),
           GoRoute(
             path: '/admin/prayers',
-            pageBuilder: (context, state) => const NoTransitionPage(child: AdminPrayersScreen()),
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: AdminPrayersScreen()),
           ),
           GoRoute(
             path: '/admin/petitions',
-            pageBuilder: (context, state) => const NoTransitionPage(child: AdminPetitionsScreen()),
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: AdminPetitionsScreen()),
           ),
           GoRoute(
             path: '/admin/users',
-            pageBuilder: (context, state) => const NoTransitionPage(child: AdminUsersScreen()),
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: AdminUsersScreen()),
           ),
           GoRoute(
             path: '/admin/more',
-            pageBuilder: (context, state) => const NoTransitionPage(child: AdminMoreScreen()),
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: AdminMoreScreen()),
           ),
         ],
       ),
 
       // ── ADMIN FULL-SCREEN ROUTES (no admin shell nav) ─────────────────
-      GoRoute(path: '/admin/advice', builder: (c, s) => const AdminAdviceScreen()),
-      GoRoute(path: '/admin/inspiration', builder: (c, s) => const AdminInspirationScreen()),
-      GoRoute(path: '/admin/forum', builder: (c, s) => const AdminForumScreen()),
+      GoRoute(
+        path: '/admin/advice',
+        builder: (c, s) => const AdminAdviceScreen(),
+      ),
+      GoRoute(
+        path: '/admin/inspiration',
+        builder: (c, s) => const AdminInspirationScreen(),
+      ),
+      GoRoute(
+        path: '/admin/forum',
+        builder: (c, s) => const AdminForumScreen(),
+      ),
     ],
   );
 });

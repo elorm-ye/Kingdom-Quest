@@ -164,8 +164,8 @@ class ThemeModeNotifier extends Notifier<ThemeMode> {
     state = saved == 'dark'
         ? ThemeMode.dark
         : saved == 'system'
-            ? ThemeMode.system
-            : ThemeMode.light;
+        ? ThemeMode.system
+        : ThemeMode.light;
   }
 
   Future<void> toggle() async {
@@ -178,8 +178,8 @@ class ThemeModeNotifier extends Notifier<ThemeMode> {
     final key = mode == ThemeMode.dark
         ? 'dark'
         : mode == ThemeMode.system
-            ? 'system'
-            : 'light';
+        ? 'system'
+        : 'light';
     await prefs.setString('themeMode', key);
   }
 
@@ -190,7 +190,9 @@ class ThemeModeNotifier extends Notifier<ThemeMode> {
 // NAVIGATION
 // ─────────────────────────────────────────────────────────────────────────────
 
-final currentNavIndexProvider = NotifierProvider<_IntNotifier, int>(_IntNotifier.new);
+final currentNavIndexProvider = NotifierProvider<_IntNotifier, int>(
+  _IntNotifier.new,
+);
 
 class _IntNotifier extends Notifier<int> {
   @override

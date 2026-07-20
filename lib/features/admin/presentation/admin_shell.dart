@@ -11,11 +11,36 @@ class AdminShell extends StatelessWidget {
   const AdminShell({super.key, required this.child});
 
   static const _navItems = [
-    (icon: Icons.dashboard_outlined, activeIcon: Icons.dashboard_rounded, label: 'Overview', route: '/admin'),
-    (icon: Icons.volunteer_activism_outlined, activeIcon: Icons.volunteer_activism_rounded, label: 'Prayers', route: '/admin/prayers'),
-    (icon: Icons.mail_outline_rounded, activeIcon: Icons.mail_rounded, label: 'Petitions', route: '/admin/petitions'),
-    (icon: Icons.people_outline_rounded, activeIcon: Icons.people_rounded, label: 'Users', route: '/admin/users'),
-    (icon: Icons.more_horiz_rounded, activeIcon: Icons.more_horiz_rounded, label: 'More', route: '/admin/more'),
+    (
+      icon: Icons.dashboard_outlined,
+      activeIcon: Icons.dashboard_rounded,
+      label: 'Overview',
+      route: '/admin',
+    ),
+    (
+      icon: Icons.volunteer_activism_outlined,
+      activeIcon: Icons.volunteer_activism_rounded,
+      label: 'Prayers',
+      route: '/admin/prayers',
+    ),
+    (
+      icon: Icons.mail_outline_rounded,
+      activeIcon: Icons.mail_rounded,
+      label: 'Petitions',
+      route: '/admin/petitions',
+    ),
+    (
+      icon: Icons.people_outline_rounded,
+      activeIcon: Icons.people_rounded,
+      label: 'Users',
+      route: '/admin/users',
+    ),
+    (
+      icon: Icons.more_horiz_rounded,
+      activeIcon: Icons.more_horiz_rounded,
+      label: 'More',
+      route: '/admin/more',
+    ),
   ];
 
   int _currentIndex(BuildContext context) {
@@ -66,10 +91,17 @@ class AdminShell extends StatelessWidget {
                       children: [
                         AnimatedContainer(
                           duration: const Duration(milliseconds: 200),
-                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 14,
+                            vertical: 4,
+                          ),
                           decoration: BoxDecoration(
-                            color: active ? primary.withValues(alpha: 0.12) : Colors.transparent,
-                            borderRadius: BorderRadius.circular(AppSpacing.radiusFull),
+                            color: active
+                                ? primary.withValues(alpha: 0.12)
+                                : Colors.transparent,
+                            borderRadius: BorderRadius.circular(
+                              AppSpacing.radiusFull,
+                            ),
                           ),
                           child: Icon(
                             active ? item.activeIcon : item.icon,
@@ -82,7 +114,9 @@ class AdminShell extends StatelessWidget {
                           item.label,
                           style: GoogleFonts.schibstedGrotesk(
                             fontSize: 10,
-                            fontWeight: active ? FontWeight.w600 : FontWeight.w400,
+                            fontWeight: active
+                                ? FontWeight.w600
+                                : FontWeight.w400,
                             color: active ? primary : inactive,
                           ),
                         ),

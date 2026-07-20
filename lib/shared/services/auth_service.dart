@@ -31,10 +31,7 @@ class AuthService {
     return _client.auth.signUp(
       email: email,
       password: password,
-      data: {
-        'display_name': displayName,
-        'gender': gender,
-      },
+      data: {'display_name': displayName, 'gender': gender},
     );
   }
 
@@ -45,10 +42,7 @@ class AuthService {
     required String email,
     required String password,
   }) async {
-    return _client.auth.signInWithPassword(
-      email: email,
-      password: password,
-    );
+    return _client.auth.signInWithPassword(email: email, password: password);
   }
 
   // ── Sign Out ─────────────────────────────────────────────────────────────
@@ -110,8 +104,8 @@ class AuthService {
       gender: genderStr == 'male'
           ? Gender.male
           : genderStr == 'female'
-              ? Gender.female
-              : Gender.preferNotToSay,
+          ? Gender.female
+          : Gender.preferNotToSay,
       createdAt: DateTime.parse(data['created_at'] as String),
     );
   }

@@ -4,7 +4,8 @@ class ForumPost {
   final String? churchId;
   final String title;
   final String content;
-  final String displayName; // "Anonymous Member" / "Anonymous Sister" / "Anonymous Brother"
+  final String
+  displayName; // "Anonymous Member" / "Anonymous Sister" / "Anonymous Brother"
   final int likeCount;
   final int commentCount;
   final int voteScore;

@@ -16,7 +16,9 @@ import '../../../core/providers/app_providers.dart';
 
 final prayerRequestsProvider = FutureProvider<List<PrayerRequest>>((ref) async {
   final profile = await ref.watch(currentUserModelProvider.future);
-  return ref.read(dataServiceProvider).fetchPrayerRequests(churchId: profile?.churchId);
+  return ref
+      .read(dataServiceProvider)
+      .fetchPrayerRequests(churchId: profile?.churchId);
 });
 
 class PrayerRequestsNotifier extends Notifier<AsyncValue<List<PrayerRequest>>> {
@@ -29,7 +31,9 @@ class PrayerRequestsNotifier extends Notifier<AsyncValue<List<PrayerRequest>>> {
   Future<void> _reload() async {
     final profile = await ref.read(currentUserModelProvider.future);
     try {
-      final items = await ref.read(dataServiceProvider).fetchPrayerRequests(churchId: profile?.churchId);
+      final items = await ref
+          .read(dataServiceProvider)
+          .fetchPrayerRequests(churchId: profile?.churchId);
       state = AsyncValue.data(items);
     } catch (e, st) {
       state = AsyncValue.error(e, st);
@@ -44,7 +48,9 @@ class PrayerRequestsNotifier extends Notifier<AsyncValue<List<PrayerRequest>>> {
     required String displayName,
   }) async {
     final profile = await ref.read(currentUserModelProvider.future);
-    await ref.read(dataServiceProvider).submitPrayerRequest(
+    await ref
+        .read(dataServiceProvider)
+        .submitPrayerRequest(
           title: title,
           description: description,
           category: category,
@@ -55,8 +61,13 @@ class PrayerRequestsNotifier extends Notifier<AsyncValue<List<PrayerRequest>>> {
     await _reload();
   }
 
-  Future<void> reply({required String prayerRequestId, required String message}) async {
-    await ref.read(dataServiceProvider).replyToPrayerRequest(
+  Future<void> reply({
+    required String prayerRequestId,
+    required String message,
+  }) async {
+    await ref
+        .read(dataServiceProvider)
+        .replyToPrayerRequest(
           prayerRequestId: prayerRequestId,
           message: message,
         );
@@ -73,8 +84,8 @@ class PrayerRequestsNotifier extends Notifier<AsyncValue<List<PrayerRequest>>> {
 
 final prayerRequestsNotifierProvider =
     NotifierProvider<PrayerRequestsNotifier, AsyncValue<List<PrayerRequest>>>(
-  PrayerRequestsNotifier.new,
-);
+      PrayerRequestsNotifier.new,
+    );
 
 // ─────────────────────────────────────────────────────────────────────────────
 // PETITIONS
@@ -90,7 +101,9 @@ class PetitionsNotifier extends Notifier<AsyncValue<List<Petition>>> {
   Future<void> _reload() async {
     final profile = await ref.read(currentUserModelProvider.future);
     try {
-      final items = await ref.read(dataServiceProvider).fetchPetitions(churchId: profile?.churchId);
+      final items = await ref
+          .read(dataServiceProvider)
+          .fetchPetitions(churchId: profile?.churchId);
       state = AsyncValue.data(items);
     } catch (e, st) {
       state = AsyncValue.error(e, st);
@@ -104,7 +117,9 @@ class PetitionsNotifier extends Notifier<AsyncValue<List<Petition>>> {
     required String displayName,
   }) async {
     final profile = await ref.read(currentUserModelProvider.future);
-    await ref.read(dataServiceProvider).submitPetition(
+    await ref
+        .read(dataServiceProvider)
+        .submitPetition(
           subject: subject,
           description: description,
           isAnonymous: isAnonymous,
@@ -114,8 +129,13 @@ class PetitionsNotifier extends Notifier<AsyncValue<List<Petition>>> {
     await _reload();
   }
 
-  Future<void> updateStatus({required String id, required String status}) async {
-    await ref.read(dataServiceProvider).updatePetitionStatus(petitionId: id, status: status);
+  Future<void> updateStatus({
+    required String id,
+    required String status,
+  }) async {
+    await ref
+        .read(dataServiceProvider)
+        .updatePetitionStatus(petitionId: id, status: status);
     await _reload();
   }
 
@@ -124,8 +144,8 @@ class PetitionsNotifier extends Notifier<AsyncValue<List<Petition>>> {
 
 final petitionsNotifierProvider =
     NotifierProvider<PetitionsNotifier, AsyncValue<List<Petition>>>(
-  PetitionsNotifier.new,
-);
+      PetitionsNotifier.new,
+    );
 
 // ─────────────────────────────────────────────────────────────────────────────
 // ADVICE
@@ -141,7 +161,9 @@ class AdviceNotifier extends Notifier<AsyncValue<List<AdviceRequest>>> {
   Future<void> _reload() async {
     final profile = await ref.read(currentUserModelProvider.future);
     try {
-      final items = await ref.read(dataServiceProvider).fetchAdviceRequests(churchId: profile?.churchId);
+      final items = await ref
+          .read(dataServiceProvider)
+          .fetchAdviceRequests(churchId: profile?.churchId);
       state = AsyncValue.data(items);
     } catch (e, st) {
       state = AsyncValue.error(e, st);
@@ -155,7 +177,9 @@ class AdviceNotifier extends Notifier<AsyncValue<List<AdviceRequest>>> {
     required String displayName,
   }) async {
     final profile = await ref.read(currentUserModelProvider.future);
-    await ref.read(dataServiceProvider).submitAdviceRequest(
+    await ref
+        .read(dataServiceProvider)
+        .submitAdviceRequest(
           title: title,
           description: description,
           isAnonymous: isAnonymous,
@@ -170,7 +194,9 @@ class AdviceNotifier extends Notifier<AsyncValue<List<AdviceRequest>>> {
     required String message,
     required List<String> bibleReferences,
   }) async {
-    await ref.read(dataServiceProvider).replyToAdviceRequest(
+    await ref
+        .read(dataServiceProvider)
+        .replyToAdviceRequest(
           adviceRequestId: adviceRequestId,
           message: message,
           bibleReferences: bibleReferences,
@@ -188,8 +214,8 @@ class AdviceNotifier extends Notifier<AsyncValue<List<AdviceRequest>>> {
 
 final adviceNotifierProvider =
     NotifierProvider<AdviceNotifier, AsyncValue<List<AdviceRequest>>>(
-  AdviceNotifier.new,
-);
+      AdviceNotifier.new,
+    );
 
 // ─────────────────────────────────────────────────────────────────────────────
 // DAILY INSPIRATION
@@ -205,15 +231,22 @@ class InspirationsNotifier extends Notifier<AsyncValue<List<Inspiration>>> {
   Future<void> _reload() async {
     final profile = await ref.read(currentUserModelProvider.future);
     try {
-      final items = await ref.read(dataServiceProvider).fetchInspirations(churchId: profile?.churchId);
+      final items = await ref
+          .read(dataServiceProvider)
+          .fetchInspirations(churchId: profile?.churchId);
       state = AsyncValue.data(items);
     } catch (e, st) {
       state = AsyncValue.error(e, st);
     }
   }
 
-  Future<void> toggleLike({required String inspirationId, required bool currentlyLiked}) async {
-    await ref.read(dataServiceProvider).toggleInspirationLike(
+  Future<void> toggleLike({
+    required String inspirationId,
+    required bool currentlyLiked,
+  }) async {
+    await ref
+        .read(dataServiceProvider)
+        .toggleInspirationLike(
           inspirationId: inspirationId,
           currentlyLiked: currentlyLiked,
         );
@@ -228,7 +261,9 @@ class InspirationsNotifier extends Notifier<AsyncValue<List<Inspiration>>> {
     String? mediaUrl,
   }) async {
     final profile = await ref.read(currentUserModelProvider.future);
-    await ref.read(dataServiceProvider).publishInspiration(
+    await ref
+        .read(dataServiceProvider)
+        .publishInspiration(
           title: title,
           content: content,
           type: type,
@@ -244,8 +279,8 @@ class InspirationsNotifier extends Notifier<AsyncValue<List<Inspiration>>> {
 
 final inspirationsNotifierProvider =
     NotifierProvider<InspirationsNotifier, AsyncValue<List<Inspiration>>>(
-  InspirationsNotifier.new,
-);
+      InspirationsNotifier.new,
+    );
 
 // ─────────────────────────────────────────────────────────────────────────────
 // COMMUNITY FORUM — Realtime via Supabase stream
@@ -256,16 +291,18 @@ final forumPostsStreamProvider = StreamProvider<List<ForumPost>>((ref) {
   return ds.forumPostsStream().map((rows) {
     return rows
         .where((m) => m['is_removed'] != true)
-        .map((m) => ForumPost(
-              id: m['id'],
-              title: m['title'],
-              content: m['content'],
-              displayName: m['display_name'] as String? ?? 'Anonymous Member',
-              likeCount: m['like_count'] as int? ?? 0,
-              commentCount: m['comment_count'] as int? ?? 0,
-              voteScore: m['vote_score'] as int? ?? 0,
-              createdAt: DateTime.parse(m['created_at']),
-            ))
+        .map(
+          (m) => ForumPost(
+            id: m['id'],
+            title: m['title'],
+            content: m['content'],
+            displayName: m['display_name'] as String? ?? 'Anonymous Member',
+            likeCount: m['like_count'] as int? ?? 0,
+            commentCount: m['comment_count'] as int? ?? 0,
+            voteScore: m['vote_score'] as int? ?? 0,
+            createdAt: DateTime.parse(m['created_at']),
+          ),
+        )
         .toList();
   });
 });
@@ -282,7 +319,9 @@ class ForumNotifier extends Notifier<AsyncValue<void>> {
     state = const AsyncValue.loading();
     try {
       final profile = await ref.read(currentUserModelProvider.future);
-      await ref.read(dataServiceProvider).createForumPost(
+      await ref
+          .read(dataServiceProvider)
+          .createForumPost(
             title: title,
             content: content,
             displayName: displayName,
@@ -302,13 +341,19 @@ class ForumNotifier extends Notifier<AsyncValue<void>> {
     await ref.read(dataServiceProvider).dismissForumReport(postId);
   }
 
-  Future<void> reportPost({required String postId, required String reason}) async {
-    await ref.read(dataServiceProvider).reportForumPost(postId: postId, reason: reason);
+  Future<void> reportPost({
+    required String postId,
+    required String reason,
+  }) async {
+    await ref
+        .read(dataServiceProvider)
+        .reportForumPost(postId: postId, reason: reason);
   }
 }
 
-final forumNotifierProvider =
-    NotifierProvider<ForumNotifier, AsyncValue<void>>(ForumNotifier.new);
+final forumNotifierProvider = NotifierProvider<ForumNotifier, AsyncValue<void>>(
+  ForumNotifier.new,
+);
 
 // ─────────────────────────────────────────────────────────────────────────────
 // EVENTS
@@ -324,15 +369,22 @@ class EventsNotifier extends Notifier<AsyncValue<List<ChurchEvent>>> {
   Future<void> _reload() async {
     final profile = await ref.read(currentUserModelProvider.future);
     try {
-      final items = await ref.read(dataServiceProvider).fetchEvents(churchId: profile?.churchId);
+      final items = await ref
+          .read(dataServiceProvider)
+          .fetchEvents(churchId: profile?.churchId);
       state = AsyncValue.data(items);
     } catch (e, st) {
       state = AsyncValue.error(e, st);
     }
   }
 
-  Future<void> toggleRegistration({required String eventId, required bool currentlyRegistered}) async {
-    await ref.read(dataServiceProvider).toggleEventRegistration(
+  Future<void> toggleRegistration({
+    required String eventId,
+    required bool currentlyRegistered,
+  }) async {
+    await ref
+        .read(dataServiceProvider)
+        .toggleEventRegistration(
           eventId: eventId,
           currentlyRegistered: currentlyRegistered,
         );
@@ -344,8 +396,8 @@ class EventsNotifier extends Notifier<AsyncValue<List<ChurchEvent>>> {
 
 final eventsNotifierProvider =
     NotifierProvider<EventsNotifier, AsyncValue<List<ChurchEvent>>>(
-  EventsNotifier.new,
-);
+      EventsNotifier.new,
+    );
 
 // ─────────────────────────────────────────────────────────────────────────────
 // ANNOUNCEMENTS
@@ -361,7 +413,9 @@ class AnnouncementsNotifier extends Notifier<AsyncValue<List<Announcement>>> {
   Future<void> _reload() async {
     final profile = await ref.read(currentUserModelProvider.future);
     try {
-      final items = await ref.read(dataServiceProvider).fetchAnnouncements(churchId: profile?.churchId);
+      final items = await ref
+          .read(dataServiceProvider)
+          .fetchAnnouncements(churchId: profile?.churchId);
       state = AsyncValue.data(items);
     } catch (e, st) {
       state = AsyncValue.error(e, st);
@@ -373,26 +427,30 @@ class AnnouncementsNotifier extends Notifier<AsyncValue<List<Announcement>>> {
 
 final announcementsNotifierProvider =
     NotifierProvider<AnnouncementsNotifier, AsyncValue<List<Announcement>>>(
-  AnnouncementsNotifier.new,
-);
+      AnnouncementsNotifier.new,
+    );
 
 // ─────────────────────────────────────────────────────────────────────────────
 // NOTIFICATIONS — Realtime via Supabase stream
 // ─────────────────────────────────────────────────────────────────────────────
 
-final notificationsStreamProvider = StreamProvider<List<AppNotification>>((ref) {
+final notificationsStreamProvider = StreamProvider<List<AppNotification>>((
+  ref,
+) {
   final ds = ref.watch(dataServiceProvider);
   return ds.notificationsStream().map((rows) {
     return rows
-        .map((m) => AppNotification(
-              id: m['id'],
-              userId: m['user_id'],
-              type: m['type'],
-              title: m['title'],
-              body: m['body'],
-              isRead: m['is_read'] as bool? ?? false,
-              createdAt: DateTime.parse(m['created_at']),
-            ))
+        .map(
+          (m) => AppNotification(
+            id: m['id'],
+            userId: m['user_id'],
+            type: m['type'],
+            title: m['title'],
+            body: m['body'],
+            isRead: m['is_read'] as bool? ?? false,
+            createdAt: DateTime.parse(m['created_at']),
+          ),
+        )
         .toList();
   });
 });
@@ -411,7 +469,9 @@ class NotificationsNotifier extends Notifier<AsyncValue<void>> {
 }
 
 final notificationsNotifierProvider =
-    NotifierProvider<NotificationsNotifier, AsyncValue<void>>(NotificationsNotifier.new);
+    NotifierProvider<NotificationsNotifier, AsyncValue<void>>(
+      NotificationsNotifier.new,
+    );
 
 // ─────────────────────────────────────────────────────────────────────────────
 // ADMIN — Users
@@ -437,8 +497,13 @@ class AdminUsersNotifier extends Notifier<AsyncValue<List<UserModel>>> {
     }
   }
 
-  Future<void> toggleRole({required String userId, required bool makeAdmin}) async {
-    await ref.read(dataServiceProvider).toggleUserRole(userId: userId, makeAdmin: makeAdmin);
+  Future<void> toggleRole({
+    required String userId,
+    required bool makeAdmin,
+  }) async {
+    await ref
+        .read(dataServiceProvider)
+        .toggleUserRole(userId: userId, makeAdmin: makeAdmin);
     await _reload();
   }
 
@@ -447,8 +512,8 @@ class AdminUsersNotifier extends Notifier<AsyncValue<List<UserModel>>> {
 
 final adminUsersNotifierProvider =
     NotifierProvider<AdminUsersNotifier, AsyncValue<List<UserModel>>>(
-  AdminUsersNotifier.new,
-);
+      AdminUsersNotifier.new,
+    );
 
 // ─────────────────────────────────────────────────────────────────────────────
 // DAILY VERSE (local rotation)

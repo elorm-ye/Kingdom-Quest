@@ -11,13 +11,27 @@ class MainShell extends StatelessWidget {
 
   static const _navItems = [
     (icon: Icons.home_outlined, activeIcon: Icons.home_rounded, label: 'Home'),
-    (icon: Icons.forum_outlined, activeIcon: Icons.forum_rounded, label: 'Community'),
-    (icon: Icons.auto_awesome_outlined, activeIcon: Icons.auto_awesome, label: 'Inspire'),
+    (
+      icon: Icons.forum_outlined,
+      activeIcon: Icons.forum_rounded,
+      label: 'Community',
+    ),
+    (
+      icon: Icons.auto_awesome_outlined,
+      activeIcon: Icons.auto_awesome,
+      label: 'Inspire',
+    ),
     (icon: Icons.event_outlined, activeIcon: Icons.event, label: 'Events'),
     (icon: Icons.person_outline, activeIcon: Icons.person, label: 'Profile'),
   ];
 
-  static const _routes = ['/home', '/community', '/inspiration', '/events', '/profile'];
+  static const _routes = [
+    '/home',
+    '/community',
+    '/inspiration',
+    '/events',
+    '/profile',
+  ];
 
   int _currentIndex(BuildContext context) {
     final location = GoRouterState.of(context).uri.toString();
@@ -40,7 +54,12 @@ class MainShell extends StatelessWidget {
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           color: bg,
-          border: Border(top: BorderSide(color: isDark ? const Color(0xFF3D2E25) : const Color(0xFFE5D9C9), width: 0.5)),
+          border: Border(
+            top: BorderSide(
+              color: isDark ? const Color(0xFF3D2E25) : const Color(0xFFE5D9C9),
+              width: 0.5,
+            ),
+          ),
         ),
         child: SafeArea(
           top: false,
@@ -62,10 +81,17 @@ class MainShell extends StatelessWidget {
                       children: [
                         AnimatedContainer(
                           duration: const Duration(milliseconds: 200),
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 4,
+                          ),
                           decoration: BoxDecoration(
-                            color: active ? primary.withValues(alpha: 0.12) : Colors.transparent,
-                            borderRadius: BorderRadius.circular(AppSpacing.radiusFull),
+                            color: active
+                                ? primary.withValues(alpha: 0.12)
+                                : Colors.transparent,
+                            borderRadius: BorderRadius.circular(
+                              AppSpacing.radiusFull,
+                            ),
                           ),
                           child: Icon(
                             active ? item.activeIcon : item.icon,
@@ -78,7 +104,9 @@ class MainShell extends StatelessWidget {
                           item.label,
                           style: GoogleFonts.schibstedGrotesk(
                             fontSize: 11,
-                            fontWeight: active ? FontWeight.w600 : FontWeight.w400,
+                            fontWeight: active
+                                ? FontWeight.w600
+                                : FontWeight.w400,
                             color: active ? primary : inactive,
                           ),
                         ),

@@ -37,9 +37,7 @@ class _SplashScreenState extends State<SplashScreen> {
       body: Container(
         width: double.infinity,
         height: double.infinity,
-        decoration: const BoxDecoration(
-          gradient: AppColors.splashGradient,
-        ),
+        decoration: const BoxDecoration(gradient: AppColors.splashGradient),
         child: SafeArea(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -48,57 +46,63 @@ class _SplashScreenState extends State<SplashScreen> {
 
               // The Mark — vessel cupping an offering
               Container(
-                width: 100,
-                height: 100,
-                decoration: BoxDecoration(
-                  color: AppColors.linen.withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(AppSpacing.radiusSection),
-                ),
-                child: Center(
-                  child: Container(
-                    width: 52,
-                    height: 52,
+                    width: 100,
+                    height: 100,
                     decoration: BoxDecoration(
-                      color: AppColors.linen.withValues(alpha: 0.9),
-                      borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(26),
-                        topRight: Radius.circular(26),
-                        bottomLeft: Radius.circular(8),
-                        bottomRight: Radius.circular(8),
+                      color: AppColors.linen.withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(
+                        AppSpacing.radiusSection,
                       ),
                     ),
                     child: Center(
                       child: Container(
-                        width: 20,
-                        height: 20,
-                        margin: const EdgeInsets.only(bottom: 6),
+                        width: 52,
+                        height: 52,
                         decoration: BoxDecoration(
-                          color: AppColors.terracotta,
-                          shape: BoxShape.circle,
+                          color: AppColors.linen.withValues(alpha: 0.9),
+                          borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(26),
+                            topRight: Radius.circular(26),
+                            bottomLeft: Radius.circular(8),
+                            bottomRight: Radius.circular(8),
+                          ),
+                        ),
+                        child: Center(
+                          child: Container(
+                            width: 20,
+                            height: 20,
+                            margin: const EdgeInsets.only(bottom: 6),
+                            decoration: BoxDecoration(
+                              color: AppColors.terracotta,
+                              shape: BoxShape.circle,
+                            ),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ),
-              )
+                  )
                   .animate()
                   .fadeIn(duration: 800.ms, curve: Curves.easeOut)
-                  .scale(begin: const Offset(0.8, 0.8), duration: 800.ms, curve: Curves.easeOut),
+                  .scale(
+                    begin: const Offset(0.8, 0.8),
+                    duration: 800.ms,
+                    curve: Curves.easeOut,
+                  ),
 
               const SizedBox(height: AppSpacing.xxl),
 
               // Wordmark — "Kingdom Quest"
               Text(
-                'Kingdom\nQuest',
-                textAlign: TextAlign.center,
-                style: GoogleFonts.bricolageGrotesque(
-                  fontSize: 42,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.linen,
-                  height: 1.1,
-                  letterSpacing: -0.5,
-                ),
-              )
+                    'Kingdom\nQuest',
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.bricolageGrotesque(
+                      fontSize: 42,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.linen,
+                      height: 1.1,
+                      letterSpacing: -0.5,
+                    ),
+                  )
                   .animate(delay: 400.ms)
                   .fadeIn(duration: 600.ms)
                   .slideY(begin: 0.3, duration: 600.ms, curve: Curves.easeOut),
@@ -114,9 +118,7 @@ class _SplashScreenState extends State<SplashScreen> {
                   color: AppColors.linen.withValues(alpha: 0.7),
                   height: 1.4,
                 ),
-              )
-                  .animate(delay: 800.ms)
-                  .fadeIn(duration: 600.ms),
+              ).animate(delay: 800.ms).fadeIn(duration: 600.ms),
 
               const Spacer(flex: 3),
 
@@ -130,9 +132,7 @@ class _SplashScreenState extends State<SplashScreen> {
                     AppColors.linen.withValues(alpha: 0.5),
                   ),
                 ),
-              )
-                  .animate(delay: 1200.ms)
-                  .fadeIn(duration: 400.ms),
+              ).animate(delay: 1200.ms).fadeIn(duration: 400.ms),
 
               const SizedBox(height: AppSpacing.huge),
             ],

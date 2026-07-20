@@ -156,7 +156,8 @@ class AppTheme {
         return AppColors.muted;
       }),
       trackColor: WidgetStateProperty.resolveWith((states) {
-        if (states.contains(WidgetState.selected)) return AppColors.terracotta.withValues(alpha: 0.3);
+        if (states.contains(WidgetState.selected))
+          return AppColors.terracotta.withValues(alpha: 0.3);
         return AppColors.muted.withValues(alpha: 0.2);
       }),
     ),
@@ -214,7 +215,9 @@ class AppTheme {
       elevation: 0,
       scrolledUnderElevation: 0,
       centerTitle: false,
-      titleTextStyle: AppTypography.h3.copyWith(color: AppColors.textPrimaryDark),
+      titleTextStyle: AppTypography.h3.copyWith(
+        color: AppColors.textPrimaryDark,
+      ),
       systemOverlayStyle: SystemUiOverlayStyle.light,
     ),
     cardTheme: CardThemeData(
@@ -260,7 +263,9 @@ class AppTheme {
     textButtonTheme: TextButtonThemeData(
       style: TextButton.styleFrom(
         foregroundColor: AppColors.accentLinkDark,
-        textStyle: AppTypography.label.copyWith(color: AppColors.accentLinkDark),
+        textStyle: AppTypography.label.copyWith(
+          color: AppColors.accentLinkDark,
+        ),
       ),
     ),
     inputDecorationTheme: InputDecorationTheme(
@@ -290,14 +295,20 @@ class AppTheme {
         borderRadius: BorderRadius.circular(AppSpacing.radiusChip),
         borderSide: const BorderSide(color: AppColors.alert, width: 1.5),
       ),
-      hintStyle: AppTypography.bodyMedium.copyWith(color: AppColors.textMutedDark),
-      labelStyle: AppTypography.label.copyWith(color: AppColors.textSecondaryDark),
+      hintStyle: AppTypography.bodyMedium.copyWith(
+        color: AppColors.textMutedDark,
+      ),
+      labelStyle: AppTypography.label.copyWith(
+        color: AppColors.textSecondaryDark,
+      ),
       errorStyle: AppTypography.bodySmall.copyWith(color: AppColors.alert),
     ),
     chipTheme: ChipThemeData(
       backgroundColor: AppColors.plumDusk,
       selectedColor: AppColors.burntAmber,
-      labelStyle: AppTypography.labelSmall.copyWith(color: AppColors.textPrimaryDark),
+      labelStyle: AppTypography.labelSmall.copyWith(
+        color: AppColors.textPrimaryDark,
+      ),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppSpacing.radiusChip),
       ),
@@ -330,7 +341,8 @@ class AppTheme {
         return AppColors.textMutedDark;
       }),
       trackColor: WidgetStateProperty.resolveWith((states) {
-        if (states.contains(WidgetState.selected)) return AppColors.burntAmber.withValues(alpha: 0.3);
+        if (states.contains(WidgetState.selected))
+          return AppColors.burntAmber.withValues(alpha: 0.3);
         return AppColors.textMutedDark.withValues(alpha: 0.2);
       }),
     ),
@@ -350,7 +362,9 @@ class AppTheme {
     ),
     snackBarTheme: SnackBarThemeData(
       backgroundColor: AppColors.plumDusk,
-      contentTextStyle: AppTypography.bodyMedium.copyWith(color: AppColors.textPrimaryDark),
+      contentTextStyle: AppTypography.bodyMedium.copyWith(
+        color: AppColors.textPrimaryDark,
+      ),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppSpacing.radiusChip),
       ),

@@ -21,9 +21,7 @@ class StorageService {
         .from(SupabaseConfig.avatarBucket)
         .upload(path, file, fileOptions: const FileOptions(upsert: true));
 
-    return _client.storage
-        .from(SupabaseConfig.avatarBucket)
-        .getPublicUrl(path);
+    return _client.storage.from(SupabaseConfig.avatarBucket).getPublicUrl(path);
   }
 
   /// Uploads inspiration media and returns the public URL.
@@ -53,9 +51,9 @@ class StorageService {
       final bucketIndex = segments.indexOf(SupabaseConfig.avatarBucket);
       if (bucketIndex == -1) return;
       final filePath = segments.sublist(bucketIndex + 1).join('/');
-      await _client.storage
-          .from(SupabaseConfig.avatarBucket)
-          .remove([filePath]);
+      await _client.storage.from(SupabaseConfig.avatarBucket).remove([
+        filePath,
+      ]);
     } catch (_) {
       // Non-critical; ignore failures
     }
