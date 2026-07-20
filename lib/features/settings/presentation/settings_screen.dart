@@ -6,7 +6,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/providers/app_providers.dart';
-import '../../../shared/services/mock_data_service.dart';
+
 
 /// Settings screen — theme, account, privacy, about.
 class SettingsScreen extends ConsumerStatefulWidget {
@@ -159,20 +159,30 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           ).animate(delay: 180.ms).fadeIn(duration: 350.ms).slideY(begin: 0.05, end: 0),
 
           // ── ADMIN PANEL (admin-role only) ──
-          if (MockDataService.currentUser.isAdmin) ...[  
-            sectionHeader('Admin').animate(delay: 200.ms).fadeIn(duration: 300.ms),
-            Container(
-              margin: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-              decoration: BoxDecoration(color: surface, borderRadius: BorderRadius.circular(AppSpacing.radiusCard)),
-              child: settingTile(
-                icon: Icons.admin_panel_settings_rounded,
-                iconColor: AppColors.sage,
-                title: 'Admin Dashboard',
-                subtitle: 'Manage content, users & church settings',
-                onTap: () => context.go('/admin'),
-              ),
-            ).animate(delay: 210.ms).fadeIn(duration: 350.ms).slideY(begin: 0.05, end: 0),
-          ],
+          Consumer(builder: (context, ref, _) {
+            final userAsync = ref.watch(currentUserModelProvider);
+            return userAsync.when(
+              data: (user) {
+                if (user == null || !user.isAdmin) return const SizedBox.shrink();
+                return Column(children: [
+                  sectionHeader('Admin').animate(delay: 200.ms).fadeIn(duration: 300.ms),
+                  Container(
+                    margin: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+                    decoration: BoxDecoration(color: surface, borderRadius: BorderRadius.circular(AppSpacing.radiusCard)),
+                    child: settingTile(
+                      icon: Icons.admin_panel_settings_rounded,
+                      iconColor: AppColors.sage,
+                      title: 'Admin Dashboard',
+                      subtitle: 'Manage content, users & church settings',
+                      onTap: () => context.go('/admin'),
+                    ),
+                  ).animate(delay: 210.ms).fadeIn(duration: 350.ms).slideY(begin: 0.05, end: 0),
+                ]);
+              },
+              loading: () => const SizedBox.shrink(),
+              error: (_, __) => const SizedBox.shrink(),
+            );
+          }),
 
           // ── PRIVACY ──
           sectionHeader('Privacy & Security').animate(delay: 220.ms).fadeIn(duration: 300.ms),
@@ -227,7 +237,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       actions: [
                         TextButton(onPressed: () => Navigator.pop(ctx), child: Text('Cancel', style: GoogleFonts.schibstedGrotesk(color: textMuted))),
                         TextButton(
-                          onPressed: () { Navigator.pop(ctx); },
+                          onPressed: () async {
+                            Navigator.pop(ctx);
+                            await ref.read(authNotifierProvider.notifier).signOut();
+                            if (context.mounted) context.go('/login');
+                          },
                           child: Text('Sign Out', style: GoogleFonts.schibstedGrotesk(color: AppColors.alert, fontWeight: FontWeight.w600)),
                         ),
                       ],

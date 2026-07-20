@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+import '../providers/app_providers.dart';
 
 import '../../features/splash/splash_screen.dart';
 import '../../features/auth/presentation/login_screen.dart';
@@ -36,12 +39,36 @@ final _rootNavigatorKey = GlobalKey<NavigatorState>();
 final _shellNavigatorKey = GlobalKey<NavigatorState>();
 final _adminNavigatorKey = GlobalKey<NavigatorState>();
 
+/// Routes that don't require authentication
+const _publicRoutes = {'/splash', '/login', '/register'};
+
 final routerProvider = Provider<GoRouter>((ref) {
+  // Watch auth state so the router rebuilds on sign in/out
+  ref.watch(authStateProvider);
+
   return GoRouter(
     navigatorKey: _rootNavigatorKey,
     initialLocation: '/splash',
+
+    // ── Auth redirect ──────────────────────────────────────────────────────
+    redirect: (context, routerState) {
+      final isSignedIn = Supabase.instance.client.auth.currentUser != null;
+      final goingTo = routerState.matchedLocation;
+      final isPublic = _publicRoutes.contains(goingTo);
+
+      // Not signed in → push to login (except public routes)
+      if (!isSignedIn && !isPublic) return '/login';
+
+      // Already signed in → skip login/register → go to home
+      if (isSignedIn && (goingTo == '/login' || goingTo == '/register')) {
+        return '/home';
+      }
+
+      return null; // no redirect
+    },
+
     routes: [
-      // ── AUTH FLOW ──
+      // ── AUTH FLOW ──────────────────────────────────────────────────────
       GoRoute(
         path: '/splash',
         builder: (context, state) => const SplashScreen(),
@@ -55,7 +82,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const RegisterScreen(),
       ),
 
-      // ── MEMBER SHELL ──
+      // ── MEMBER SHELL ───────────────────────────────────────────────────
       ShellRoute(
         navigatorKey: _shellNavigatorKey,
         builder: (context, state, child) => MainShell(child: child),
@@ -83,7 +110,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         ],
       ),
 
-      // ── MEMBER FULL-SCREEN ROUTES ──
+      // ── MEMBER FULL-SCREEN ROUTES ──────────────────────────────────────
       GoRoute(path: '/prayer-requests', builder: (c, s) => const PrayerRequestsScreen()),
       GoRoute(path: '/submit-prayer', builder: (c, s) => const SubmitPrayerScreen()),
       GoRoute(path: '/petitions', builder: (c, s) => const PetitionsScreen()),
@@ -94,7 +121,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/notifications', builder: (c, s) => const NotificationsScreen()),
       GoRoute(path: '/settings', builder: (c, s) => const SettingsScreen()),
 
-      // ── ADMIN SHELL ──
+      // ── ADMIN SHELL ────────────────────────────────────────────────────
       ShellRoute(
         navigatorKey: _adminNavigatorKey,
         builder: (context, state, child) => AdminShell(child: child),
@@ -122,7 +149,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         ],
       ),
 
-      // ── ADMIN FULL-SCREEN ROUTES (no admin shell nav) ──
+      // ── ADMIN FULL-SCREEN ROUTES (no admin shell nav) ─────────────────
       GoRoute(path: '/admin/advice', builder: (c, s) => const AdminAdviceScreen()),
       GoRoute(path: '/admin/inspiration', builder: (c, s) => const AdminInspirationScreen()),
       GoRoute(path: '/admin/forum', builder: (c, s) => const AdminForumScreen()),

@@ -1,22 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../../core/providers/app_providers.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 
-class LoginScreen extends StatefulWidget {
+class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  ConsumerState<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailCtrl = TextEditingController();
   final _passCtrl = TextEditingController();
   bool _obscure = true;
-  bool _loading = false;
 
   @override
   void dispose() {
@@ -27,16 +28,48 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> _login() async {
     if (!_formKey.currentState!.validate()) return;
-    setState(() => _loading = true);
-    await Future.delayed(const Duration(milliseconds: 1200));
-    if (mounted) {
-      setState(() => _loading = false);
+
+    final ok = await ref.read(authNotifierProvider.notifier).signIn(
+          email: _emailCtrl.text.trim(),
+          password: _passCtrl.text,
+        );
+
+    if (!mounted) return;
+    if (ok) {
       context.go('/home');
+    } else {
+      final msg = ref.read(authNotifierProvider.notifier).errorMessage ?? 'Sign in failed.';
+      _showError(msg);
     }
+  }
+
+  Future<void> _forgotPassword() async {
+    final email = _emailCtrl.text.trim();
+    if (email.isEmpty || !email.contains('@')) {
+      _showError('Enter your email above first, then tap Forgot Password.');
+      return;
+    }
+    await ref.read(authNotifierProvider.notifier).resetPassword(email);
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Password reset email sent. Check your inbox.')),
+    );
+  }
+
+  void _showError(String msg) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(msg),
+        backgroundColor: AppColors.alert,
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    final authState = ref.watch(authNotifierProvider);
+    final isLoading = authState.isLoading;
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final card = isDark ? AppColors.espresso : AppColors.linen;
 
@@ -48,7 +81,7 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Column(
             children: [
               const SizedBox(height: AppSpacing.huge),
-              // Mark
+              // Brand mark
               Center(child: _mark(isDark))
                   .animate().fadeIn(duration: 600.ms).scale(begin: const Offset(0.9, 0.9), duration: 600.ms),
               const SizedBox(height: AppSpacing.xxxl),
@@ -73,7 +106,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     keyboardType: TextInputType.emailAddress,
                     decoration: InputDecoration(
                         hintText: 'your@email.com', fillColor: card,
-                        prefixIcon: Icon(Icons.email_outlined, color: isDark ? AppColors.textMutedDark : AppColors.muted, size: 20)),
+                        prefixIcon: Icon(Icons.email_outlined,
+                            color: isDark ? AppColors.textMutedDark : AppColors.muted, size: 20)),
                     validator: (v) => v == null || !v.contains('@') ? 'Enter a valid email' : null,
                   ),
                   const SizedBox(height: AppSpacing.xl),
@@ -84,7 +118,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     obscureText: _obscure,
                     decoration: InputDecoration(
                         hintText: 'Enter your password', fillColor: card,
-                        prefixIcon: Icon(Icons.lock_outline, color: isDark ? AppColors.textMutedDark : AppColors.muted, size: 20),
+                        prefixIcon: Icon(Icons.lock_outline,
+                            color: isDark ? AppColors.textMutedDark : AppColors.muted, size: 20),
                         suffixIcon: IconButton(
                             icon: Icon(_obscure ? Icons.visibility_off_outlined : Icons.visibility_outlined,
                                 color: isDark ? AppColors.textMutedDark : AppColors.muted, size: 20),
@@ -95,8 +130,11 @@ class _LoginScreenState extends State<LoginScreen> {
                   Align(
                     alignment: Alignment.centerRight,
                     child: TextButton(
-                        onPressed: () {},
-                        style: TextButton.styleFrom(padding: EdgeInsets.zero, minimumSize: Size.zero, tapTargetSize: MaterialTapTargetSize.shrinkWrap),
+                        onPressed: _forgotPassword,
+                        style: TextButton.styleFrom(
+                            padding: EdgeInsets.zero,
+                            minimumSize: Size.zero,
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap),
                         child: Text('Forgot password?',
                             style: GoogleFonts.schibstedGrotesk(fontSize: 13, fontWeight: FontWeight.w500,
                                 color: isDark ? AppColors.accentLinkDark : AppColors.terracotta))),
@@ -105,10 +143,11 @@ class _LoginScreenState extends State<LoginScreen> {
                   SizedBox(
                     width: double.infinity, height: AppSpacing.buttonHeight,
                     child: ElevatedButton(
-                        onPressed: _loading ? null : _login,
-                        child: _loading
+                        onPressed: isLoading ? null : _login,
+                        child: isLoading
                             ? const SizedBox(width: 20, height: 20,
-                            child: CircularProgressIndicator(strokeWidth: 2, valueColor: AlwaysStoppedAnimation(Colors.white)))
+                                child: CircularProgressIndicator(strokeWidth: 2,
+                                    valueColor: AlwaysStoppedAnimation(Colors.white)))
                             : const Text('Sign In')),
                   ),
                 ]),
@@ -116,15 +155,21 @@ class _LoginScreenState extends State<LoginScreen> {
               const SizedBox(height: AppSpacing.xxl),
               _dividerRow(isDark).animate(delay: 600.ms).fadeIn(duration: 400.ms),
               const SizedBox(height: AppSpacing.xl),
+              // Social buttons (Google sign-in placeholder — wire up later)
               Row(children: [
-                Expanded(child: _socialBtn(Icons.g_mobiledata_rounded, 'Google', () => context.go('/home'), isDark, card)),
+                Expanded(child: _socialBtn(Icons.g_mobiledata_rounded, 'Google', () {
+                  _showError('Google sign-in coming soon.');
+                }, isDark, card)),
                 const SizedBox(width: AppSpacing.md),
-                Expanded(child: _socialBtn(Icons.phone_outlined, 'Phone', () {}, isDark, card)),
+                Expanded(child: _socialBtn(Icons.phone_outlined, 'Phone', () {
+                  _showError('Phone sign-in coming soon.');
+                }, isDark, card)),
               ]).animate(delay: 700.ms).fadeIn(duration: 400.ms),
               const SizedBox(height: AppSpacing.xxxl),
               Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                 Text("Don't have an account? ",
-                    style: GoogleFonts.schibstedGrotesk(fontSize: 14, color: isDark ? AppColors.textMutedDark : AppColors.muted)),
+                    style: GoogleFonts.schibstedGrotesk(
+                        fontSize: 14, color: isDark ? AppColors.textMutedDark : AppColors.muted)),
                 GestureDetector(
                     onTap: () => context.push('/register'),
                     child: Text('Sign Up',
@@ -145,8 +190,11 @@ class _LoginScreenState extends State<LoginScreen> {
     child: Center(child: Container(
       width: 36, height: 36,
       decoration: BoxDecoration(color: AppColors.linen.withValues(alpha: 0.9),
-          borderRadius: const BorderRadius.only(topLeft: Radius.circular(18), topRight: Radius.circular(18), bottomLeft: Radius.circular(6), bottomRight: Radius.circular(6))),
-      child: Center(child: Container(width: 14, height: 14, margin: const EdgeInsets.only(bottom: 4),
+          borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(18), topRight: Radius.circular(18),
+              bottomLeft: Radius.circular(6), bottomRight: Radius.circular(6))),
+      child: Center(child: Container(width: 14, height: 14,
+          margin: const EdgeInsets.only(bottom: 4),
           decoration: const BoxDecoration(color: AppColors.terracotta, shape: BoxShape.circle))),
     )),
   );
@@ -158,19 +206,22 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget _dividerRow(bool isDark) => Row(children: [
     Expanded(child: Divider(color: isDark ? const Color(0xFF4A3A30) : const Color(0xFFD9CEBD))),
     Padding(padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-        child: Text('or continue with', style: GoogleFonts.schibstedGrotesk(fontSize: 12, color: isDark ? AppColors.textMutedDark : AppColors.muted))),
+        child: Text('or continue with',
+            style: GoogleFonts.schibstedGrotesk(
+                fontSize: 12, color: isDark ? AppColors.textMutedDark : AppColors.muted))),
     Expanded(child: Divider(color: isDark ? const Color(0xFF4A3A30) : const Color(0xFFD9CEBD))),
   ]);
 
-  Widget _socialBtn(IconData icon, String label, VoidCallback onTap, bool isDark, Color card) => Material(
-    color: card, borderRadius: BorderRadius.circular(AppSpacing.radiusChip),
-    child: InkWell(onTap: onTap, borderRadius: BorderRadius.circular(AppSpacing.radiusChip),
-        child: Container(height: AppSpacing.buttonHeight, alignment: Alignment.center,
-            child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-              Icon(icon, size: 22, color: isDark ? AppColors.textPrimaryDark : AppColors.umber),
-              const SizedBox(width: AppSpacing.sm),
-              Text(label, style: GoogleFonts.schibstedGrotesk(fontSize: 14, fontWeight: FontWeight.w500,
-                  color: isDark ? AppColors.textPrimaryDark : AppColors.umber)),
-            ]))),
-  );
+  Widget _socialBtn(IconData icon, String label, VoidCallback onTap, bool isDark, Color card) =>
+      Material(
+        color: card, borderRadius: BorderRadius.circular(AppSpacing.radiusChip),
+        child: InkWell(onTap: onTap, borderRadius: BorderRadius.circular(AppSpacing.radiusChip),
+            child: Container(height: AppSpacing.buttonHeight, alignment: Alignment.center,
+                child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                  Icon(icon, size: 22, color: isDark ? AppColors.textPrimaryDark : AppColors.umber),
+                  const SizedBox(width: AppSpacing.sm),
+                  Text(label, style: GoogleFonts.schibstedGrotesk(fontSize: 14, fontWeight: FontWeight.w500,
+                      color: isDark ? AppColors.textPrimaryDark : AppColors.umber)),
+                ]))),
+      );
 }
