@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:hugeicons/hugeicons.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/theme/app_colors.dart';
@@ -173,15 +172,15 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
               decoration: InputDecoration(
                 hintText: 'Search members...',
                 hintStyle: GoogleFonts.schibstedGrotesk(color: textMuted),
-                prefixIcon: HugeIcon(
-                  icon: HugeIcons.strokeRoundedSearch01,
+                prefixIcon: Icon(
+                  Icons.search_rounded,
                   color: textMuted,
                   size: 20,
                 ),
                 suffixIcon: _search.isNotEmpty
                     ? IconButton(
-                        icon: HugeIcon(
-                          icon: HugeIcons.strokeRoundedCancel01,
+                        icon: Icon(
+                          Icons.close_rounded,
                           color: textMuted,
                           size: 18,
                         ),
@@ -292,8 +291,8 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                         ),
                         trailing: PopupMenuButton<String>(
                           color: surface,
-                          icon: HugeIcon(
-                            icon: HugeIcons.strokeRoundedMoreVertical,
+                          icon: Icon(
+                            Icons.more_vert_rounded,
                             color: textMuted,
                             size: 18,
                           ),
@@ -332,8 +331,8 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                               value: 'message',
                               child: Row(
                                 children: [
-                                  HugeIcon(
-                                    icon: HugeIcons.strokeRoundedMail01,
+                                  Icon(
+                                    Icons.email_outlined,
                                     size: 16,
                                     color: textMuted,
                                   ),

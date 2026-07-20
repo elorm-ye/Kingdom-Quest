@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:hugeicons/hugeicons.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -81,8 +80,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       backgroundColor: isDark ? AppColors.umberNight : AppColors.sand,
       appBar: AppBar(
         leading: IconButton(
-          icon: const HugeIcon(
-            icon: HugeIcons.strokeRoundedArrowLeft01,
+          icon: const Icon(
+            Icons.arrow_back,
             size: 20,
           ),
           onPressed: () => context.pop(),
@@ -124,8 +123,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   decoration: InputDecoration(
                     hintText: 'Enter your name',
                     fillColor: card,
-                    prefixIcon: HugeIcon(
-                      icon: HugeIcons.strokeRoundedUser,
+                    prefixIcon: Icon(
+                      Icons.person_outline,
                       size: 20,
                       color: isDark ? AppColors.textMutedDark : AppColors.muted,
                     ),
@@ -143,8 +142,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   decoration: InputDecoration(
                     hintText: 'your@email.com',
                     fillColor: card,
-                    prefixIcon: HugeIcon(
-                      icon: HugeIcons.strokeRoundedMail01,
+                    prefixIcon: Icon(
+                      Icons.email_outlined,
                       size: 20,
                       color: isDark ? AppColors.textMutedDark : AppColors.muted,
                     ),
@@ -202,8 +201,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   decoration: InputDecoration(
                     hintText: 'Min 6 characters',
                     fillColor: card,
-                    prefixIcon: HugeIcon(
-                      icon: HugeIcons.strokeRoundedLockKey,
+                    prefixIcon: Icon(
+                      Icons.lock_outline_rounded,
                       size: 20,
                       color: isDark ? AppColors.textMutedDark : AppColors.muted,
                     ),
@@ -233,8 +232,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   decoration: InputDecoration(
                     hintText: 'Re-enter password',
                     fillColor: card,
-                    prefixIcon: HugeIcon(
-                      icon: HugeIcons.strokeRoundedLockKey,
+                    prefixIcon: Icon(
+                      Icons.lock_outline_rounded,
                       size: 20,
                       color: isDark ? AppColors.textMutedDark : AppColors.muted,
                     ),

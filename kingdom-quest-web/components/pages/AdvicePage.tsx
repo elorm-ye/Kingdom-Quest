@@ -3,8 +3,7 @@
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import type { AdviceRequest } from '@/lib/types'
-import { HugeiconsIcon } from '@hugeicons/react';
-import { MessageMultiple01Icon, Add01Icon, Search01Icon } from '@hugeicons/core-free-icons';
+import { MessagesSquare, Plus, Search } from 'lucide-react';
 
 export default function AdvicePage() {
   const supabase = createClient()
@@ -36,12 +35,12 @@ export default function AdvicePage() {
           <p className="mt-1 text-base" style={{ color: 'var(--text-muted)' }}>Seek guidance from church leaders.</p>
         </div>
         <button className="kq-btn kq-btn-primary self-start md:self-auto">
-          <HugeiconsIcon icon={Add01Icon} size={18} /> Request Advice
+          <Plus size={18} /> Request Advice
         </button>
       </header>
 
       <div className="relative mb-6">
-        <HugeiconsIcon icon={Search01Icon} size={18} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--text-muted)' }} />
+        <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--text-muted)' }} />
         <input 
           type="text" 
           placeholder="Search advice requests..." 
@@ -57,7 +56,7 @@ export default function AdvicePage() {
         </div>
       ) : filtered.length === 0 ? (
         <div className="text-center py-12 kq-card">
-          <HugeiconsIcon icon={MessageMultiple01Icon} size={48} className="mx-auto mb-4 opacity-20" />
+          <MessagesSquare size={48} className="mx-auto mb-4 opacity-20" />
           <h3 className="text-xl font-bold mb-2">No advice requests</h3>
           <p style={{ color: 'var(--text-muted)' }}>Be the first to seek spiritual guidance.</p>
         </div>

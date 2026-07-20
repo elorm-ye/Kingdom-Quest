@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:hugeicons/hugeicons.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/theme/app_colors.dart';
@@ -47,8 +46,8 @@ class _SubmitPetitionScreenState extends State<SubmitPetitionScreen> {
       backgroundColor: isDark ? AppColors.umberNight : AppColors.sand,
       appBar: AppBar(
         leading: IconButton(
-          icon: const HugeIcon(
-            icon: HugeIcons.strokeRoundedArrowLeft01,
+          icon: const Icon(
+            Icons.arrow_back,
             size: 20,
           ),
           onPressed: () => context.pop(),

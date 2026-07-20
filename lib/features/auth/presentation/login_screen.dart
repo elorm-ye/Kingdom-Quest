@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:hugeicons/hugeicons.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -121,8 +120,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           decoration: InputDecoration(
                             hintText: 'your@email.com',
                             fillColor: card,
-                            prefixIcon: HugeIcon(
-                              icon: HugeIcons.strokeRoundedMail01,
+                            prefixIcon: Icon(
+                              Icons.email_outlined,
                               color: isDark
                                   ? AppColors.textMutedDark
                                   : AppColors.muted,
@@ -142,8 +141,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           decoration: InputDecoration(
                             hintText: 'Enter your password',
                             fillColor: card,
-                            prefixIcon: HugeIcon(
-                              icon: HugeIcons.strokeRoundedLockKey,
+                            prefixIcon: Icon(
+                              Icons.lock_outline_rounded,
                               color: isDark
                                   ? AppColors.textMutedDark
                                   : AppColors.muted,

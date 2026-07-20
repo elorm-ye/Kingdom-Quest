@@ -3,8 +3,7 @@
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import type { ChurchEvent } from '@/lib/types'
-import { HugeiconsIcon } from '@hugeicons/react';
-import { Location01Icon, Calendar01Icon, Time01Icon } from '@hugeicons/core-free-icons';
+import { MapPin, Calendar, Clock } from 'lucide-react';
 
 export default function EventsPage() {
   const supabase = createClient()
@@ -37,7 +36,7 @@ export default function EventsPage() {
         </div>
       ) : events.length === 0 ? (
         <div className="text-center py-12 kq-card">
-          <HugeiconsIcon icon={Calendar01Icon} size={48} className="mx-auto mb-4 opacity-20" />
+          <Calendar size={48} className="mx-auto mb-4 opacity-20" />
           <h3 className="text-xl font-bold mb-2">No upcoming events</h3>
           <p style={{ color: 'var(--text-muted)' }}>Check back later for updates.</p>
         </div>
@@ -58,7 +57,7 @@ export default function EventsPage() {
                 )}
                 <div className="space-y-2 text-sm mt-auto border-t pt-4" style={{ borderColor: 'var(--border-subtle)', color: 'var(--text-muted)' }}>
                   <div className="flex items-center gap-2">
-                    <HugeiconsIcon icon={Time01Icon} size={16} /> 
+                    <Clock size={16} /> 
                     <span>
                       {new Date(ev.start_time).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })}
                       {ev.end_time && ` - ${new Date(ev.end_time).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })}`}
@@ -66,7 +65,7 @@ export default function EventsPage() {
                   </div>
                   {ev.location && (
                     <div className="flex items-center gap-2">
-                      <HugeiconsIcon icon={Location01Icon} size={16} /> <span>{ev.location}</span>
+                      <MapPin size={16} /> <span>{ev.location}</span>
                     </div>
                   )}
                 </div>

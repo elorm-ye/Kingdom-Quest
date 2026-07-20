@@ -1,8 +1,7 @@
 'use client'
 
 import { useAuth } from '@/components/providers/AuthProvider'
-import { HugeiconsIcon } from '@hugeicons/react';
-import { UserMultipleIcon, Megaphone01Icon, File01Icon, CheckmarkCircle01Icon, Shield01Icon } from '@hugeicons/core-free-icons';
+import { Users, Megaphone, FileText, CheckCircle, Shield } from 'lucide-react';
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
@@ -32,7 +31,7 @@ export default function AdminPage() {
         <div className="kq-card p-5 border-l-4" style={{ borderLeftColor: 'var(--primary)' }}>
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-bold text-sm" style={{ color: 'var(--text-muted)' }}>Pending Prayers</h3>
-            <HugeiconsIcon icon={CheckmarkCircle01Icon} size={20} style={{ color: 'var(--primary)' }} />
+            <CheckCircle size={20} style={{ color: 'var(--primary)' }} />
           </div>
           <p className="text-3xl font-bold font-display" style={{ color: 'var(--text-primary)' }}>12</p>
         </div>
@@ -40,7 +39,7 @@ export default function AdminPage() {
         <div className="kq-card p-5 border-l-4" style={{ borderLeftColor: 'var(--sage)' }}>
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-bold text-sm" style={{ color: 'var(--text-muted)' }}>Open Advice Reqs</h3>
-            <HugeiconsIcon icon={File01Icon} size={20} style={{ color: 'var(--sage)' }} />
+            <FileText size={20} style={{ color: 'var(--sage)' }} />
           </div>
           <p className="text-3xl font-bold font-display" style={{ color: 'var(--text-primary)' }}>5</p>
         </div>
@@ -48,7 +47,7 @@ export default function AdminPage() {
         <div className="kq-card p-5 border-l-4" style={{ borderLeftColor: 'var(--alert)' }}>
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-bold text-sm" style={{ color: 'var(--text-muted)' }}>Reported Posts</h3>
-            <HugeiconsIcon icon={Shield01Icon} size={20} style={{ color: 'var(--alert)' }} />
+            <Shield size={20} style={{ color: 'var(--alert)' }} />
           </div>
           <p className="text-3xl font-bold font-display" style={{ color: 'var(--text-primary)' }}>2</p>
         </div>
@@ -56,7 +55,7 @@ export default function AdminPage() {
         <div className="kq-card p-5 border-l-4" style={{ borderLeftColor: 'var(--accent)' }}>
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-bold text-sm" style={{ color: 'var(--text-muted)' }}>Total Members</h3>
-            <HugeiconsIcon icon={UserMultipleIcon} size={20} style={{ color: 'var(--accent)' }} />
+            <Users size={20} style={{ color: 'var(--accent)' }} />
           </div>
           <p className="text-3xl font-bold font-display" style={{ color: 'var(--text-primary)' }}>148</p>
         </div>
@@ -66,8 +65,8 @@ export default function AdminPage() {
         <div className="kq-card p-6">
           <h2 className="text-xl font-bold font-display mb-4">Quick Actions</h2>
           <div className="space-y-3">
-            <button className="kq-btn kq-btn-primary w-full justify-start"><HugeiconsIcon icon={Megaphone01Icon} size={18} /> Post Announcement</button>
-            <button className="kq-btn kq-btn-ghost w-full justify-start"><HugeiconsIcon icon={File01Icon} size={18} /> Add Daily Inspiration</button>
+            <button className="kq-btn kq-btn-primary w-full justify-start"><Megaphone size={18} /> Post Announcement</button>
+            <button className="kq-btn kq-btn-ghost w-full justify-start"><FileText size={18} /> Add Daily Inspiration</button>
           </div>
         </div>
         

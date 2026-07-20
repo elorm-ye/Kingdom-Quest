@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:hugeicons/hugeicons.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -160,8 +159,8 @@ class AdminHomeScreen extends StatelessWidget {
             ),
             actions: [
               IconButton(
-                icon: HugeIcon(
-                  icon: HugeIcons.strokeRoundedLogout01,
+                icon: Icon(
+                  Icons.logout_rounded,
                   color: textMuted,
                 ),
                 tooltip: 'Back to member view',
@@ -267,8 +266,8 @@ class AdminHomeScreen extends StatelessWidget {
                       ),
                       child: Row(
                         children: [
-                          HugeIcon(
-                            icon: HugeIcons.strokeRoundedTime01,
+                          Icon(
+                            Icons.access_time_rounded,
                             color: primary,
                             size: 20,
                           ),

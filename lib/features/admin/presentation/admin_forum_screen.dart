@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:hugeicons/hugeicons.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/theme/app_colors.dart';
@@ -98,8 +97,8 @@ class _AdminForumScreenState extends State<AdminForumScreen>
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        HugeIcon(
-                          icon: HugeIcons.strokeRoundedTickDouble01,
+                        Icon(
+                          Icons.done_all_rounded,
                           size: 56,
                           color: AppColors.sage.withValues(alpha: 0.6),
                         ),
@@ -211,8 +210,8 @@ class _ForumAdminCard extends StatelessWidget {
                         color: primary.withValues(alpha: 0.1),
                         shape: BoxShape.circle,
                       ),
-                      child: HugeIcon(
-                        icon: HugeIcons.strokeRoundedUserBlock01,
+                      child: Icon(
+                        Icons.person_off_outlined,
                         size: 16,
                         color: primary,
                       ),
@@ -351,8 +350,8 @@ class _ForumAdminCard extends StatelessWidget {
                           ),
                         );
                       },
-                      icon: const HugeIcon(
-                        icon: HugeIcons.strokeRoundedDelete01,
+                      icon: const Icon(
+                        Icons.delete_outline_rounded,
                         size: 14,
                       ),
                       label: Text(

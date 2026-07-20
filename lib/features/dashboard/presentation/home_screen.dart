@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:hugeicons/hugeicons.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -45,8 +44,8 @@ class HomeScreen extends StatelessWidget {
               IconButton(
                 icon: Stack(
                   children: [
-                    HugeIcon(
-                      icon: HugeIcons.strokeRoundedNotification01,
+                    Icon(
+                      Icons.notifications_outlined,
                       color: isDark
                           ? AppColors.textPrimaryDark
                           : AppColors.umber,
@@ -447,8 +446,8 @@ class HomeScreen extends StatelessWidget {
           Row(
             children: [
               if (pinned) ...[
-                HugeIcon(
-                  icon: HugeIcons.strokeRoundedPin,
+                Icon(
+                  Icons.push_pin_outlined,
                   size: 14,
                   color: isDark ? AppColors.glow : AppColors.terracotta,
                 ),
@@ -568,8 +567,8 @@ class HomeScreen extends StatelessWidget {
                 if (location.isNotEmpty)
                   Row(
                     children: [
-                      HugeIcon(
-                        icon: HugeIcons.strokeRoundedLocation01,
+                      Icon(
+                        Icons.location_on_outlined,
                         size: 13,
                         color: isDark
                             ? AppColors.textMutedDark
@@ -590,8 +589,8 @@ class HomeScreen extends StatelessWidget {
               ],
             ),
           ),
-          HugeIcon(
-            icon: HugeIcons.strokeRoundedArrowRight01,
+          Icon(
+            Icons.chevron_right_rounded,
             color: isDark ? AppColors.textMutedDark : AppColors.muted,
           ),
         ],

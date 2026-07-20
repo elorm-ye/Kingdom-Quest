@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:hugeicons/hugeicons.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -30,8 +29,8 @@ class _PrayerRequestsScreenState extends State<PrayerRequestsScreen> {
       backgroundColor: isDark ? AppColors.umberNight : AppColors.sand,
       appBar: AppBar(
         leading: IconButton(
-          icon: const HugeIcon(
-            icon: HugeIcons.strokeRoundedArrowLeft01,
+          icon: const Icon(
+            Icons.arrow_back,
             size: 20,
           ),
           onPressed: () => context.pop(),
@@ -46,7 +45,7 @@ class _PrayerRequestsScreenState extends State<PrayerRequestsScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => context.push('/submit-prayer'),
-        child: const HugeIcon(icon: HugeIcons.strokeRoundedAdd01),
+        child: const Icon(Icons.add),
       ),
       body: Column(
         children: [
@@ -196,8 +195,8 @@ class _PrayerRequestsScreenState extends State<PrayerRequestsScreen> {
           const SizedBox(height: AppSpacing.md),
           Row(
             children: [
-              HugeIcon(
-                icon: HugeIcons.strokeRoundedUser,
+              Icon(
+                Icons.person_outline,
                 size: 14,
                 color: isDark ? AppColors.textMutedDark : AppColors.muted,
               ),
@@ -212,8 +211,8 @@ class _PrayerRequestsScreenState extends State<PrayerRequestsScreen> {
                 ),
               ),
               const Spacer(),
-              HugeIcon(
-                icon: HugeIcons.strokeRoundedFavourite,
+              Icon(
+                Icons.favorite_rounded,
                 size: 14,
                 color: AppColors.terracotta,
               ),
@@ -235,8 +234,8 @@ class _PrayerRequestsScreenState extends State<PrayerRequestsScreen> {
             const SizedBox(height: AppSpacing.sm),
             Row(
               children: [
-                HugeIcon(
-                  icon: HugeIcons.strokeRoundedArrowTurnBackward,
+                Icon(
+                  Icons.reply_rounded,
                   size: 14,
                   color: isDark
                       ? AppColors.accentLinkDark

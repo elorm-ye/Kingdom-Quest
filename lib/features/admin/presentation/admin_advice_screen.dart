@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:hugeicons/hugeicons.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/theme/app_colors.dart';
@@ -127,8 +126,8 @@ class _AdminAdviceScreenState extends State<AdminAdviceScreen> {
                   color: textMuted,
                   fontSize: 13,
                 ),
-                prefixIcon: HugeIcon(
-                  icon: HugeIcons.strokeRoundedBook01,
+                prefixIcon: Icon(
+                  Icons.menu_book_outlined,
                   color: primary,
                   size: 18,
                 ),
@@ -323,8 +322,8 @@ class _AdminAdviceScreenState extends State<AdminAdviceScreen> {
                                 textPrimary,
                                 textMuted,
                               ),
-                              icon: const HugeIcon(
-                                icon: HugeIcons.strokeRoundedArrowTurnBackward,
+                              icon: const Icon(
+                                Icons.reply_rounded,
                                 size: 14,
                               ),
                               label: Text(
@@ -355,8 +354,8 @@ class _AdminAdviceScreenState extends State<AdminAdviceScreen> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
-                            HugeIcon(
-                              icon: HugeIcons.strokeRoundedCheckmarkCircle01,
+                            Icon(
+                              Icons.check_circle_outline,
                               size: 14,
                               color: AppColors.sage,
                             ),

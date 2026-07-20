@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:hugeicons/hugeicons.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -20,8 +19,8 @@ class PetitionsScreen extends StatelessWidget {
       backgroundColor: isDark ? AppColors.umberNight : AppColors.sand,
       appBar: AppBar(
         leading: IconButton(
-          icon: const HugeIcon(
-            icon: HugeIcons.strokeRoundedArrowLeft01,
+          icon: const Icon(
+            Icons.arrow_back,
             size: 20,
           ),
           onPressed: () => context.pop(),
@@ -36,7 +35,7 @@ class PetitionsScreen extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => context.push('/submit-petition'),
-        child: const HugeIcon(icon: HugeIcons.strokeRoundedAdd01),
+        child: const Icon(Icons.add),
       ),
       body: ListView.builder(
         padding: const EdgeInsets.all(AppSpacing.xl),
@@ -120,8 +119,8 @@ class PetitionsScreen extends StatelessWidget {
                     const SizedBox(height: AppSpacing.md),
                     Row(
                       children: [
-                        HugeIcon(
-                          icon: HugeIcons.strokeRoundedUser,
+                        Icon(
+                          Icons.person_outline,
                           size: 14,
                           color: isDark
                               ? AppColors.textMutedDark

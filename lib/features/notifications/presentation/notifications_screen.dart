@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:hugeicons/hugeicons.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/theme/app_colors.dart';
@@ -141,8 +140,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  HugeIcon(
-                    icon: HugeIcons.strokeRoundedNotificationOff01,
+                  Icon(
+                    Icons.notifications_off_outlined,
                     size: 64,
                     color: textMuted,
                   ),

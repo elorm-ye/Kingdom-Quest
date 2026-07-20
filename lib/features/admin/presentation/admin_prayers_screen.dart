@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:hugeicons/hugeicons.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/theme/app_colors.dart';
@@ -345,8 +344,8 @@ class _PrayerAdminCard extends StatelessWidget {
                           ),
                         ),
                         const Spacer(),
-                        HugeIcon(
-                          icon: HugeIcons.strokeRoundedFavourite,
+                        Icon(
+                          Icons.favorite_outline,
                           size: 12,
                           color: textMuted,
                         ),
@@ -480,8 +479,8 @@ class _PrayerAdminCard extends StatelessWidget {
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              HugeIcon(
-                                icon: HugeIcons.strokeRoundedArrowTurnBackward,
+                              Icon(
+                                Icons.reply_rounded,
                                 size: 14,
                                 color: primary,
                               ),

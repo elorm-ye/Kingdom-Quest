@@ -3,8 +3,7 @@
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import type { AppNotification } from '@/lib/types'
-import { HugeiconsIcon } from '@hugeicons/react';
-import { Notification01Icon } from '@hugeicons/core-free-icons';
+import { Bell } from 'lucide-react';
 
 export default function NotificationsPage() {
   const supabase = createClient()
@@ -51,7 +50,7 @@ export default function NotificationsPage() {
         </div>
       ) : notifications.length === 0 ? (
         <div className="text-center py-12 kq-card">
-          <HugeiconsIcon icon={Notification01Icon} size={48} className="mx-auto mb-4 opacity-20" />
+          <Bell size={48} className="mx-auto mb-4 opacity-20" />
           <h3 className="text-xl font-bold mb-2">No notifications</h3>
           <p style={{ color: 'var(--text-muted)' }}>You&apos;re all caught up!</p>
         </div>

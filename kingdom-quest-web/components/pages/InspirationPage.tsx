@@ -3,8 +3,7 @@
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import type { Inspiration } from '@/lib/types'
-import { HugeiconsIcon } from '@hugeicons/react';
-import { FavouriteIcon, Message01Icon, Sun01Icon } from '@hugeicons/core-free-icons';
+import { Heart, MessageSquare, Sun } from 'lucide-react';
 
 export default function InspirationPage() {
   const supabase = createClient()
@@ -36,7 +35,7 @@ export default function InspirationPage() {
         </div>
       ) : inspirations.length === 0 ? (
         <div className="text-center py-12 kq-card">
-          <HugeiconsIcon icon={Sun01Icon} size={48} className="mx-auto mb-4 opacity-20" />
+          <Sun size={48} className="mx-auto mb-4 opacity-20" />
           <h3 className="text-xl font-bold mb-2">No inspiration found</h3>
           <p style={{ color: 'var(--text-muted)' }}>Check back later for new content.</p>
         </div>
@@ -64,10 +63,10 @@ export default function InspirationPage() {
                 
                 <div className="flex items-center gap-6 mt-auto pt-4 border-t" style={{ borderColor: 'var(--border-subtle)', color: 'var(--text-muted)' }}>
                   <button className="flex items-center gap-1.5 hover:text-red-500 transition-colors text-sm font-medium">
-                    <HugeiconsIcon icon={FavouriteIcon} size={18} /> {insp.like_count}
+                    <Heart size={18} /> {insp.like_count}
                   </button>
                   <button className="flex items-center gap-1.5 hover:text-gray-900 transition-colors text-sm font-medium">
-                    <HugeiconsIcon icon={Message01Icon} size={18} /> {insp.comment_count}
+                    <MessageSquare size={18} /> {insp.comment_count}
                   </button>
                 </div>
               </div>

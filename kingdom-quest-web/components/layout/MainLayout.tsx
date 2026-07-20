@@ -3,8 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { HugeiconsIcon } from '@hugeicons/react';
-import { Cancel01Icon, Logout01Icon, Menu01Icon, MessageMultiple01Icon, FavouriteIcon, File01Icon, Calendar01Icon, UserIcon, Sun01Icon, Home01Icon, Notification01Icon, Shield01Icon, Settings01Icon } from '@hugeicons/core-free-icons';
+import { Home, Heart, FileText, MessageSquare, Sun, MessagesSquare, Calendar, Bell, User, Shield, Settings, LogOut, Menu, X } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client'
 import type { Profile } from '@/lib/types'
 
@@ -16,23 +15,23 @@ interface NavItem {
 }
 
 const memberNav: NavItem[] = [
-  { href: '/home',             icon: <HugeiconsIcon icon={Home01Icon} size={20} />,          label: 'Home',        id: 'nav-home' },
-  { href: '/prayer-requests',  icon: <HugeiconsIcon icon={FavouriteIcon} size={20} />,         label: 'Prayers',     id: 'nav-prayers' },
-  { href: '/petitions',        icon: <HugeiconsIcon icon={File01Icon} size={20} />,      label: 'Petitions',   id: 'nav-petitions' },
-  { href: '/advice',           icon: <HugeiconsIcon icon={MessageMultiple01Icon} size={20} />, label: 'Advice',      id: 'nav-advice' },
-  { href: '/inspiration',      icon: <HugeiconsIcon icon={Sun01Icon} size={20} />,     label: 'Inspiration', id: 'nav-inspiration' },
-  { href: '/forum',            icon: <HugeiconsIcon icon={MessageMultiple01Icon} size={20} />, label: 'Forum',       id: 'nav-forum' },
-  { href: '/events',           icon: <HugeiconsIcon icon={Calendar01Icon} size={20} />,      label: 'Events',      id: 'nav-events' },
-  { href: '/notifications',    icon: <HugeiconsIcon icon={Notification01Icon} size={20} />,          label: 'Alerts',      id: 'nav-alerts' },
-  { href: '/profile',          icon: <HugeiconsIcon icon={UserIcon} size={20} />,          label: 'Profile',     id: 'nav-profile' },
+  { href: '/home',             icon: <Home size={20} />,          label: 'Home',        id: 'nav-home' },
+  { href: '/prayer-requests',  icon: <Heart size={20} />,         label: 'Prayers',     id: 'nav-prayers' },
+  { href: '/petitions',        icon: <FileText size={20} />,      label: 'Petitions',   id: 'nav-petitions' },
+  { href: '/advice',           icon: <MessageSquare size={20} />, label: 'Advice',      id: 'nav-advice' },
+  { href: '/inspiration',      icon: <Sun size={20} />,     label: 'Inspiration', id: 'nav-inspiration' },
+  { href: '/forum',            icon: <MessagesSquare size={20} />, label: 'Forum',       id: 'nav-forum' },
+  { href: '/events',           icon: <Calendar size={20} />,      label: 'Events',      id: 'nav-events' },
+  { href: '/notifications',    icon: <Bell size={20} />,          label: 'Alerts',      id: 'nav-alerts' },
+  { href: '/profile',          icon: <User size={20} />,          label: 'Profile',     id: 'nav-profile' },
 ]
 
 const bottomNav: NavItem[] = [
-  { href: '/home',          icon: <HugeiconsIcon icon={Home01Icon} size={22} />,          label: 'Home',        id: 'bnav-home' },
-  { href: '/inspiration',   icon: <HugeiconsIcon icon={Sun01Icon} size={22} />,     label: 'Inspire',     id: 'bnav-inspiration' },
-  { href: '/forum',         icon: <HugeiconsIcon icon={MessageMultiple01Icon} size={22} />, label: 'Forum',       id: 'bnav-forum' },
-  { href: '/events',        icon: <HugeiconsIcon icon={Calendar01Icon} size={22} />,      label: 'Events',      id: 'bnav-events' },
-  { href: '/profile',       icon: <HugeiconsIcon icon={UserIcon} size={22} />,          label: 'Profile',     id: 'bnav-profile' },
+  { href: '/home',          icon: <Home size={22} />,          label: 'Home',        id: 'bnav-home' },
+  { href: '/inspiration',   icon: <Sun size={22} />,     label: 'Inspire',     id: 'bnav-inspiration' },
+  { href: '/forum',         icon: <MessagesSquare size={22} />, label: 'Forum',       id: 'bnav-forum' },
+  { href: '/events',        icon: <Calendar size={22} />,      label: 'Events',      id: 'bnav-events' },
+  { href: '/profile',       icon: <User size={22} />,          label: 'Profile',     id: 'bnav-profile' },
 ]
 
 function NavLink({ item, active, onClick }: { item: NavItem; active: boolean; onClick?: () => void }) {
@@ -99,7 +98,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
           {isAdmin && (
             <>
               <div className="my-3 mx-2 h-px" style={{ background: 'var(--border)' }} />
-              <NavLink item={{ href: '/admin', icon: <HugeiconsIcon icon={Shield01Icon} size={20} />, label: 'Admin', id: 'nav-admin' }}
+              <NavLink item={{ href: '/admin', icon: <Shield size={20} />, label: 'Admin', id: 'nav-admin' }}
                 active={pathname.startsWith('/admin')} />
             </>
           )}
@@ -107,13 +106,13 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
 
         {/* Footer */}
         <div className="px-3 pt-4 border-t space-y-1" style={{ borderColor: 'var(--border-subtle)' }}>
-          <NavLink item={{ href: '/settings', icon: <HugeiconsIcon icon={Settings01Icon} size={20} />, label: 'Settings', id: 'nav-settings' }}
+          <NavLink item={{ href: '/settings', icon: <Settings size={20} />, label: 'Settings', id: 'nav-settings' }}
             active={pathname === '/settings'} />
           <button id="sidebar-signout"
             onClick={handleSignOut}
             className="flex items-center gap-3 w-full px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200"
             style={{ color: 'var(--alert)', background: 'transparent' }}>
-            <HugeiconsIcon icon={Logout01Icon} size={20} />
+            <LogOut size={20} />
             Sign Out
           </button>
         </div>
@@ -145,7 +144,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
         </Link>
         <button id="mobile-menu-btn" onClick={() => setMenuOpen(true)}
           className="p-2 rounded-lg" style={{ color: 'var(--text-secondary)' }}>
-          <HugeiconsIcon icon={Menu01Icon} size={22} />
+          <Menu size={22} />
         </button>
       </header>
 
@@ -157,7 +156,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
             style={{ background: 'var(--surface)' }}>
             <div className="flex items-center justify-between px-5 mb-6">
               <span className="font-display font-bold text-lg" style={{ color: 'var(--text-primary)' }}>Menu</span>
-              <button onClick={() => setMenuOpen(false)} style={{ color: 'var(--text-muted)' }}><HugeiconsIcon icon={Cancel01Icon} size={22} /></button>
+              <button onClick={() => setMenuOpen(false)} style={{ color: 'var(--text-muted)' }}><X size={22} /></button>
             </div>
             <nav className="flex-1 px-3 space-y-1 overflow-y-auto">
               {memberNav.map(item => (
@@ -166,18 +165,18 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
               {isAdmin && (
                 <>
                   <div className="my-3 mx-2 h-px" style={{ background: 'var(--border)' }} />
-                  <NavLink item={{ href: '/admin', icon: <HugeiconsIcon icon={Shield01Icon} size={20} />, label: 'Admin Dashboard', id: 'nav-admin-mobile' }}
+                  <NavLink item={{ href: '/admin', icon: <Shield size={20} />, label: 'Admin Dashboard', id: 'nav-admin-mobile' }}
                     active={pathname.startsWith('/admin')} onClick={() => setMenuOpen(false)} />
                 </>
               )}
             </nav>
             <div className="px-3 pt-4 border-t space-y-1" style={{ borderColor: 'var(--border-subtle)' }}>
-              <NavLink item={{ href: '/settings', icon: <HugeiconsIcon icon={Settings01Icon} size={20} />, label: 'Settings', id: 'nav-settings-mobile' }}
+              <NavLink item={{ href: '/settings', icon: <Settings size={20} />, label: 'Settings', id: 'nav-settings-mobile' }}
                 active={pathname === '/settings'} onClick={() => setMenuOpen(false)} />
               <button onClick={() => { setMenuOpen(false); handleSignOut() }}
                 className="flex items-center gap-3 w-full px-4 py-2.5 rounded-xl text-sm font-medium"
                 style={{ color: 'var(--alert)' }}>
-                <HugeiconsIcon icon={Logout01Icon} size={20} /> Sign Out
+                <LogOut size={20} /> Sign Out
               </button>
             </div>
           </aside>

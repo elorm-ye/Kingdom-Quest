@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:hugeicons/hugeicons.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -94,8 +93,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         trailing:
             trailing ??
             (onTap != null
-                ? HugeIcon(
-                    icon: HugeIcons.strokeRoundedArrowRight01,
+                ? Icon(
+                    Icons.chevron_right_rounded,
                     color: textMuted,
                     size: 20,
                   )
@@ -508,8 +507,8 @@ class _ThemeOptionTile extends StatelessWidget {
         ),
       ),
       trailing: selected
-          ? HugeIcon(
-              icon: HugeIcons.strokeRoundedCheckmarkCircle01,
+          ? Icon(
+              Icons.check_circle_rounded,
               color: primary,
               size: 20,
             )

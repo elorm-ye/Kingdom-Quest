@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:hugeicons/hugeicons.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/theme/app_colors.dart';
@@ -246,8 +245,8 @@ class _AdminInspirationScreenState extends State<AdminInspirationScreen> {
                     decoration: InputDecoration(
                       hintText: 'e.g. Philippians 4:13',
                       hintStyle: GoogleFonts.schibstedGrotesk(color: textMuted),
-                      prefixIcon: HugeIcon(
-                        icon: HugeIcons.strokeRoundedBook01,
+                      prefixIcon: Icon(
+                        Icons.menu_book_outlined,
                         size: 18,
                         color: primary,
                       ),
@@ -277,8 +276,8 @@ class _AdminInspirationScreenState extends State<AdminInspirationScreen> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const HugeIcon(
-                              icon: HugeIcons.strokeRoundedCheckmarkCircle01,
+                            const Icon(
+                              Icons.check_circle_outline,
                               color: Colors.white,
                             ),
                             const SizedBox(width: AppSpacing.sm),
@@ -305,8 +304,8 @@ class _AdminInspirationScreenState extends State<AdminInspirationScreen> {
                                   color: Colors.white,
                                 ),
                               )
-                            : const HugeIcon(
-                                icon: HugeIcons.strokeRoundedSent,
+                            : const Icon(
+                                Icons.send_rounded,
                                 size: 18,
                               ),
                         label: Text(
@@ -358,8 +357,8 @@ class _AdminInspirationScreenState extends State<AdminInspirationScreen> {
                             color: primary.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(10),
                           ),
-                          child: HugeIcon(
-                            icon: HugeIcons.strokeRoundedSparkles,
+                          child: Icon(
+                            Icons.auto_awesome_rounded,
                             size: 18,
                             color: primary,
                           ),

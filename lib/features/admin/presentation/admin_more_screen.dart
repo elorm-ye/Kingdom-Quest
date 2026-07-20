@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:hugeicons/hugeicons.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -103,8 +102,8 @@ class AdminMoreScreen extends StatelessWidget {
                               color: textMuted,
                             ),
                           ),
-                          trailing: HugeIcon(
-                            icon: HugeIcons.strokeRoundedArrowRight01,
+                          trailing: Icon(
+                            Icons.chevron_right_rounded,
                             color: textMuted,
                           ),
                         )
@@ -152,8 +151,8 @@ class AdminMoreScreen extends StatelessWidget {
                       color: primary.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: HugeIcon(
-                      icon: HugeIcons.strokeRoundedBuilding01,
+                    child: Icon(
+                      Icons.account_balance_outlined,
                       color: primary,
                       size: 22,
                     ),
@@ -173,8 +172,8 @@ class AdminMoreScreen extends StatelessWidget {
                       color: textMuted,
                     ),
                   ),
-                  trailing: HugeIcon(
-                    icon: HugeIcons.strokeRoundedArrowRight01,
+                  trailing: Icon(
+                    Icons.chevron_right_rounded,
                     color: textMuted,
                   ),
                 ),
@@ -192,8 +191,8 @@ class AdminMoreScreen extends StatelessWidget {
                       color: primary.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: HugeIcon(
-                      icon: HugeIcons.strokeRoundedCalendar01,
+                    child: Icon(
+                      Icons.calendar_month_outlined,
                       color: primary,
                       size: 22,
                     ),
@@ -213,8 +212,8 @@ class AdminMoreScreen extends StatelessWidget {
                       color: textMuted,
                     ),
                   ),
-                  trailing: HugeIcon(
-                    icon: HugeIcons.strokeRoundedArrowRight01,
+                  trailing: Icon(
+                    Icons.chevron_right_rounded,
                     color: textMuted,
                   ),
                 ),
@@ -232,8 +231,8 @@ class AdminMoreScreen extends StatelessWidget {
                       color: primary.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: HugeIcon(
-                      icon: HugeIcons.strokeRoundedMegaphone01,
+                    child: Icon(
+                      Icons.campaign_outlined,
                       color: primary,
                       size: 22,
                     ),
@@ -253,8 +252,8 @@ class AdminMoreScreen extends StatelessWidget {
                       color: textMuted,
                     ),
                   ),
-                  trailing: HugeIcon(
-                    icon: HugeIcons.strokeRoundedArrowRight01,
+                  trailing: Icon(
+                    Icons.chevron_right_rounded,
                     color: textMuted,
                   ),
                 ),

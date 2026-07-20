@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:hugeicons/hugeicons.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -27,8 +26,8 @@ class ForumScreen extends StatelessWidget {
         ),
         actions: [
           IconButton(
-            icon: const HugeIcon(
-              icon: HugeIcons.strokeRoundedSearch01,
+            icon: const Icon(
+              Icons.search_rounded,
               size: 22,
             ),
             onPressed: () {},
@@ -37,7 +36,7 @@ class ForumScreen extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => context.push('/create-post'),
-        child: const HugeIcon(icon: HugeIcons.strokeRoundedEdit02),
+        child: const Icon(Icons.edit_outlined),
       ),
       body: Column(
         children: [
@@ -53,8 +52,8 @@ class ForumScreen extends StatelessWidget {
             ),
             child: Row(
               children: [
-                HugeIcon(
-                  icon: HugeIcons.strokeRoundedShield01,
+                Icon(
+                  Icons.shield_outlined,
                   size: 16,
                   color: isDark ? AppColors.glow : AppColors.terracotta,
                 ),
@@ -107,8 +106,8 @@ class ForumScreen extends StatelessWidget {
                                         ),
                                   shape: BoxShape.circle,
                                 ),
-                                child: HugeIcon(
-                                  icon: HugeIcons.strokeRoundedUser,
+                                child: Icon(
+                                  Icons.person_outline,
                                   size: 18,
                                   color: isDark
                                       ? AppColors.textMutedDark
@@ -142,8 +141,8 @@ class ForumScreen extends StatelessWidget {
                               ),
                               const Spacer(),
                               IconButton(
-                                icon: HugeIcon(
-                                  icon: HugeIcons.strokeRoundedMoreHorizontal,
+                                icon: Icon(
+                                  Icons.more_horiz_rounded,
                                   size: 18,
                                   color: isDark
                                       ? AppColors.textMutedDark

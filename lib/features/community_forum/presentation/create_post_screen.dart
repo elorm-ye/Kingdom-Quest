@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:hugeicons/hugeicons.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/theme/app_colors.dart';
@@ -46,7 +45,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
       backgroundColor: isDark ? AppColors.umberNight : AppColors.sand,
       appBar: AppBar(
         leading: IconButton(
-          icon: const HugeIcon(icon: HugeIcons.strokeRoundedCancel01, size: 22),
+          icon: const Icon(Icons.close, size: 22),
           onPressed: () => context.pop(),
         ),
         title: Text(
@@ -75,8 +74,8 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                 ),
                 child: Row(
                   children: [
-                    HugeIcon(
-                      icon: HugeIcons.strokeRoundedShield01,
+                    Icon(
+                      Icons.shield_outlined,
                       size: 16,
                       color: isDark ? AppColors.glow : AppColors.terracotta,
                     ),

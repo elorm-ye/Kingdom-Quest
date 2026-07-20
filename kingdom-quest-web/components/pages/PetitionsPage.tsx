@@ -3,8 +3,7 @@
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import type { Petition } from '@/lib/types'
-import { HugeiconsIcon } from '@hugeicons/react';
-import { Add01Icon, File01Icon, Search01Icon } from '@hugeicons/core-free-icons';
+import { Plus, FileText, Search } from 'lucide-react';
 
 export default function PetitionsPage() {
   const supabase = createClient()
@@ -36,12 +35,12 @@ export default function PetitionsPage() {
           <p className="mt-1 text-base" style={{ color: 'var(--text-muted)' }}>Submit feedback, ideas, or grievances.</p>
         </div>
         <button className="kq-btn kq-btn-primary self-start md:self-auto">
-          <HugeiconsIcon icon={Add01Icon} size={18} /> New Petition
+          <Plus size={18} /> New Petition
         </button>
       </header>
 
       <div className="relative mb-6">
-        <HugeiconsIcon icon={Search01Icon} size={18} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--text-muted)' }} />
+        <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--text-muted)' }} />
         <input 
           type="text" 
           placeholder="Search petitions..." 
@@ -57,7 +56,7 @@ export default function PetitionsPage() {
         </div>
       ) : filteredPetitions.length === 0 ? (
         <div className="text-center py-12 kq-card">
-          <HugeiconsIcon icon={File01Icon} size={48} className="mx-auto mb-4 opacity-20" />
+          <FileText size={48} className="mx-auto mb-4 opacity-20" />
           <h3 className="text-xl font-bold mb-2">No petitions found</h3>
           <p style={{ color: 'var(--text-muted)' }}>There are no petitions matching your search.</p>
         </div>

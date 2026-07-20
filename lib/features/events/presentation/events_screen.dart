@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:hugeicons/hugeicons.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/theme/app_colors.dart';
@@ -269,8 +268,8 @@ class _EventsScreenState extends State<EventsScreen>
                                 const SizedBox(height: AppSpacing.md),
                                 Row(
                                   children: [
-                                    HugeIcon(
-                                      icon: HugeIcons.strokeRoundedLocation01,
+                                    Icon(
+                                      Icons.location_on_outlined,
                                       size: 13,
                                       color: textMuted,
                                     ),
@@ -284,8 +283,8 @@ class _EventsScreenState extends State<EventsScreen>
                                         ),
                                       ),
                                     ),
-                                    HugeIcon(
-                                      icon: HugeIcons.strokeRoundedUserMultiple,
+                                    Icon(
+                                      Icons.people_outline_rounded,
                                       size: 13,
                                       color: textMuted,
                                     ),
@@ -334,8 +333,8 @@ class _EventsScreenState extends State<EventsScreen>
                                   const SizedBox(height: AppSpacing.sm),
                                   Row(
                                     children: [
-                                      HugeIcon(
-                                        icon: HugeIcons.strokeRoundedRepeat,
+                                      Icon(
+                                        Icons.repeat_rounded,
                                         size: 12,
                                         color: AppColors.sage,
                                       ),
@@ -399,8 +398,8 @@ class _EventsScreenState extends State<EventsScreen>
                           Row(
                             children: [
                               if (ann.isPinned) ...[
-                                HugeIcon(
-                                  icon: HugeIcons.strokeRoundedPin,
+                                Icon(
+                                  Icons.push_pin_outlined,
                                   size: 14,
                                   color: primary,
                                 ),
@@ -452,8 +451,8 @@ class _EventsScreenState extends State<EventsScreen>
                                   color: primary.withValues(alpha: 0.12),
                                   shape: BoxShape.circle,
                                 ),
-                                child: HugeIcon(
-                                  icon: HugeIcons.strokeRoundedUser,
+                                child: Icon(
+                                  Icons.person_outline,
                                   size: 14,
                                   color: primary,
                                 ),

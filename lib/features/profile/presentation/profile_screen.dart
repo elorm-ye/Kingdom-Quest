@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:hugeicons/hugeicons.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -70,8 +69,8 @@ class ProfileScreen extends StatelessWidget {
             surfaceTintColor: Colors.transparent,
             actions: [
               IconButton(
-                icon: HugeIcon(
-                  icon: HugeIcons.strokeRoundedSettings01,
+                icon: Icon(
+                  Icons.settings_outlined,
                   color: textPrimary,
                 ),
                 onPressed: () => context.push('/settings'),
@@ -140,8 +139,8 @@ class ProfileScreen extends StatelessWidget {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            HugeIcon(
-                              icon: HugeIcons.strokeRoundedBuilding01,
+                            Icon(
+                              Icons.church_outlined,
                               size: 13,
                               color: textMuted,
                             ),
@@ -390,8 +389,8 @@ class ProfileScreen extends StatelessWidget {
                     width: double.infinity,
                     child: OutlinedButton.icon(
                       onPressed: () {},
-                      icon: HugeIcon(
-                        icon: HugeIcons.strokeRoundedEdit02,
+                      icon: Icon(
+                        Icons.edit_outlined,
                         size: 16,
                         color: primary,
                       ),

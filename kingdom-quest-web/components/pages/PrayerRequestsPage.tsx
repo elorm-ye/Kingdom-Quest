@@ -3,8 +3,7 @@
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import type { PrayerRequest } from '@/lib/types'
-import { HugeiconsIcon } from '@hugeicons/react';
-import { FavouriteIcon, Add01Icon, Search01Icon } from '@hugeicons/core-free-icons';
+import { Heart, Plus, Search } from 'lucide-react';
 
 export default function PrayerRequestsPage() {
   const supabase = createClient()
@@ -39,13 +38,13 @@ export default function PrayerRequestsPage() {
           <p className="mt-1 text-base" style={{ color: 'var(--text-muted)' }}>Join your community in prayer.</p>
         </div>
         <button className="kq-btn kq-btn-primary self-start md:self-auto">
-          <HugeiconsIcon icon={Add01Icon} size={18} /> Submit Request
+          <Plus size={18} /> Submit Request
         </button>
       </header>
 
       <div className="flex flex-col md:flex-row gap-4 mb-6">
         <div className="relative flex-1">
-          <HugeiconsIcon icon={Search01Icon} size={18} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--text-muted)' }} />
+          <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--text-muted)' }} />
           <input 
             type="text" 
             placeholder="Search prayers..." 
@@ -72,7 +71,7 @@ export default function PrayerRequestsPage() {
         </div>
       ) : filteredRequests.length === 0 ? (
         <div className="text-center py-12 kq-card">
-          <HugeiconsIcon icon={FavouriteIcon} size={48} className="mx-auto mb-4 opacity-20" />
+          <Heart size={48} className="mx-auto mb-4 opacity-20" />
           <h3 className="text-xl font-bold mb-2">No prayer requests found</h3>
           <p style={{ color: 'var(--text-muted)' }}>Be the first to share a prayer request.</p>
         </div>
@@ -96,7 +95,7 @@ export default function PrayerRequestsPage() {
                   <span>{new Date(req.created_at).toLocaleDateString()}</span>
                 </div>
                 <button className="kq-btn kq-btn-ghost py-1.5 px-3 text-xs rounded-full">
-                  <HugeiconsIcon icon={FavouriteIcon} size={14} className="mr-1" /> Pray ({req.prayer_count})
+                  <Heart size={14} className="mr-1" /> Pray ({req.prayer_count})
                 </button>
               </div>
               
