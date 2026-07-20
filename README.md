@@ -1,210 +1,105 @@
-# Kingdom Quest — Mobile App
+# Kingdom Quest Platform
 
-A Flutter-based youth ministry app with multi-church support, prayer requests, petitions, advice center, daily inspiration, Bible study, and admin dashboard — built with Supabase backend and designed for iOS/Android.
+A comprehensive, cross-platform youth ministry solution built with **Flutter (Mobile)**, **Next.js (Web)**, and **Supabase (Backend)**. Kingdom Quest provides a safe, sacred space for church communities with support for multi-church architecture, prayer requests, petitions, a spiritual advice center, daily inspiration, community forums, and a robust admin dashboard.
 
-##  Getting Started
+---
+
+## 📱 Platform Architecture
+
+The Kingdom Quest platform consists of three main components:
+
+1. **Mobile App (`/`)**: Built with Flutter 3.x, Riverpod, and GoRouter. Designed for both iOS and Android.
+2. **Web App & Admin Panel (`/kingdom-quest-web/`)**: Built with Next.js 15, React, and Tailwind CSS. Acts as a member-facing PWA and a role-gated admin management portal.
+3. **Backend**: Powered by Supabase (PostgreSQL, Auth, Realtime, Storage, Edge Functions).
+
+## ✨ Key Features
+
+### For Youth & Members
+- **Authentication**: Email/password and Google OAuth support.
+- **Prayer Requests**: Post, view, comment, and track prayer requests.
+- **Community Forum**: Safe, anonymous discussions utilizing SHA-256 hashed identifiers to protect user privacy.
+- **Advice Center**: Seek spiritual guidance directly from church elders.
+- **Daily Inspiration**: Curated devotionals, verses, and testimonies.
+- **Events Calendar**: View upcoming church events and RSVP.
+- **Notifications**: Real-time alerts powered by Supabase Realtime and Firebase Cloud Messaging (FCM).
+
+### For Admins (Role-gated)
+- **Dashboard**: High-level statistics on platform engagement.
+- **Moderation**: Ability to review reported forum posts and manage advice requests.
+- **Content Publishing**: Create and schedule daily inspiration and global announcements.
+- **User Management**: Assign roles and manage community members.
+
+---
+
+## 🚀 Getting Started
 
 ### Prerequisites
+- **Flutter SDK**: [Install Flutter](https://docs.flutter.dev/get-started/install)
+- **Node.js**: v18+ [Install Node](https://nodejs.org/)
+- **Supabase Account**: For backend deployment.
 
-- **Flutter 3.x SDK**: [Install Flutter](https://docs.flutter.dev/get-started/install)
-- **Android Studio or VS Code**
-- **Android device or emulator**
+### 1. Supabase Backend Setup
+1. Create a new Supabase project.
+2. Run the SQL script found in `lib/core/supabase/supabase_schema.sql` in your Supabase SQL Editor to generate all tables, RLS policies, and triggers.
+3. Obtain your `Project URL` and `Anon Key`.
 
-### Installation
-
+### 2. Running the Flutter App (iOS / Android)
 ```bash
-# Clone the repository
-git clone <repository-url>
-cd kingdom_quest
-
-# Install dependencies
+# From the root directory
 flutter pub get
+
+# Create a .env file and add your Supabase credentials:
+# SUPABASE_URL=https://your-project.supabase.co
+# SUPABASE_ANON_KEY=your-anon-key
 
 # Run the app
 flutter run
 ```
 
-##  Project Structure
+### 3. Running the Next.js Web App
+```bash
+# Navigate to the web directory
+cd kingdom-quest-web
 
+# Install dependencies
+npm install
+
+# Create a .env.local file and add your Supabase credentials:
+# NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+# NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+
+# Run the development server
+npm run dev
 ```
-kingdom_quest/
-├── lib/
-│   ├── main.dart                  # App entry point
-│   ├── core/                      # Core utilities
-│   │   ├── theme/                 # Design system & themes
-│   │   ├── providers/             # Riverpod providers
-│   │   ├── router/                # GoRouter navigation
-│   │   └── supabase/              # Supabase client
-│   ├── features/                  # App features
-│   │   ├── auth/                  # Authentication
-│   │   ├── dashboard/             # Dashboard overview
-│   │   ├── prayer_requests/       # Prayer requests
-│   │   ├── petitions/             # Petitions with voting
-│   │   ├── advice/                # Ask-an-elder advice
-│   │   ├── daily_inspiration/     # Daily verse + devotional
-│   │   ├── community_forum/       # Forum with posts/replies
-│   │   ├── events/                # Events calendar & RSVPs
-│   │   ├── notifications/         # Notification center
-│   │   ├── profile/               # User profile & settings
-│   │   └── admin/                 # Admin dashboard
-│   └── shared/                    # Shared components
-│       ├── widgets/
-│       ├── models/
-│       └── services/
-├── assets/                        # Images, icons, fonts
-├── pubspec.yaml                   # Dependencies
-└── README.md                      # This file
-```
+Open `http://localhost:3000` in your browser.
 
-##  Key Features
+---
 
-### For Youth & Members
-- **Authentication**: Email/password, Google sign-in, magic links
-- **Dashboard**: Quick stats + quick actions
-- **Prayer Requests**: Post, view, comment, mark answered
-- **Petitions**: Read, upvote, sign, track status
-- **Advice Center**: Submit anonymous questions, get pastor replies
-- **Daily Inspiration**: Verse + devotional (published by admin)
-- **Community Forum**: Post topics, reply, report abuse
-- **Events Calendar**: View events, RSVP, get reminders
-- **Notifications**: Real-time alerts for new content
-- **User Profile**: Manage settings, view activity, change password
+## 🎨 Design System
 
-### Admin Features (Admin Role)
-- **Admin Dashboard**: Stats overview, quick actions
-- **Prayer Management**: View, respond, mark answered
-- **Petition Management**: Update status, respond to petitioners
-- **Advice Moderation**: Respond to questions, close discussions
-- **Content Publishing**: Create and schedule daily inspiration
-- **Forum Moderation**: View reports, remove posts
-- **User Management**: View members, assign roles
+Both the Mobile and Web apps share a unified design token system to ensure strict brand continuity.
 
-##  Tech Stack
+- **Primary**: Terracotta (`#B8614A`)
+- **Accent**: Burnt Amber (`#C7784E`)
+- **Secondary**: Olive Clay (`#7E7458`)
+- **Background**: Sand (`#F1E9DC`)
+- **Cards**: Linen (`#F8F1E8`)
 
-- **Framework**: [Flutter 3.x](https://flutter.dev/)
-- **Language**: [Dart 3.x](https://dart.dev/)
-- **State Management**: [Riverpod 3.x](https://riverpod.dev/)
-- **Navigation**: [GoRouter](https://pub.dev/packages/go_router)
-- **Backend**: [Supabase](https://supabase.com/)
-  - Auth (email, Google OAuth, magic links)
-  - PostgreSQL database
-  - Realtime subscriptions
-  - Storage
-  - Edge Functions (for notifications, moderation, etc.)
-- **Push Notifications**: [Firebase Cloud Messaging](https://firebase.google.com/docs/cloud-messaging)
-- **Icons**: [Font Awesome Flutter](https://pub.dev/packages/font_awesome_flutter)
-- **Design**: Custom design tokens + Material 3
+**Typography**:
+- Headers: Bricolage Grotesque
+- Body: Schibsted Grotesk
 
-##  Contributing
+---
 
-1. Create a feature branch: `git checkout -b feature/new-feature`
-2. Make your changes
-3. Test thoroughly on Android emulator or device
-4. Run `flutter format .`
-5. Commit: `git commit -m "feat: add new feature"`
-6. Push: `git push origin feature/new-feature`
-7. Create a pull request
+## 🔒 Security & Privacy
 
-### Coding Standards
-- Use Riverpod providers for state management
-- Follow the existing folder structure
-- Keep UI components reusable
-- Add type hints and comments where needed
-- Test all new functionality
+- **Row-Level Security (RLS)**: Strictly enforced on every PostgreSQL table via Supabase to prevent data leaks.
+- **Anonymity**: Forum identity is preserved using a one-way SHA-256 hash (User ID + Server Salt) which rotates monthly, protecting users while preventing ban-evasion.
 
-##  Design System
+---
 
-### Color Palette
-- **Primary**: Terracotta (#B8614A)
-- **Accent**: Burnt Amber (#C7784E)
-- **Secondary**: Olive Clay (#7E7458)
-- **Background**: Sand (#F1E9DC)
-- **Cards**: Linen (#F8F1E8)
+## 🛠 Tech Stack Details
 
-### Typography
-- **Display**: Bricolage Grotesque (400/500/600/700)
-- **Body**: Schibsted Grotesk (400/500/600)
-- **Caption**: Mono uppercase (14px)
-
-### Spacing
-- 4px base grid
-- Steps: 4, 8, 12, 16, 24, 32, 48, 64
-- Border radii: 12px (buttons), 16px (cards), 24px (sections)
-
-##  Feature Modules
-
-### Auth Module
-- Screens: Login, Register, Forgot Password, Verify Email, Reset Password
-- Providers: `AuthServiceProvider`, `AuthProvider`
-- Flow: Email/password or Google sign-in → verify email → magic link → auto-redirect
-
-### Dashboard Module
-- Screens: Dashboard Overview
-- Providers: `DashboardProvider`
-- Widgets: Stat cards, quick action buttons
-
-### Prayer Requests Module
-- Screens: Prayer List, New Prayer Request, Prayer Detail
-- Providers: `PrayerRequestServiceProvider`, `PrayerListProvider`
-- Features: Create, view, comment, mark answered, filter by church
-
-### Petitions Module
-- Screens: Petition List, Petition Detail
-- Providers: `PetitionServiceProvider`
-- Features: View, upvote, sign petition, track status
-
-### Advice Center Module
-- Screens: Advice List, New Advice, Advice Detail
-- Providers: `AdviceServiceProvider`
-- Features: Anonymous questions, pastor replies, moderation
-
-### Daily Inspiration Module
-- Screens: Daily Inspiration
-- Providers: `DailyInspirationProvider`
-- Features: Verse of the day, devotional, sharing
-
-### Community Forum Module
-- Screens: Forum List, New Post, Post Detail
-- Providers: `ForumServiceProvider`
-- Features: Post topics, replies, reporting
-
-### Events Module
-- Screens: Events List, Event Detail, RSVP
-- Providers: `EventServiceProvider`
-- Features: Event calendar, RSVP tracking
-
-### Notifications Module
-- Screens: Notification List
-- Providers: `NotificationServiceProvider`
-- Features: Real-time notifications, mark as read
-
-### Profile & Settings Module
-- Screens: Profile, Edit Profile, Change Password, Logout
-- Providers: `ProfileServiceProvider`
-- Features: User info, password change, delete account
-
-### Admin Dashboard Module
-- Screens: Admin Dashboard, User Management, Prayer Management, etc.
-- Providers: Admin service providers
-- Features: Full admin control over all features
-
-##  Supabase Integration
-
-### Database Schema (Simplified)
-```sql
--- users table (managed by Supabase Auth)
--- profiles: link to auth.users
-create table profiles (
-    id uuid references auth.users primary key,
-    church_id uuid references churches(id) on delete set null,
-    role text default 'member' check (role in ('member', 'elder', 'admin')),
-    full_name text,
-    avatar_url text,
-    created_at timestamp with time zone default timezone('utc'::text, now()) not null
-);
-
--- churches
-create table churches (
-    id uuid default uuid_generate_v4() primary key,
-    name text not null,
-    created_at timestamp with time zone default timezone('utc'::text, now
+- **Mobile**: Flutter, Dart, Riverpod (State), GoRouter (Navigation), supabase_flutter.
+- **Web**: Next.js (App Router), React, Tailwind CSS, @supabase/ssr.
+- **Push Notifications**: Firebase Cloud Messaging (FCM).
