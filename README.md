@@ -1,4 +1,4 @@
-# Kingdom Quest Platform
+# Kingdom Quest 
 
 A comprehensive, cross-platform youth ministry solution built with **Flutter (Mobile)**, **Next.js (Web)**, and **Supabase (Backend)**. Kingdom Quest provides a safe, sacred space for church communities with support for multi-church architecture, prayer requests, petitions, a spiritual advice center, daily inspiration, community forums, and a robust admin dashboard.
 
