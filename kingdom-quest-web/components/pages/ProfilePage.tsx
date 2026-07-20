@@ -47,7 +47,7 @@ export default function ProfilePage() {
           </div>
           
           {profile.bio && (
-            <p className="text-sm text-left italic" style={{ color: 'var(--text-muted)' }}>"{profile.bio}"</p>
+            <p className="text-sm text-left italic" style={{ color: 'var(--text-muted)' }}>&quot;{profile.bio}&quot;</p>
           )}
         </div>
       </div>

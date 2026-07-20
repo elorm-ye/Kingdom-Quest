@@ -62,7 +62,7 @@ export default function HomePage() {
     <div className="p-6 space-y-8 animate-fade-in max-w-7xl mx-auto">
       <header className="mb-8">
         <h1 className="text-3xl font-bold font-display" style={{ color: 'var(--text-primary)' }}>Welcome Home</h1>
-        <p className="mt-1 text-lg" style={{ color: 'var(--text-muted)' }}>Here is what's happening in your community today.</p>
+        <p className="mt-1 text-lg" style={{ color: 'var(--text-muted)' }}>Here is what&apos;s happening in your community today.</p>
       </header>
 
       {/* Announcements */}

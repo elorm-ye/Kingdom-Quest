@@ -5,10 +5,12 @@ import { HugeiconsIcon } from '@hugeicons/react';
 import { Cancel01Icon, Download01Icon } from '@hugeicons/core-free-icons';
 
 export function PWAInstallPrompt() {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null)
   const [showPrompt, setShowPrompt] = useState(false)
 
   useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleBeforeInstallPrompt = (e: any) => {
       // Prevent Chrome 67 and earlier from automatically showing the prompt
       e.preventDefault()
@@ -22,6 +24,7 @@ export function PWAInstallPrompt() {
 
     // Check if already installed (standalone mode)
     if (window.matchMedia('(display-mode: standalone)').matches) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setShowPrompt(false)
     }
 

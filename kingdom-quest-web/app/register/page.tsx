@@ -1,14 +1,14 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+
 import Link from 'next/link'
 import { HugeiconsIcon } from '@hugeicons/react';
 import { ViewIcon, ViewOffIcon, ArrowLeft01Icon, Loading01Icon } from '@hugeicons/core-free-icons';
 import { createClient } from '@/lib/supabase/client'
 
 export default function RegisterPage() {
-  const router = useRouter()
+
   const supabase = createClient()
   const [form, setForm] = useState({ name: '', email: '', gender: 'preferNotToSay', password: '', confirm: '' })
   const [showPass, setShowPass] = useState(false)

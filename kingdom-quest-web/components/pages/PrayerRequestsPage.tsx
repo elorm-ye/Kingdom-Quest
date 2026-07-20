@@ -57,7 +57,7 @@ export default function PrayerRequestsPage() {
         <select 
           className="kq-input md:w-48"
           value={filter}
-          onChange={e => setFilter(e.target.value as any)}
+          onChange={e => setFilter(e.target.value as 'all' | 'pending' | 'praying' | 'answered')}
         >
           <option value="all">All Statuses</option>
           <option value="pending">Pending</option>

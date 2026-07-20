@@ -53,7 +53,7 @@ export default function NotificationsPage() {
         <div className="text-center py-12 kq-card">
           <HugeiconsIcon icon={Notification01Icon} size={48} className="mx-auto mb-4 opacity-20" />
           <h3 className="text-xl font-bold mb-2">No notifications</h3>
-          <p style={{ color: 'var(--text-muted)' }}>You're all caught up!</p>
+          <p style={{ color: 'var(--text-muted)' }}>You&apos;re all caught up!</p>
         </div>
       ) : (
         <div className="space-y-2">
