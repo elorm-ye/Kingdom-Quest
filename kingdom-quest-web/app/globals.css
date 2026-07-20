@@ -1,0 +1,229 @@
+/* ── Google Fonts ─────────────────────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;600;700&family=Schibsted+Grotesk:wght@400;500;600&display=swap');
+
+@import "tailwindcss";
+
+/* ── Kingdom Quest Design Tokens ──────────────────────────────────────────── */
+:root {
+  /* Brand colors */
+  --terracotta: #B8614A;
+  --burnt-amber: #C7784E;
+  --olive-clay: #7E7458;
+  --umber: #2C211A;
+  --sand: #F1E9DC;
+  --linen: #F8F1E8;
+  --muted: #706750;
+  --sage: #5B8A68;
+  --alert: #E24E36;
+  --glow: #F5D984;
+
+  /* Light mode semantic */
+  --bg: var(--sand);
+  --surface: var(--linen);
+  --surface-raised: #FFFFFF;
+  --text-primary: var(--umber);
+  --text-secondary: #4A3B2E;
+  --text-muted: var(--muted);
+  --border: #E0D4C0;
+  --border-subtle: #EDE4D4;
+  --primary: var(--terracotta);
+  --primary-hover: #A5503A;
+  --accent: var(--burnt-amber);
+
+  /* Typography */
+  --font-display: 'Bricolage Grotesque', sans-serif;
+  --font-body: 'Schibsted Grotesk', sans-serif;
+
+  /* Radius */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-full: 9999px;
+}
+
+/* Dark mode override */
+.dark {
+  --bg: #1A110E;
+  --surface: #241A15;
+  --surface-raised: #332420;
+  --text-primary: #F7F0E6;
+  --text-secondary: #C3B4A5;
+  --text-muted: #8A7C6E;
+  --border: #3D2E25;
+  --border-subtle: #2E2018;
+  --primary: var(--burnt-amber);
+  --primary-hover: #D4875A;
+  --accent: var(--glow);
+}
+
+/* ── Base ──────────────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.6;
+  margin: 0;
+  min-height: 100dvh;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Typography ────────────────────────────────────────────────────────────── */
+h1, h2, h3, h4, h5 {
+  font-family: var(--font-display);
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+/* ── Scrollbar ─────────────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+/* ── Selection ─────────────────────────────────────────────────────────────── */
+::selection { background: var(--primary); color: white; }
+
+/* ── Focus ─────────────────────────────────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ── Utility classes ───────────────────────────────────────────────────────── */
+.font-display { font-family: var(--font-display); }
+.font-body    { font-family: var(--font-body); }
+.text-primary   { color: var(--text-primary); }
+.text-secondary { color: var(--text-secondary); }
+.text-muted     { color: var(--text-muted); }
+.bg-surface     { background: var(--surface); }
+.bg-raised      { background: var(--surface-raised); }
+.border-subtle  { border-color: var(--border-subtle); }
+
+/* ── Card ──────────────────────────────────────────────────────────────────── */
+.kq-card {
+  background: var(--surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+.kq-card:hover {
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  transform: translateY(-1px);
+}
+
+/* ── Button ────────────────────────────────────────────────────────────────── */
+.kq-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border-radius: var(--radius-md);
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+  white-space: nowrap;
+}
+.kq-btn:active { transform: scale(0.97); }
+.kq-btn-primary {
+  background: var(--primary);
+  color: white;
+  box-shadow: 0 2px 8px rgba(184,97,74,0.3);
+}
+.kq-btn-primary:hover { background: var(--primary-hover); }
+.kq-btn-ghost {
+  background: transparent;
+  color: var(--text-primary);
+  border: 1.5px solid var(--border);
+}
+.kq-btn-ghost:hover { background: var(--surface); }
+
+/* ── Input ─────────────────────────────────────────────────────────────────── */
+.kq-input {
+  width: 100%;
+  padding: 12px 16px;
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 15px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.kq-input:focus { border-color: var(--primary); }
+.kq-input::placeholder { color: var(--text-muted); }
+
+/* ── Badge ─────────────────────────────────────────────────────────────────── */
+.kq-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+/* ── Gradient brand ────────────────────────────────────────────────────────── */
+.kq-gradient {
+  background: linear-gradient(135deg, var(--terracotta) 0%, var(--burnt-amber) 100%);
+}
+.kq-gradient-text {
+  background: linear-gradient(135deg, var(--terracotta), var(--burnt-amber));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Animations ────────────────────────────────────────────────────────────── */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(184,97,74,0.4); }
+  50%       { box-shadow: 0 0 0 8px rgba(184,97,74,0); }
+}
+
+.animate-fade-in  { animation: fadeIn 0.4s ease both; }
+.animate-slide-up { animation: slideUp 0.5s ease both; }
+.animate-pulse-glow { animation: pulse-glow 2s infinite; }
+
+/* ── Shimmer skeleton ──────────────────────────────────────────────────────── */
+@keyframes shimmer {
+  from { background-position: -200% 0; }
+  to   { background-position:  200% 0; }
+}
+.skeleton {
+  background: linear-gradient(90deg, var(--surface) 25%, var(--border-subtle) 50%, var(--surface) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--radius-md);
+}
+
+/* ── Status colors ─────────────────────────────────────────────────────────── */
+.status-pending     { background: rgba(112,103,80,0.12); color: var(--muted); }
+.status-praying     { background: rgba(91,138,104,0.12); color: var(--sage); }
+.status-answered    { background: rgba(91,138,104,0.15); color: #3d7a53; }
+.status-review      { background: rgba(199,120,78,0.12); color: var(--burnt-amber); }
+.status-resolved    { background: rgba(91,138,104,0.12); color: var(--sage); }
+.status-in-progress { background: rgba(184,97,74,0.12); color: var(--terracotta); }
+.status-completed   { background: rgba(91,138,104,0.12); color: var(--sage); }

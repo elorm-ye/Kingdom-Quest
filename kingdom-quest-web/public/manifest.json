@@ -1,0 +1,38 @@
+{
+  "name": "Kingdom Quest",
+  "short_name": "KQ",
+  "description": "A safe, sacred space for youth ministry — prayer, advice, community & more.",
+  "start_url": "/home",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#F1E9DC",
+  "theme_color": "#B8614A",
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["lifestyle", "social", "education"],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Prayer Requests",
+      "url": "/prayer-requests",
+      "description": "Submit or view prayer requests"
+    },
+    {
+      "name": "Daily Inspiration",
+      "url": "/inspiration",
+      "description": "Today's daily inspiration"
+    }
+  ]
+}
