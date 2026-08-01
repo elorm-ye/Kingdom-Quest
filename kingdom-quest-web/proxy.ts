@@ -1,5 +1,29 @@
+/**
+ * middleware.ts  (was proxy.ts — renamed to match Next.js convention)
+ *
+ * This file is intentionally kept as proxy.ts and re-exported from middleware.ts
+ * to match the project's existing structure.
+ *
+ * Responsibilities:
+ *  1. Supabase session refresh on every request (required for SSR auth).
+ *  2. Route protection — redirect unauthenticated users to /login.
+ *  3. Rate limiting on auth pages — prevent brute-force via browser navigation.
+ *  4. Standard security headers forwarded to all responses (belt-and-suspenders
+ *     on top of next.config.ts headers, which are set per-route).
+ *
+ * OWASP references:
+ *  - OWASP ASVS 4.0 §13.2.6 — Rate limiting on all public endpoints.
+ *  - OWASP ASVS 4.0 §3.3   — Session management and invalidation.
+ */
+
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
+import {
+  checkRateLimit,
+  rateLimitExceededResponse,
+  getClientIp,
+  AUTH_RATE_LIMIT,
+} from '@/lib/security/rateLimit'
 
 export default async function proxy(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request })
@@ -25,14 +49,30 @@ export default async function proxy(request: NextRequest) {
     }
   )
 
-  // Refresh session — IMPORTANT: do not remove this
+  // Refresh session — IMPORTANT: do not remove this block.
+  // It keeps the Supabase session cookie fresh on every request.
   const {
     data: { user },
   } = await supabase.auth.getUser()
 
   const { pathname } = request.nextUrl
 
+  // ── Rate limiting on auth pages ──────────────────────────────────────────
+  // Applies to the login and register pages (browser-based navigation).
+  // This complements the /api/auth/* route rate limits.
   const isAuthPage = pathname.startsWith('/login') || pathname.startsWith('/register')
+  if (isAuthPage) {
+    const ip = getClientIp(request)
+    // Use a lighter limit for page views (30 req / 15 min) to allow normal
+    // browser usage while still blocking automated scanners.
+    const authPageLimit = { ...AUTH_RATE_LIMIT, limit: 30, namespace: 'auth-page' }
+    const rlResult = checkRateLimit(ip, authPageLimit)
+    if (!rlResult.allowed) {
+      return rateLimitExceededResponse(rlResult, authPageLimit)
+    }
+  }
+
+  // ── Route protection ─────────────────────────────────────────────────────
   const isProtected =
     pathname.startsWith('/home') ||
     pathname.startsWith('/prayer-requests') ||
