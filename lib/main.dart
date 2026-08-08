@@ -32,12 +32,15 @@ class KingdomQuestApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(routerProvider);
     final themeMode = ref.watch(themeModeProvider);
+    final colorTheme = ref.watch(colorThemeProvider);
+
+    final isPink = colorTheme == ColorThemeName.pink;
 
     return MaterialApp.router(
       title: 'Kingdom Quest',
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.light,
-      darkTheme: AppTheme.dark,
+      theme: isPink ? AppTheme.pinkLight : AppTheme.light,
+      darkTheme: isPink ? AppTheme.pinkDark : AppTheme.dark,
       themeMode: themeMode,
       routerConfig: router,
     );
