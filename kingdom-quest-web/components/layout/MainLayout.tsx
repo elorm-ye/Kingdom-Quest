@@ -3,9 +3,10 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { Home, Heart, FileText, MessageSquare, Sun, MessagesSquare, Calendar, Bell, User, Shield, Settings, LogOut, Menu, X } from 'lucide-react';
+import { Home, Heart, FileText, MessageSquare, Sun, MessagesSquare, Calendar, Bell, User, Shield, Settings, LogOut, Menu, X, Palette } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client'
 import type { Profile } from '@/lib/types'
+import { useTheme } from '@/components/providers/ThemeProvider'
 
 interface NavItem {
   href: string
@@ -44,7 +45,7 @@ function NavLink({ item, active, onClick }: { item: NavItem; active: boolean; on
       style={{
         color: active ? 'white' : 'var(--text-secondary)',
         background: active ? 'var(--primary)' : 'transparent',
-        boxShadow: active ? '0 2px 8px rgba(184,97,74,0.3)' : 'none',
+        boxShadow: active ? '0 2px 8px rgba(var(--primary-rgb), 0.3)' : 'none',
       }}
     >
       <span style={{ opacity: active ? 1 : 0.7 }}>{item.icon}</span>
@@ -59,6 +60,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
   const supabase = createClient()
   const [profile, setProfile] = useState<Profile | null>(null)
   const [menuOpen, setMenuOpen] = useState(false)
+  const { theme, toggleTheme } = useTheme()
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
@@ -106,6 +108,14 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
 
         {/* Footer */}
         <div className="px-3 pt-4 border-t space-y-1" style={{ borderColor: 'var(--border-subtle)' }}>
+          {/* Theme toggle */}
+          <button id="sidebar-theme-toggle"
+            onClick={toggleTheme}
+            className="flex items-center gap-3 w-full px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200"
+            style={{ color: theme === 'pink' ? 'var(--primary)' : 'var(--text-secondary)', background: theme === 'pink' ? 'rgba(var(--primary-rgb), 0.1)' : 'transparent' }}>
+            <Palette size={20} />
+            {theme === 'pink' ? 'Pink Theme ✨' : 'Default Theme'}
+          </button>
           <NavLink item={{ href: '/settings', icon: <Settings size={20} />, label: 'Settings', id: 'nav-settings' }}
             active={pathname === '/settings'} />
           <button id="sidebar-signout"
@@ -171,6 +181,14 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
               )}
             </nav>
             <div className="px-3 pt-4 border-t space-y-1" style={{ borderColor: 'var(--border-subtle)' }}>
+              {/* Theme toggle */}
+              <button
+                onClick={() => { toggleTheme() }}
+                className="flex items-center gap-3 w-full px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200"
+                style={{ color: theme === 'pink' ? 'var(--primary)' : 'var(--text-secondary)', background: theme === 'pink' ? 'rgba(var(--primary-rgb), 0.1)' : 'transparent' }}>
+                <Palette size={20} />
+                {theme === 'pink' ? 'Pink Theme ✨' : 'Default Theme'}
+              </button>
               <NavLink item={{ href: '/settings', icon: <Settings size={20} />, label: 'Settings', id: 'nav-settings-mobile' }}
                 active={pathname === '/settings'} onClick={() => setMenuOpen(false)} />
               <button onClick={() => { setMenuOpen(false); handleSignOut() }}

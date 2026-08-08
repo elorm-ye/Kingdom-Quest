@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next'
 import { AuthProvider } from '@/components/providers/AuthProvider'
+import { ThemeProvider } from '@/components/providers/ThemeProvider'
 import { PWAInstallPrompt } from '@/components/PWAInstallPrompt'
 import './globals.css'
 
@@ -46,8 +47,10 @@ export default function RootLayout({
       </head>
       <body>
         <AuthProvider>
-          {children}
-          <PWAInstallPrompt />
+          <ThemeProvider>
+            {children}
+            <PWAInstallPrompt />
+          </ThemeProvider>
         </AuthProvider>
       </body>
     </html>
