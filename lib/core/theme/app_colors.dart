@@ -104,4 +104,75 @@ class AppColors {
   static const Color spiritualGrowth = Color(0xFFB8614A);
   static const Color thanksgiving = Color(0xFFF5D984);
   static const Color other = Color(0xFF8A7C6E);
+
+  // ─────────────────────────────────────────────
+  // PINK THEME — LIGHT MODE
+  // ─────────────────────────────────────────────
+
+  /// Primary · CTAs
+  static const Color pinkPrimary = Color(0xFFE8638A);
+
+  /// Accent · gradients
+  static const Color pinkAccent = Color(0xFFF29BBB);
+
+  /// Secondary
+  static const Color pinkSecondary = Color(0xFF9B7E8A);
+
+  /// Text · ink
+  static const Color pinkInk = Color(0xFF2D1F28);
+
+  /// Background
+  static const Color pinkBg = Color(0xFFFFF0F5);
+
+  /// Cards
+  static const Color pinkSurface = Color(0xFFFFF7FA);
+
+  /// Captions
+  static const Color pinkMuted = Color(0xFF9E8A94);
+
+  /// Success / sage (pink-tinted)
+  static const Color pinkSage = Color(0xFFD4699B);
+
+  // ─────────────────────────────────────────────
+  // PINK THEME — DARK MODE
+  // ─────────────────────────────────────────────
+
+  static const Color pinkNight = Color(0xFF1F121A);
+  static const Color pinkEspresso = Color(0xFF2A1A24);
+  static const Color pinkPlumDusk = Color(0xFF3A2530);
+  static const Color pinkGlow = Color(0xFFFFCCE5);
+
+  // Text on Pink Dark
+  static const Color pinkTextPrimaryDark = Color(0xFFF7EFF3);
+  static const Color pinkTextSecondaryDark = Color(0xFFC8B0BC);
+  static const Color pinkTextMutedDark = Color(0xFF8A7580);
+  static const Color pinkAccentLinkDark = Color(0xFFF5B0CC);
+
+  // ─────────────────────────────────────────────
+  // PINK GRADIENTS
+  // ─────────────────────────────────────────────
+
+  static const LinearGradient pinkBrandGradient = LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [pinkPrimary, pinkAccent],
+  );
+
+  static const LinearGradient pinkWarmGradient = LinearGradient(
+    begin: Alignment.topCenter,
+    end: Alignment.bottomCenter,
+    colors: [pinkPrimary, Color(0xFFF5B0CC)],
+  );
+
+  static const LinearGradient pinkDarkSurfaceGradient = LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [pinkEspresso, pinkPlumDusk],
+  );
+
+  static const LinearGradient pinkSplashGradient = LinearGradient(
+    begin: Alignment.topCenter,
+    end: Alignment.bottomCenter,
+    colors: [Color(0xFFF29BBB), Color(0xFFE8638A), Color(0xFFC94D72)],
+  );
 }
