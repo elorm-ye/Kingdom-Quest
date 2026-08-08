@@ -151,4 +151,44 @@ class AppTypography {
     labelMedium: label.copyWith(color: AppColors.textSecondaryDark),
     labelSmall: caption.copyWith(color: AppColors.textMutedDark),
   );
+
+  // ─────────────────────────────────────────────
+  // PINK TEXT THEMES
+  // ─────────────────────────────────────────────
+
+  static TextTheme get pinkLightTextTheme => TextTheme(
+    displayLarge: h1.copyWith(color: AppColors.pinkInk),
+    displayMedium: h2.copyWith(color: AppColors.pinkInk),
+    displaySmall: h3.copyWith(color: AppColors.pinkInk),
+    headlineLarge: h1.copyWith(color: AppColors.pinkInk),
+    headlineMedium: h2.copyWith(color: AppColors.pinkInk),
+    headlineSmall: h3.copyWith(color: AppColors.pinkInk),
+    titleLarge: h3.copyWith(color: AppColors.pinkInk),
+    titleMedium: label.copyWith(color: AppColors.pinkInk),
+    titleSmall: labelSmall.copyWith(color: AppColors.pinkMuted),
+    bodyLarge: bodyLarge.copyWith(color: AppColors.pinkInk),
+    bodyMedium: bodyMedium.copyWith(color: AppColors.pinkInk),
+    bodySmall: bodySmall.copyWith(color: AppColors.pinkMuted),
+    labelLarge: button,
+    labelMedium: label.copyWith(color: AppColors.pinkInk),
+    labelSmall: caption.copyWith(color: AppColors.pinkMuted),
+  );
+
+  static TextTheme get pinkDarkTextTheme => TextTheme(
+    displayLarge: h1.copyWith(color: AppColors.pinkTextPrimaryDark),
+    displayMedium: h2.copyWith(color: AppColors.pinkTextPrimaryDark),
+    displaySmall: h3.copyWith(color: AppColors.pinkTextPrimaryDark),
+    headlineLarge: h1.copyWith(color: AppColors.pinkTextPrimaryDark),
+    headlineMedium: h2.copyWith(color: AppColors.pinkTextPrimaryDark),
+    headlineSmall: h3.copyWith(color: AppColors.pinkTextPrimaryDark),
+    titleLarge: h3.copyWith(color: AppColors.pinkTextPrimaryDark),
+    titleMedium: label.copyWith(color: AppColors.pinkTextSecondaryDark),
+    titleSmall: labelSmall.copyWith(color: AppColors.pinkTextMutedDark),
+    bodyLarge: bodyLarge.copyWith(color: AppColors.pinkTextPrimaryDark),
+    bodyMedium: bodyMedium.copyWith(color: AppColors.pinkTextSecondaryDark),
+    bodySmall: bodySmall.copyWith(color: AppColors.pinkTextMutedDark),
+    labelLarge: button,
+    labelMedium: label.copyWith(color: AppColors.pinkTextSecondaryDark),
+    labelSmall: caption.copyWith(color: AppColors.pinkTextMutedDark),
+  );
 }

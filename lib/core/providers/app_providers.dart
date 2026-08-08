@@ -187,6 +187,45 @@ class ThemeModeNotifier extends Notifier<ThemeMode> {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// COLOR THEME (default / pink)
+// ─────────────────────────────────────────────────────────────────────────────
+
+/// The name of the active color theme. Currently supports 'default' and 'pink'.
+enum ColorThemeName { defaultTheme, pink }
+
+final colorThemeProvider = NotifierProvider<ColorThemeNotifier, ColorThemeName>(() {
+  return ColorThemeNotifier();
+});
+
+class ColorThemeNotifier extends Notifier<ColorThemeName> {
+  @override
+  ColorThemeName build() {
+    _loadColorTheme();
+    return ColorThemeName.defaultTheme;
+  }
+
+  Future<void> _loadColorTheme() async {
+    final prefs = await SharedPreferences.getInstance();
+    final saved = prefs.getString('colorTheme') ?? 'default';
+    state = saved == 'pink' ? ColorThemeName.pink : ColorThemeName.defaultTheme;
+  }
+
+  Future<void> toggle() async {
+    await setColorTheme(
+      state == ColorThemeName.defaultTheme ? ColorThemeName.pink : ColorThemeName.defaultTheme,
+    );
+  }
+
+  Future<void> setColorTheme(ColorThemeName theme) async {
+    state = theme;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('colorTheme', theme == ColorThemeName.pink ? 'pink' : 'default');
+  }
+
+  bool get isPink => state == ColorThemeName.pink;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // NAVIGATION
 // ─────────────────────────────────────────────────────────────────────────────
 
