@@ -8,3 +8,4 @@ export 'advice_request.dart';
 export 'inspiration.dart';
 export 'forum_post.dart';
 export 'event.dart';
+export 'sermon_note.dart';

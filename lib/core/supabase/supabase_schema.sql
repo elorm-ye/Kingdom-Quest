@@ -316,6 +316,41 @@ create policy "Users can remove their own reaction"
   to authenticated using (auth.uid() = user_id);
 
 -- ─────────────────────────────────────────────────────────────
+-- TABLE: sermon_notes
+-- ─────────────────────────────────────────────────────────────
+create table if not exists public.sermon_notes (
+  id                   uuid primary key default gen_random_uuid(),
+  admin_id             uuid not null references auth.users(id) on delete cascade,
+  church_id            uuid references public.churches(id) on delete cascade,
+  title                text not null,
+  preacher_name        text not null,
+  scripture_reference  text not null,
+  content              text not null,
+  sermon_date          date not null default current_date,
+  image_url            text,
+  published_at         timestamptz default now(),
+  created_at           timestamptz not null default now()
+);
+
+alter table public.sermon_notes enable row level security;
+
+create policy "Church members can read sermon notes"
+  on public.sermon_notes for select
+  to authenticated using (true);
+
+create policy "Admins can insert sermon notes"
+  on public.sermon_notes for insert
+  to authenticated with check (is_admin(auth.uid()));
+
+create policy "Admins can update sermon notes"
+  on public.sermon_notes for update
+  to authenticated using (is_admin(auth.uid()));
+
+create policy "Admins can delete sermon notes"
+  on public.sermon_notes for delete
+  to authenticated using (is_admin(auth.uid()));
+
+-- ─────────────────────────────────────────────────────────────
 -- TABLE: forum_posts  (privacy-preserving anonymous tokens)
 -- ─────────────────────────────────────────────────────────────
 create table if not exists public.forum_posts (
@@ -534,6 +569,7 @@ create policy "Users can manage their own FCM tokens"
 --
 --   supabase storage create avatars --public
 --   supabase storage create inspiration-media --public
+--   supabase storage create sermon-notes --public
 --
 -- After creating the buckets, apply these storage policies:
 
@@ -567,6 +603,16 @@ create policy "Admins can upload inspiration media"
   to authenticated
   with check (bucket_id = 'inspiration-media' and is_admin(auth.uid()));
 
+-- Sermon-notes media bucket policies
+create policy "Sermon note images are publicly accessible"
+  on storage.objects for select
+  using (bucket_id = 'sermon-notes');
+
+create policy "Admins can upload sermon note images"
+  on storage.objects for insert
+  to authenticated
+  with check (bucket_id = 'sermon-notes' and is_admin(auth.uid()));
+
 -- ─────────────────────────────────────────────────────────────
 -- REALTIME: enable for key tables
 -- ─────────────────────────────────────────────────────────────
@@ -576,3 +622,4 @@ alter publication supabase_realtime add table public.forum_posts;
 alter publication supabase_realtime add table public.notifications;
 alter publication supabase_realtime add table public.inspirations;
 alter publication supabase_realtime add table public.prayer_requests;
+alter publication supabase_realtime add table public.sermon_notes;

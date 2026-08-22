@@ -20,6 +20,9 @@ class SupabaseConfig {
   /// Storage bucket for inspiration media (images / videos)
   static const String inspirationBucket = 'inspiration-media';
 
+  /// Storage bucket for sermon note images
+  static const String sermonNotesBucket = 'sermon-notes';
+
   /// Realtime channel names
   static const String forumChannel = 'forum-posts';
   static const String notificationsChannel = 'user-notifications';
