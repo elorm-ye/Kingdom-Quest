@@ -48,9 +48,10 @@ The Kingdom Quest platform consists of three main components:
 # From the root directory
 flutter pub get
 
-# Create a .env file and add your Supabase credentials:
-# SUPABASE_URL=https://your-project.supabase.co
-# SUPABASE_ANON_KEY=your-anon-key
+# Open lib/core/supabase/supabase_config.dart and replace the
+# placeholder values with your Supabase Project URL and Anon Key:
+#   static const String supabaseUrl = 'https://your-project-ref.supabase.co';
+#   static const String supabaseAnonKey = 'your-anon-key-here';
 
 # Run the app
 flutter run
