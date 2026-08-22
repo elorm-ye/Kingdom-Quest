@@ -1,7 +1,7 @@
 'use client'
 
 import { useAuth } from '@/components/providers/AuthProvider'
-import { Users, Megaphone, FileText, CheckCircle, Shield } from 'lucide-react';
+import { Users, Megaphone, FileText, CheckCircle, Shield, BookOpen } from 'lucide-react';
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
