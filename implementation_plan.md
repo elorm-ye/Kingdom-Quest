@@ -347,15 +347,15 @@ kingdom-quest-web/                      ← Next.js Web App (separate repo or mo
 | # | Screen | Flutter (Mobile) | Next.js (Web/PWA) |
 |---|--------|-----------------|-------------------|
 | 1 | Splash | ✅ Done | Loading state on root |
-| 2 | Login / Register | ✅ Done | ⏳ To build |
-| 3 | Home Dashboard | ✅ Done | ⏳ To build |
-| 4 | Prayer Requests | ✅ Done | ⏳ To build |
-| 5 | Petitions | ✅ Done | ⏳ To build |
-| 6 | Advice Center | ✅ Done | ⏳ To build |
-| 7 | Daily Inspiration | ✅ Done | ⏳ To build |
-| 8 | Community Forum | ✅ Done | ⏳ To build |
-| 9 | Events & Announcements | ✅ Done | ⏳ To build |
-| 10 | Notifications | ✅ Done | ⏳ To build |
-| 11 | User Profile | ✅ Done | ⏳ To build |
+| 2 | Login / Register | ✅ Done | ✅ Done |
+| 3 | Home Dashboard | ✅ Done | ✅ Done |
+| 4 | Prayer Requests | ✅ Done | ✅ Done |
+| 5 | Petitions | ✅ Done | ✅ Done |
+| 6 | Advice Center | ✅ Done | ✅ Done |
+| 7 | Daily Inspiration | ✅ Done | ✅ Done |
+| 8 | Community Forum | ✅ Done | ✅ Done |
+| 9 | Events & Announcements | ✅ Done | ✅ Done |
+| 10 | Notifications | ✅ Done | ✅ Done |
+| 11 | User Profile | ✅ Done | ✅ Done |
 | 12 | Settings | ✅ Done | ⏳ To build |
-| 13 | Admin Dashboard | ✅ Done | ⏳ To build (primary) |
+| 13 | Admin Dashboard | ✅ Done | ✅ Done |

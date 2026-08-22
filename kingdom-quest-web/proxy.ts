@@ -1,8 +1,8 @@
 /**
- * middleware.ts  (was proxy.ts — renamed to match Next.js convention)
+ * proxy.ts — Next.js 16 Edge Proxy (formerly middleware.ts)
  *
- * This file is intentionally kept as proxy.ts and re-exported from middleware.ts
- * to match the project's existing structure.
+ * In Next.js 16+, the "proxy" file convention replaces "middleware".
+ * This file is auto-loaded by Next.js from the project root.
  *
  * Responsibilities:
  *  1. Supabase session refresh on every request (required for SSR auth).

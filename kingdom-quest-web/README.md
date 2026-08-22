@@ -119,7 +119,7 @@ kingdom-quest-web/
 ├── public/
 │   ├── firebase-messaging-sw.js  # FCM background service worker
 │   └── icons/
-├── proxy.ts            # Next.js middleware (session refresh + route guard + rate limiting)
+├── proxy.ts            # Next.js proxy (session refresh + route guard + rate limiting)
 ├── next.config.ts      # Security headers (CSP, HSTS, etc.)
 └── .env.local.example  # Environment variable template (safe to commit)
 ```
@@ -176,7 +176,7 @@ All API route handlers use `lib/security/validation.ts`:
 ### Authentication & Session Management
 
 - Sessions managed entirely by **Supabase Auth** with secure `HttpOnly` cookies via `@supabase/ssr`
-- Middleware (`proxy.ts`) refreshes the session token on every request
+- Proxy (`proxy.ts`) refreshes the session token on every request
 - All protected routes redirect to `/login` when no valid session is present
 - Admin routes additionally verify `profile.role === 'admin'` client-side (with server-side RLS as the authoritative control)
 
