@@ -67,6 +67,7 @@ export default function AdminPage() {
           <div className="space-y-3">
             <button className="kq-btn kq-btn-primary w-full justify-start"><Megaphone size={18} /> Post Announcement</button>
             <button className="kq-btn kq-btn-ghost w-full justify-start"><FileText size={18} /> Add Daily Inspiration</button>
+            <button className="kq-btn kq-btn-ghost w-full justify-start"><BookOpen size={18} /> Add Sermon Note</button>
           </div>
         </div>
         
