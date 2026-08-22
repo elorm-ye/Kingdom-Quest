@@ -283,6 +283,88 @@ final inspirationsNotifierProvider =
     );
 
 // ─────────────────────────────────────────────────────────────────────────────
+// SERMON NOTES
+// ─────────────────────────────────────────────────────────────────────────────
+
+class SermonNotesNotifier extends Notifier<AsyncValue<List<SermonNote>>> {
+  @override
+  AsyncValue<List<SermonNote>> build() {
+    _reload();
+    return const AsyncValue.loading();
+  }
+
+  Future<void> _reload() async {
+    final profile = await ref.read(currentUserModelProvider.future);
+    try {
+      final items = await ref
+          .read(dataServiceProvider)
+          .fetchSermonNotes(churchId: profile?.churchId);
+      state = AsyncValue.data(items);
+    } catch (e, st) {
+      state = AsyncValue.error(e, st);
+    }
+  }
+
+  Future<void> publish({
+    required String title,
+    required String preacherName,
+    required String scriptureReference,
+    required String content,
+    required DateTime sermonDate,
+    String? imageUrl,
+  }) async {
+    final profile = await ref.read(currentUserModelProvider.future);
+    await ref
+        .read(dataServiceProvider)
+        .publishSermonNote(
+          title: title,
+          preacherName: preacherName,
+          scriptureReference: scriptureReference,
+          content: content,
+          sermonDate: sermonDate,
+          imageUrl: imageUrl,
+          churchId: profile?.churchId,
+        );
+    await _reload();
+  }
+
+  Future<void> update({
+    required String id,
+    required String title,
+    required String preacherName,
+    required String scriptureReference,
+    required String content,
+    required DateTime sermonDate,
+    String? imageUrl,
+  }) async {
+    await ref
+        .read(dataServiceProvider)
+        .updateSermonNote(
+          id: id,
+          title: title,
+          preacherName: preacherName,
+          scriptureReference: scriptureReference,
+          content: content,
+          sermonDate: sermonDate,
+          imageUrl: imageUrl,
+        );
+    await _reload();
+  }
+
+  Future<void> delete(String id) async {
+    await ref.read(dataServiceProvider).deleteSermonNote(id);
+    await _reload();
+  }
+
+  Future<void> refresh() => _reload();
+}
+
+final sermonNotesNotifierProvider =
+    NotifierProvider<SermonNotesNotifier, AsyncValue<List<SermonNote>>>(
+      SermonNotesNotifier.new,
+    );
+
+// ─────────────────────────────────────────────────────────────────────────────
 // COMMUNITY FORUM — Realtime via Supabase stream
 // ─────────────────────────────────────────────────────────────────────────────
 

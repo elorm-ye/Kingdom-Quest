@@ -326,6 +326,73 @@ class SupabaseDataService {
   }
 
   // ─────────────────────────────────────────────────────────────────────────
+  // SERMON NOTES
+  // ─────────────────────────────────────────────────────────────────────────
+
+  Future<List<SermonNote>> fetchSermonNotes({String? churchId}) async {
+    final List<dynamic> data;
+    if (churchId != null) {
+      data = await _client
+          .from('sermon_notes')
+          .select()
+          .eq('church_id', churchId)
+          .order('sermon_date', ascending: false);
+    } else {
+      data = await _client
+          .from('sermon_notes')
+          .select()
+          .order('sermon_date', ascending: false);
+    }
+    return data.map((m) => _sermonNoteFromMap(m)).toList();
+  }
+
+  Future<void> publishSermonNote({
+    required String title,
+    required String preacherName,
+    required String scriptureReference,
+    required String content,
+    required DateTime sermonDate,
+    String? imageUrl,
+    String? churchId,
+  }) async {
+    final user = _client.auth.currentUser!;
+    await _client.from('sermon_notes').insert({
+      'admin_id': user.id,
+      'church_id': churchId ?? SupabaseConfig.defaultChurchId,
+      'title': title,
+      'preacher_name': preacherName,
+      'scripture_reference': scriptureReference,
+      'content': content,
+      'sermon_date': sermonDate.toIso8601String().split('T').first,
+      'image_url': imageUrl,
+      'published_at': DateTime.now().toIso8601String(),
+    });
+  }
+
+  Future<void> updateSermonNote({
+    required String id,
+    required String title,
+    required String preacherName,
+    required String scriptureReference,
+    required String content,
+    required DateTime sermonDate,
+    String? imageUrl,
+  }) async {
+    await _client.from('sermon_notes').update({
+      'title': title,
+      'preacher_name': preacherName,
+      'scripture_reference': scriptureReference,
+      'content': content,
+      'sermon_date': sermonDate.toIso8601String().split('T').first,
+      'image_url': imageUrl,
+    }).eq('id', id);
+  }
+
+  Future<void> deleteSermonNote(String id) async {
+    await _client.from('sermon_notes').delete().eq('id', id);
+  }
+
+  // ─────────────────────────────────────────────────────────────────────────
   // FORUM POSTS
   // ─────────────────────────────────────────────────────────────────────────
 
@@ -796,6 +863,24 @@ class SupabaseDataService {
           ? Gender.female
           : Gender.preferNotToSay,
       createdAt: DateTime.parse(data['created_at'] as String),
+    );
+  }
+
+  static SermonNote _sermonNoteFromMap(Map<String, dynamic> m) {
+    return SermonNote(
+      id: m['id'],
+      adminId: m['admin_id'],
+      churchId: m['church_id'],
+      title: m['title'],
+      preacherName: m['preacher_name'] ?? '',
+      scriptureReference: m['scripture_reference'] ?? '',
+      content: m['content'],
+      sermonDate: DateTime.parse(m['sermon_date']),
+      imageUrl: m['image_url'],
+      publishedAt: m['published_at'] != null
+          ? DateTime.parse(m['published_at'])
+          : null,
+      createdAt: DateTime.parse(m['created_at']),
     );
   }
 

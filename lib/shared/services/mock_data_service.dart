@@ -435,6 +435,52 @@ class MockDataService {
   ];
 
   // ─────────────────────────────────────────────
+  // SERMON NOTES
+  // ─────────────────────────────────────────────
+
+  static List<SermonNote> get sermonNotes => [
+    SermonNote(
+      id: 'sn_001',
+      adminId: 'admin_001',
+      churchId: 'church_001',
+      title: 'Walking by Faith, Not by Sight',
+      preacherName: 'Pastor James',
+      scriptureReference: '2 Corinthians 5:7',
+      content:
+          'In today\'s sermon, we explored what it truly means to walk by faith. Faith is not the absence of doubt — it is choosing to trust God despite the uncertainty. Pastor James shared three practical steps: (1) Start each day in prayer, (2) Remember God\'s past faithfulness, and (3) Surround yourself with believers who encourage you.',
+      sermonDate: DateTime.now().subtract(const Duration(days: 1)),
+      publishedAt: DateTime.now().subtract(const Duration(hours: 6)),
+      createdAt: DateTime.now().subtract(const Duration(hours: 6)),
+    ),
+    SermonNote(
+      id: 'sn_002',
+      adminId: 'admin_002',
+      churchId: 'church_001',
+      title: 'The Power of Forgiveness',
+      preacherName: 'Minister Ruth',
+      scriptureReference: 'Ephesians 4:31-32',
+      content:
+          'Minister Ruth reminded us that forgiveness is not a feeling — it is a decision. Holding onto bitterness only poisons our own hearts. Key takeaway: Forgiveness sets YOU free. It doesn\'t mean condoning what happened, it means releasing the hold it has on your life.',
+      sermonDate: DateTime.now().subtract(const Duration(days: 8)),
+      publishedAt: DateTime.now().subtract(const Duration(days: 7)),
+      createdAt: DateTime.now().subtract(const Duration(days: 7)),
+    ),
+    SermonNote(
+      id: 'sn_003',
+      adminId: 'admin_001',
+      churchId: 'church_001',
+      title: 'Purpose in the Wilderness',
+      preacherName: 'Pastor James',
+      scriptureReference: 'Deuteronomy 8:2-3',
+      content:
+          'Sometimes God leads us through the wilderness not to punish us, but to prepare us. The Israelites spent 40 years in the desert, and every moment had purpose. If you\'re in a season that feels dry, trust that God is shaping your character for what\'s ahead.',
+      sermonDate: DateTime.now().subtract(const Duration(days: 15)),
+      publishedAt: DateTime.now().subtract(const Duration(days: 14)),
+      createdAt: DateTime.now().subtract(const Duration(days: 14)),
+    ),
+  ];
+
+  // ─────────────────────────────────────────────
   // NOTIFICATIONS
   // ─────────────────────────────────────────────
 
