@@ -41,6 +41,13 @@ class AdminMoreScreen extends StatelessWidget {
         subtitle: 'Review reported posts and moderate content',
         route: '/admin/forum',
       ),
+      (
+        icon: Icons.menu_book_rounded,
+        color: const Color(0xFF7B6B8A),
+        title: 'Sermon Notes',
+        subtitle: 'Publish sermon summaries for members',
+        route: '/admin/sermon-notes',
+      ),
     ];
 
     return Scaffold(

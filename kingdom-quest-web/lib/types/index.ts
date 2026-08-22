@@ -147,3 +147,17 @@ export interface AppNotification {
   is_read: boolean
   created_at: string
 }
+
+export interface SermonNote {
+  id: string
+  admin_id: string
+  church_id: string | null
+  title: string
+  preacher_name: string
+  scripture_reference: string
+  content: string
+  sermon_date: string
+  image_url: string | null
+  published_at: string | null
+  created_at: string
+}

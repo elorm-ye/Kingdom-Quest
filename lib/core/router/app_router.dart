@@ -34,6 +34,7 @@ import '../../features/admin/presentation/admin_more_screen.dart';
 import '../../features/admin/presentation/admin_advice_screen.dart';
 import '../../features/admin/presentation/admin_inspiration_screen.dart';
 import '../../features/admin/presentation/admin_forum_screen.dart';
+import '../../features/admin/presentation/admin_sermon_notes_screen.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 final _shellNavigatorKey = GlobalKey<NavigatorState>();
@@ -186,6 +187,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/admin/forum',
         builder: (c, s) => const AdminForumScreen(),
+      ),
+      GoRoute(
+        path: '/admin/sermon-notes',
+        builder: (c, s) => const AdminSermonNotesScreen(),
       ),
     ],
   );
