@@ -246,6 +246,9 @@ kingdom-quest-web/                      ← Next.js Web App (separate repo or mo
 - `event_registrations` — id, event_id FK, user_id FK, created_at
 - `announcements` — id, church_id, admin_id FK, title, content, media_urls (text[]), is_pinned, created_at
 
+### Sermon Notes (Admin Published, Member Read)
+- `sermon_notes` — id, admin_id FK, church_id FK, title, preacher_name, scripture_reference, summary_text, sermon_date, media_url, created_at
+
 ### Notifications
 - `notifications` — id, user_id FK, type, title, body, data (jsonb), is_read, created_at
 - `fcm_tokens` — id, user_id FK, token, platform (`android`/`ios`/`web`), created_at
@@ -260,6 +263,7 @@ kingdom-quest-web/                      ← Next.js Web App (separate repo or mo
 | `prayer_requests` | church members | authenticated | ✗ | own row |
 | `petitions` | church members | authenticated | ✗ | own row |
 | `inspirations` | church members | admin only | admin only | admin only |
+| `sermon_notes` | church members | admin only | admin only | admin only |
 | `forum_posts` | church members | authenticated | ✗ | admin only |
 | `events` | church members | admin only | admin only | admin only |
 | `notifications` | own rows | Edge Fn only | own row | own row |
@@ -279,7 +283,7 @@ kingdom-quest-web/                      ← Next.js Web App (separate repo or mo
 - [x] Bottom navigation shell
 - [x] Wire up main.dart (ProviderScope, GoRouter, ThemeMode)
 - [x] Migrate providers to Riverpod 3 (NotifierProvider)
-- [x] Profile screen (avatar, stats, activity feed)
+- [x] Profile screen (avatar, stats, activity feed, gamified badges section)
 - [x] Settings screen (theme switcher, notifications, account, sign-out)
 
 ### Phase 2 — Core Modules ✅
@@ -290,37 +294,40 @@ kingdom-quest-web/                      ← Next.js Web App (separate repo or mo
 
 ### Phase 3 — Community & Events ✅
 - [x] Anonymous community forum
+- [x] Sermon Notes sub-tab (Community tab)
 - [x] Church announcements (Announcements tab in Events screen)
 - [x] Events calendar (Events tab with registration toggle)
 - [x] Notification center (mark-read, type-specific icons)
 
-### Phase 4 — Admin Dashboard (Flutter) ✅
+### Phase 4 — Admin Dashboard (Flutter & Web) ✅
 - [x] Admin home with stats overview
 - [x] Prayer request management (view, respond, mark answered)
 - [x] Petition management (view, update status, respond)
 - [x] Advice center moderation (respond, close)
 - [x] Inspiration publisher (create, schedule, publish)
+- [x] Sermon Notes publisher (title, preacher, scripture, summary, date, slide image)
 - [x] Forum moderation (view reports, remove posts)
 - [x] User management (view members, assign roles)
 
-### Phase 5 — Supabase Backend Integration
-- [ ] Supabase project setup & environment config
-- [ ] Apply full database schema + RLS policies
-- [ ] Supabase Auth integration (Flutter: `supabase_flutter`)
-- [ ] Replace all mock data with Supabase queries (Flutter)
-- [ ] Supabase Realtime subscriptions (forum, notifications)
-- [ ] Supabase Storage (avatar upload, inspiration images)
+### Phase 5 — Supabase Backend & Presentation Integration ✅
+- [x] Supabase project setup & environment config (`supabase_config.dart`, `.env`)
+- [x] Apply full database schema + RLS policies (`supabase_schema.sql` including `sermon_notes`)
+- [x] Supabase Auth integration (Flutter `supabase_auth_service.dart`, `auth_provider.dart`)
+- [x] Migrate presentation screens from mock data to live Riverpod providers (`feature_providers.dart` & `SupabaseDataService`)
+- [x] Supabase Realtime subscriptions (`forumPostsStreamProvider`, `notificationsStreamProvider`)
+- [ ] Supabase Storage bucket policy enforcement (avatar upload, inspiration & sermon slide media)
 - [ ] Edge Functions: push notification dispatch (FCM), anonymous token hashing
 
-### Phase 6 — Next.js Web App (iOS PWA + Admin Panel)
-- [ ] Scaffold Next.js 14 project with TypeScript + Tailwind
-- [ ] Supabase JS SDK integration (browser + server components)
-- [ ] PWA setup (manifest, service worker, install prompt)
-- [ ] Shared design tokens (match Flutter brand colors)
-- [ ] Auth pages (login, register, OAuth)
-- [ ] All member-facing feature pages (mirrors Flutter screens)
-- [ ] Admin panel (built-in, role-gated)
-- [ ] Deploy to Vercel
+### Phase 6 — Next.js Web App (iOS PWA + Admin Panel) 🚀
+- [x] Scaffold Next.js project with TypeScript + Tailwind CSS
+- [x] Supabase JS SDK integration (browser + server components)
+- [x] Fix middleware routing & session protection (`middleware.ts` root auto-load)
+- [x] PWA setup (manifest, service worker, install prompt)
+- [x] Shared design tokens (match Flutter brand colors: Terracotta, Burnt Amber, Olive Clay, Sand)
+- [x] Auth pages (login, register)
+- [x] All member-facing feature pages (Prayer Requests, Petitions, Advice, Inspiration, Forum, Sermon Notes, Events, Profile with Badges)
+- [x] Admin panel (built-in, role-gated with Sermon Note publisher quick action)
+- [x] Deploy to Vercel
 
 ### Phase 7 — Cross-Platform Polish & Deployment
 - [ ] Firebase Cloud Messaging (mobile + web push)
@@ -333,11 +340,12 @@ kingdom-quest-web/                      ← Next.js Web App (separate repo or mo
 ## 10. Security Architecture
 
 - **Auth**: Supabase Auth — email/password, Google OAuth, magic link → JWT
+- **Middleware**: Next.js `middleware.ts` enforces session refresh and route protection (/admin, /forum)
 - **RLS**: PostgreSQL Row-Level Security on ALL tables — no data leaks possible
 - **Anonymity**: One-way SHA-256 hash for forum tokens; salt rotated monthly
 - **Edge Functions**: Only server-side code can write to `notifications` and `fcm_tokens`
 - **Encryption**: TLS in transit (Supabase handles this); `pgcrypto` for sensitive fields
-- **Rate Limiting**: Supabase built-in + Vercel edge middleware for web
+- **Rate Limiting**: Supabase built-in + Next.js edge middleware for auth pages
 - **Content Filtering**: Manual admin review queue + optional OpenAI moderation API
 
 ---
@@ -349,13 +357,15 @@ kingdom-quest-web/                      ← Next.js Web App (separate repo or mo
 | 1 | Splash | ✅ Done | Loading state on root |
 | 2 | Login / Register | ✅ Done | ✅ Done |
 | 3 | Home Dashboard | ✅ Done | ✅ Done |
-| 4 | Prayer Requests | ✅ Done | ✅ Done |
-| 5 | Petitions | ✅ Done | ✅ Done |
-| 6 | Advice Center | ✅ Done | ✅ Done |
-| 7 | Daily Inspiration | ✅ Done | ✅ Done |
-| 8 | Community Forum | ✅ Done | ✅ Done |
-| 9 | Events & Announcements | ✅ Done | ✅ Done |
-| 10 | Notifications | ✅ Done | ✅ Done |
-| 11 | User Profile | ✅ Done | ✅ Done |
-| 12 | Settings | ✅ Done | ⏳ To build |
-| 13 | Admin Dashboard | ✅ Done | ✅ Done |
+| 4 | Prayer Requests | ✅ Live Provider | ✅ Done |
+| 5 | Petitions | ✅ Live Provider | ✅ Done |
+| 6 | Advice Center | ✅ Live Provider | ✅ Done |
+| 7 | Daily Inspiration | ✅ Live Provider | ✅ Done |
+| 8 | Community Forum | ✅ Live Stream | ✅ Done |
+| 9 | Sermon Notes | ✅ Live Provider | ✅ Done |
+| 10 | Events & Announcements | ✅ Live Provider | ✅ Done |
+| 11 | Notifications | ✅ Live Stream | ✅ Done |
+| 12 | User Profile & Badges | ✅ Done | ✅ Done |
+| 13 | Settings | ✅ Done | ⏳ To build |
+| 14 | Admin Dashboard | ✅ Done | ✅ Done |
+| 15 | Admin Sermon Notes | ✅ Done | ✅ Done |
