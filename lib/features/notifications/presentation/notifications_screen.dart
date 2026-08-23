@@ -1,61 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
+import '../../../core/providers/feature_providers.dart';
 import '../../../shared/models/models.dart';
-import '../../../shared/services/mock_data_service.dart';
 
 /// Notification center screen — grouped by read/unread.
-class NotificationsScreen extends StatefulWidget {
+class NotificationsScreen extends ConsumerStatefulWidget {
   const NotificationsScreen({super.key});
 
   @override
-  State<NotificationsScreen> createState() => _NotificationsScreenState();
+  ConsumerState<NotificationsScreen> createState() => _NotificationsScreenState();
 }
 
-class _NotificationsScreenState extends State<NotificationsScreen> {
-  late List<AppNotification> _notifications;
-
-  @override
-  void initState() {
-    super.initState();
-    _notifications = List.from(MockDataService.notifications);
-  }
+class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
 
   void _markAllRead() {
-    setState(() {
-      _notifications = _notifications
-          .map(
-            (n) => AppNotification(
-              id: n.id,
-              userId: n.userId,
-              type: n.type,
-              title: n.title,
-              body: n.body,
-              data: n.data,
-              isRead: true,
-              createdAt: n.createdAt,
-            ),
-          )
-          .toList();
-    });
+    ref.read(notificationsNotifierProvider.notifier).markAllRead();
   }
 
-  void _markRead(int index) {
-    final n = _notifications[index];
-    setState(() {
-      _notifications[index] = AppNotification(
-        id: n.id,
-        userId: n.userId,
-        type: n.type,
-        title: n.title,
-        body: n.body,
-        data: n.data,
-        isRead: true,
-        createdAt: n.createdAt,
-      );
-    });
+
+  void _markRead(String id) {
+    ref.read(notificationsNotifierProvider.notifier).markRead(id);
   }
 
   IconData _iconForType(String type) {
@@ -105,6 +73,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     final surface = isDark ? AppColors.espresso : AppColors.linen;
     final textPrimary = isDark ? AppColors.textPrimaryDark : AppColors.umber;
     final textMuted = isDark ? AppColors.textMutedDark : AppColors.muted;
+    final asyncNotifications = ref.watch(notificationsStreamProvider);
+    final _notifications = asyncNotifications.valueOrNull ?? [];
     final unreadCount = _notifications.where((n) => !n.isRead).length;
 
     return Scaffold(
@@ -165,7 +135,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                 final typeColor = _colorForType(n.type, primary);
 
                 return GestureDetector(
-                      onTap: () => _markRead(i),
+                      onTap: () => _markRead(n.id),
                       child: AnimatedContainer(
                         duration: const Duration(milliseconds: 300),
                         margin: const EdgeInsets.only(bottom: AppSpacing.sm),

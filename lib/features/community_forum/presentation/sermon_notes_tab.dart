@@ -1,21 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
+import '../../../core/providers/feature_providers.dart';
 import '../../../shared/models/sermon_note.dart';
-import '../../../shared/services/mock_data_service.dart';
 
 /// Sermon Notes tab — displayed inside the Community screen TabBarView.
 /// Newest sermon notes first, tap to expand full summary.
-class SermonNotesTab extends StatelessWidget {
+class SermonNotesTab extends ConsumerWidget {
   const SermonNotesTab({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final notes = MockDataService.sermonNotes;
+    final asyncNotes = ref.watch(sermonNotesNotifierProvider);
+    final notes = asyncNotes.valueOrNull ?? [];
 
     if (notes.isEmpty) {
       return Center(

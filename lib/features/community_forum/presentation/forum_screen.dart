@@ -1,20 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
-import '../../../shared/services/mock_data_service.dart';
+import '../../../core/providers/feature_providers.dart';
 import 'sermon_notes_tab.dart';
 
-class ForumScreen extends StatefulWidget {
+class ForumScreen extends ConsumerStatefulWidget {
   const ForumScreen({super.key});
 
   @override
-  State<ForumScreen> createState() => _ForumScreenState();
+  ConsumerState<ForumScreen> createState() => _ForumScreenState();
 }
 
-class _ForumScreenState extends State<ForumScreen>
+class _ForumScreenState extends ConsumerState<ForumScreen>
     with SingleTickerProviderStateMixin {
   late final TabController _tabController;
 
@@ -113,11 +114,12 @@ class _ForumScreenState extends State<ForumScreen>
   }
 }
 
-class _ForumList extends StatelessWidget {
+class _ForumList extends ConsumerWidget {
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final posts = MockDataService.forumPosts;
+    final asyncPosts = ref.watch(forumPostsStreamProvider);
+    final posts = asyncPosts.valueOrNull ?? [];
 
     return Column(
       children: [

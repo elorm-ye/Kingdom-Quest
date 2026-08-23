@@ -1,29 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
+import '../../../core/providers/feature_providers.dart';
 import '../../../shared/models/models.dart';
-import '../../../shared/services/mock_data_service.dart';
 
 /// Events & Announcements screen — tabbed layout.
-class EventsScreen extends StatefulWidget {
+class EventsScreen extends ConsumerStatefulWidget {
   const EventsScreen({super.key});
 
   @override
-  State<EventsScreen> createState() => _EventsScreenState();
+  ConsumerState<EventsScreen> createState() => _EventsScreenState();
 }
 
-class _EventsScreenState extends State<EventsScreen>
+class _EventsScreenState extends ConsumerState<EventsScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  late List<ChurchEvent> _events;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
-    _events = List.from(MockDataService.events);
   }
 
   @override
@@ -33,26 +32,14 @@ class _EventsScreenState extends State<EventsScreen>
   }
 
   void _toggleRegistration(int index) {
-    final e = _events[index];
-    setState(() {
-      _events[index] = ChurchEvent(
-        id: e.id,
-        churchId: e.churchId,
-        title: e.title,
-        description: e.description,
-        location: e.location,
-        startTime: e.startTime,
-        endTime: e.endTime,
-        isRecurring: e.isRecurring,
-        recurringPattern: e.recurringPattern,
-        createdBy: e.createdBy,
-        registrationCount: e.isRegistered
-            ? e.registrationCount - 1
-            : e.registrationCount + 1,
-        isRegistered: !e.isRegistered,
-        createdAt: e.createdAt,
-      );
-    });
+    final asyncEvents = ref.read(eventsNotifierProvider);
+    final events = asyncEvents.valueOrNull ?? [];
+    if (index >= events.length) return;
+    final e = events[index];
+    ref.read(eventsNotifierProvider.notifier).toggleRegistration(
+      eventId: e.id,
+      currentlyRegistered: e.isRegistered,
+    );
   }
 
   String _formatDateTime(DateTime dt) {
@@ -99,7 +86,10 @@ class _EventsScreenState extends State<EventsScreen>
     final surface = isDark ? AppColors.espresso : AppColors.linen;
     final textPrimary = isDark ? AppColors.textPrimaryDark : AppColors.umber;
     final textMuted = isDark ? AppColors.textMutedDark : AppColors.muted;
-    final announcements = MockDataService.announcements;
+    final asyncEvents = ref.watch(eventsNotifierProvider);
+    final _events = asyncEvents.valueOrNull ?? [];
+    final asyncAnnouncements = ref.watch(announcementsNotifierProvider);
+    final announcements = asyncAnnouncements.valueOrNull ?? [];
 
     return Scaffold(
       backgroundColor: bg,
