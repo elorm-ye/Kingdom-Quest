@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
-import '../../../shared/services/mock_data_service.dart';
+import '../../../core/providers/feature_providers.dart';
 
-class InspirationScreen extends StatelessWidget {
+class InspirationScreen extends ConsumerWidget {
   const InspirationScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final posts = MockDataService.inspirations;
+    final asyncPosts = ref.watch(inspirationsNotifierProvider);
+    final posts = asyncPosts.valueOrNull ?? [];
 
     return Scaffold(
       backgroundColor: isDark ? AppColors.umberNight : AppColors.sand,
@@ -24,10 +26,14 @@ class InspirationScreen extends StatelessWidget {
           ),
         ),
       ),
-      body: ListView.builder(
-        padding: const EdgeInsets.all(AppSpacing.xl),
-        itemCount: posts.length,
-        itemBuilder: (context, i) {
+      body: asyncPosts.isLoading && posts.isEmpty
+          ? const Center(child: CircularProgressIndicator())
+          : RefreshIndicator(
+              onRefresh: () => ref.read(inspirationsNotifierProvider.notifier).refresh(),
+              child: ListView.builder(
+                padding: const EdgeInsets.all(AppSpacing.xl),
+                itemCount: posts.length,
+                itemBuilder: (context, i) {
           final p = posts[i];
           final card = isDark ? AppColors.espresso : AppColors.linen;
           final typeColor = switch (p.type.name) {
@@ -173,6 +179,7 @@ class InspirationScreen extends StatelessWidget {
               .slideY(begin: 0.05);
         },
       ),
+    ),
     );
   }
 

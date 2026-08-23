@@ -1,19 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
+import '../../../core/providers/feature_providers.dart';
 import '../../../shared/models/petition.dart';
-import '../../../shared/services/mock_data_service.dart';
 
-class PetitionsScreen extends StatelessWidget {
+class PetitionsScreen extends ConsumerWidget {
   const PetitionsScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final petitions = MockDataService.petitions;
+    final asyncPetitions = ref.watch(petitionsNotifierProvider);
+    final petitions = asyncPetitions.valueOrNull ?? [];
 
     return Scaffold(
       backgroundColor: isDark ? AppColors.umberNight : AppColors.sand,
@@ -37,10 +39,14 @@ class PetitionsScreen extends StatelessWidget {
         onPressed: () => context.push('/submit-petition'),
         child: const Icon(Icons.add),
       ),
-      body: ListView.builder(
-        padding: const EdgeInsets.all(AppSpacing.xl),
-        itemCount: petitions.length,
-        itemBuilder: (context, i) {
+      body: asyncPetitions.isLoading && petitions.isEmpty
+          ? const Center(child: CircularProgressIndicator())
+          : RefreshIndicator(
+              onRefresh: () => ref.read(petitionsNotifierProvider.notifier).refresh(),
+              child: ListView.builder(
+                padding: const EdgeInsets.all(AppSpacing.xl),
+                itemCount: petitions.length,
+                itemBuilder: (context, i) {
           final p = petitions[i];
           final statusColor = switch (p.status) {
             PetitionStatus.pending =>
@@ -148,6 +154,7 @@ class PetitionsScreen extends StatelessWidget {
               .slideY(begin: 0.05);
         },
       ),
+    ),
     );
   }
 

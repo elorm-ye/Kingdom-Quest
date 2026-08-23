@@ -1,19 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
+import '../../../core/providers/feature_providers.dart';
 import '../../../shared/models/advice_request.dart';
-import '../../../shared/services/mock_data_service.dart';
 
-class AdviceScreen extends StatelessWidget {
+class AdviceScreen extends ConsumerWidget {
   const AdviceScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final requests = MockDataService.adviceRequests;
+    final asyncRequests = ref.watch(adviceNotifierProvider);
+    final requests = asyncRequests.valueOrNull ?? [];
 
     return Scaffold(
       backgroundColor: isDark ? AppColors.umberNight : AppColors.sand,
@@ -37,10 +39,14 @@ class AdviceScreen extends StatelessWidget {
         onPressed: () => context.push('/submit-advice'),
         child: const Icon(Icons.add),
       ),
-      body: ListView.builder(
-        padding: const EdgeInsets.all(AppSpacing.xl),
-        itemCount: requests.length,
-        itemBuilder: (context, i) {
+      body: asyncRequests.isLoading && requests.isEmpty
+          ? const Center(child: CircularProgressIndicator())
+          : RefreshIndicator(
+              onRefresh: () => ref.read(adviceNotifierProvider.notifier).refresh(),
+              child: ListView.builder(
+                padding: const EdgeInsets.all(AppSpacing.xl),
+                itemCount: requests.length,
+                itemBuilder: (context, i) {
           final a = requests[i];
           final card = isDark ? AppColors.espresso : AppColors.linen;
           final statusColor = switch (a.status) {
@@ -191,6 +197,7 @@ class AdviceScreen extends StatelessWidget {
               .slideY(begin: 0.05);
         },
       ),
+    ),
     );
   }
 }

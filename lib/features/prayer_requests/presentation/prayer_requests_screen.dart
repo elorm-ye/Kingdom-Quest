@@ -1,25 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
+import '../../../core/providers/feature_providers.dart';
 import '../../../shared/models/prayer_request.dart';
-import '../../../shared/services/mock_data_service.dart';
 
-class PrayerRequestsScreen extends StatefulWidget {
+class PrayerRequestsScreen extends ConsumerStatefulWidget {
   const PrayerRequestsScreen({super.key});
   @override
-  State<PrayerRequestsScreen> createState() => _PrayerRequestsScreenState();
+  ConsumerState<PrayerRequestsScreen> createState() => _PrayerRequestsScreenState();
 }
 
-class _PrayerRequestsScreenState extends State<PrayerRequestsScreen> {
+class _PrayerRequestsScreenState extends ConsumerState<PrayerRequestsScreen> {
   PrayerCategory? _selectedCategory;
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final requests = MockDataService.prayerRequests
+    final asyncRequests = ref.watch(prayerRequestsNotifierProvider);
+    final allRequests = asyncRequests.valueOrNull ?? [];
+    final requests = allRequests
         .where(
           (r) => _selectedCategory == null || r.category == _selectedCategory,
         )
@@ -75,14 +78,19 @@ class _PrayerRequestsScreenState extends State<PrayerRequestsScreen> {
           ).animate().fadeIn(duration: 400.ms),
           const SizedBox(height: AppSpacing.md),
           Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
-              itemCount: requests.length,
-              itemBuilder: (context, i) => _requestCard(requests[i], isDark)
-                  .animate(delay: Duration(milliseconds: 100 * i))
-                  .fadeIn(duration: 400.ms)
-                  .slideY(begin: 0.05),
-            ),
+            child: asyncRequests.isLoading && allRequests.isEmpty
+                ? const Center(child: CircularProgressIndicator())
+                : RefreshIndicator(
+                    onRefresh: () => ref.read(prayerRequestsNotifierProvider.notifier).refresh(),
+                    child: ListView.builder(
+                      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
+                      itemCount: requests.length,
+                      itemBuilder: (context, i) => _requestCard(requests[i], isDark)
+                          .animate(delay: Duration(milliseconds: 100 * i))
+                          .fadeIn(duration: 400.ms)
+                          .slideY(begin: 0.05),
+                    ),
+                  ),
           ),
         ],
       ),
