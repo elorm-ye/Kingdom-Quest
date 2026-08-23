@@ -273,7 +273,7 @@ kingdom-quest-web/                      ← Next.js Web App (separate repo or mo
 
 ## 9. Phased Delivery Roadmap
 
-### Phase 1 — Foundation ✅
+### Phase 1 — Foundation ✓
 - [x] Create implementation plan
 - [x] Scaffold Flutter project
 - [x] Implement design system (colors, typography, spacing, theme)
@@ -286,20 +286,20 @@ kingdom-quest-web/                      ← Next.js Web App (separate repo or mo
 - [x] Profile screen (avatar, stats, activity feed, gamified badges section)
 - [x] Settings screen (theme switcher, notifications, account, sign-out)
 
-### Phase 2 — Core Modules ✅
+### Phase 2 — Core Modules ✓
 - [x] Prayer request submission & listing
 - [x] Petition submission & tracking
 - [x] Advice center
 - [x] Daily inspiration feed
 
-### Phase 3 — Community & Events ✅
+### Phase 3 — Community & Events ✓
 - [x] Anonymous community forum
 - [x] Sermon Notes sub-tab (Community tab)
 - [x] Church announcements (Announcements tab in Events screen)
 - [x] Events calendar (Events tab with registration toggle)
 - [x] Notification center (mark-read, type-specific icons)
 
-### Phase 4 — Admin Dashboard (Flutter & Web) ✅
+### Phase 4 — Admin Dashboard (Flutter & Web) ✓
 - [x] Admin home with stats overview
 - [x] Prayer request management (view, respond, mark answered)
 - [x] Petition management (view, update status, respond)
@@ -309,7 +309,7 @@ kingdom-quest-web/                      ← Next.js Web App (separate repo or mo
 - [x] Forum moderation (view reports, remove posts)
 - [x] User management (view members, assign roles)
 
-### Phase 5 — Supabase Backend & Presentation Integration ✅
+### Phase 5 — Supabase Backend & Presentation Integration 
 - [x] Supabase project setup & environment config (`supabase_config.dart`, `.env`)
 - [x] Apply full database schema + RLS policies (`supabase_schema.sql` including `sermon_notes`)
 - [x] Supabase Auth integration (Flutter `supabase_auth_service.dart`, `auth_provider.dart`)
@@ -318,7 +318,7 @@ kingdom-quest-web/                      ← Next.js Web App (separate repo or mo
 - [ ] Supabase Storage bucket policy enforcement (avatar upload, inspiration & sermon slide media)
 - [ ] Edge Functions: push notification dispatch (FCM), anonymous token hashing
 
-### Phase 6 — Next.js Web App (iOS PWA + Admin Panel) 🚀
+### Phase 6 — Next.js Web App (iOS PWA + Admin Panel) ✓
 - [x] Scaffold Next.js project with TypeScript + Tailwind CSS
 - [x] Supabase JS SDK integration (browser + server components)
 - [x] Fix middleware routing & session protection (`middleware.ts` root auto-load)
@@ -354,18 +354,18 @@ kingdom-quest-web/                      ← Next.js Web App (separate repo or mo
 
 | # | Screen | Flutter (Mobile) | Next.js (Web/PWA) |
 |---|--------|-----------------|-------------------|
-| 1 | Splash | ✅ Done | Loading state on root |
-| 2 | Login / Register | ✅ Done | ✅ Done |
-| 3 | Home Dashboard | ✅ Done | ✅ Done |
-| 4 | Prayer Requests | ✅ Live Provider | ✅ Done |
-| 5 | Petitions | ✅ Live Provider | ✅ Done |
-| 6 | Advice Center | ✅ Live Provider | ✅ Done |
-| 7 | Daily Inspiration | ✅ Live Provider | ✅ Done |
-| 8 | Community Forum | ✅ Live Stream | ✅ Done |
-| 9 | Sermon Notes | ✅ Live Provider | ✅ Done |
-| 10 | Events & Announcements | ✅ Live Provider | ✅ Done |
-| 11 | Notifications | ✅ Live Stream | ✅ Done |
-| 12 | User Profile & Badges | ✅ Done | ✅ Done |
-| 13 | Settings | ✅ Done | ⏳ To build |
-| 14 | Admin Dashboard | ✅ Done | ✅ Done |
-| 15 | Admin Sermon Notes | ✅ Done | ✅ Done |
+| 1 | Splash | ✓ Done | Loading state on root |
+| 2 | Login / Register | ✓ Done | ✓ Done |
+| 3 | Home Dashboard | ✓ Done | ✓ Done |
+| 4 | Prayer Requests | ✓ Live Provider | ✓ Done |
+| 5 | Petitions | ✓ Live Provider | ✓ Done |
+| 6 | Advice Center | ✓ Live Provider | ✓ Done |
+| 7 | Daily Inspiration | ✓ Live Provider | ✓ Done |
+| 8 | Community Forum | ✓ Live Stream | ✓ Done |
+| 9 | Sermon Notes | ✓ Live Provider | ✓ Done |
+| 10 | Events & Announcements | ✓ Live Provider | ✓ Done |
+| 11 | Notifications | ✓ Live Stream | ✓ Done |
+| 12 | User Profile & Badges | ✓ Done | ✓ Done |
+| 13 | Settings | ✓ Done | To build |
+| 14 | Admin Dashboard | ✓ Done | ✓ Done |
+| 15 | Admin Sermon Notes | ✓ Done | ✓ Done |
