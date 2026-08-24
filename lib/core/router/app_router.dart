@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-
 import '../providers/app_providers.dart';
 
 import '../../features/splash/splash_screen.dart';
@@ -46,6 +44,7 @@ const _publicRoutes = {'/splash', '/login', '/register'};
 final routerProvider = Provider<GoRouter>((ref) {
   // Watch auth state so the router rebuilds on sign in/out
   ref.watch(authStateProvider);
+  ref.watch(demoUserModelProvider);
 
   return GoRouter(
     navigatorKey: _rootNavigatorKey,
@@ -53,7 +52,7 @@ final routerProvider = Provider<GoRouter>((ref) {
 
     // ── Auth redirect ──────────────────────────────────────────────────────
     redirect: (context, routerState) {
-      final isSignedIn = Supabase.instance.client.auth.currentUser != null;
+      final isSignedIn = ref.read(isAuthenticatedProvider);
       final goingTo = routerState.matchedLocation;
       final isPublic = _publicRoutes.contains(goingTo);
 

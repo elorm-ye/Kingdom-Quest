@@ -59,7 +59,7 @@ final demoUserModelProvider = NotifierProvider<_DemoUserNotifier, UserModel?>(
 
 class _DemoUserNotifier extends Notifier<UserModel?> {
   @override
-  UserModel? build() => MockDataService.currentUser;
+  UserModel? build() => null;
   void set(UserModel? u) => state = u;
 }
 
