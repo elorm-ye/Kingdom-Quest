@@ -36,9 +36,24 @@ The Kingdom Quest platform consists of three main components:
 ### Prerequisites
 - **Flutter SDK**: [Install Flutter](https://docs.flutter.dev/get-started/install)
 - **Node.js**: v18+ [Install Node](https://nodejs.org/)
-- **Supabase Account**: For backend deployment.
+- **Supabase Account**: For production backend deployment.
 
-### 1. Supabase Backend Setup
+---
+
+## Demo & Offline Testing Mode (No Backend Required)
+
+The Flutter mobile application includes an **Offline Demo & Quick Test Mode**, allowing developers and testers to immediately evaluate all member and admin features without configuring a live Supabase instance:
+
+1. **Quick Test Buttons on Login Screen**:
+   - **👤 Demo Member**: Click **"Demo Member"** to log in immediately as a regular youth member (`David`). Explore prayer requests, petitions, advice center, sermon notes, daily inspirations, community forum, and user profile.
+   - **🛡️ Demo Admin**: Click **"Demo Admin"** to log in as an administrator (`Pastor James`). Access the Admin Dashboard, manage users, review petitions, answer advice requests, publish sermon notes & inspirations, and moderate reported forum posts.
+
+2. **Automatic Fallback**:
+   - If a live Supabase backend is offline or unconfigured, all authentication attempts and feature providers gracefully fall back to local mock data (`MockDataService`), preventing error screens or crashes.
+
+---
+
+### 1. Supabase Backend Setup (Production)
 1. Create a new Supabase project.
 2. Run the SQL script found in `lib/core/supabase/supabase_schema.sql` in your Supabase SQL Editor to generate all tables, RLS policies, and triggers.
 3. Obtain your `Project URL` and `Anon Key`.
@@ -48,12 +63,12 @@ The Kingdom Quest platform consists of three main components:
 # From the root directory
 flutter pub get
 
-# Open lib/core/supabase/supabase_config.dart and replace the
+# (Optional) Open lib/core/supabase/supabase_config.dart and replace
 # placeholder values with your Supabase Project URL and Anon Key:
 #   static const String supabaseUrl = 'https://your-project-ref.supabase.co';
 #   static const String supabaseAnonKey = 'your-anon-key-here';
 
-# Run the app
+# Run the app (Demo mode is active by default if no backend is provided!)
 flutter run
 ```
 
