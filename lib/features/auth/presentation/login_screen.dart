@@ -217,17 +217,21 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               const SizedBox(height: AppSpacing.xxl),
               _dividerRow(
                 isDark,
+                text: 'or test app without backend',
               ).animate(delay: 600.ms).fadeIn(duration: 400.ms),
               const SizedBox(height: AppSpacing.xl),
-              // Social buttons (Google sign-in placeholder — wire up later)
+              // Demo Test buttons
               Row(
                 children: [
                   Expanded(
                     child: _socialBtn(
-                      Icons.g_mobiledata_rounded,
-                      'Google',
-                      () {
-                        _showError('Google sign-in coming soon.');
+                      Icons.person_outline_rounded,
+                      'Demo Member',
+                      () async {
+                        await ref
+                            .read(authNotifierProvider.notifier)
+                            .signInAsDemo(isAdmin: false);
+                        if (context.mounted) context.go('/home');
                       },
                       isDark,
                       card,
@@ -236,10 +240,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   const SizedBox(width: AppSpacing.md),
                   Expanded(
                     child: _socialBtn(
-                      Icons.phone_outlined,
-                      'Phone',
-                      () {
-                        _showError('Phone sign-in coming soon.');
+                      Icons.admin_panel_settings_outlined,
+                      'Demo Admin',
+                      () async {
+                        await ref
+                            .read(authNotifierProvider.notifier)
+                            .signInAsDemo(isAdmin: true);
+                        if (context.mounted) context.go('/home');
                       },
                       isDark,
                       card,
@@ -326,7 +333,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     ),
   );
 
-  Widget _dividerRow(bool isDark) => Row(
+  Widget _dividerRow(bool isDark, {String text = 'or continue with'}) => Row(
     children: [
       Expanded(
         child: Divider(
@@ -336,7 +343,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       Padding(
         padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
         child: Text(
-          'or continue with',
+          text,
           style: GoogleFonts.schibstedGrotesk(
             fontSize: 12,
             color: isDark ? AppColors.textMutedDark : AppColors.muted,

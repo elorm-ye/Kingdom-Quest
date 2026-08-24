@@ -5,7 +5,6 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/providers/feature_providers.dart';
-import '../../../shared/models/models.dart';
 
 /// Notification center screen — grouped by read/unread.
 class NotificationsScreen extends ConsumerStatefulWidget {

@@ -71,6 +71,18 @@ class MockDataService {
     createdAt: DateTime.now().subtract(const Duration(days: 90)),
   );
 
+  static UserModel get adminUser => UserModel(
+    id: 'admin_001',
+    email: 'pastor.james@kingdomquest.app',
+    displayName: 'Pastor James',
+    avatarUrl: null,
+    role: UserRole.admin,
+    churchId: 'church_001',
+    gender: Gender.male,
+    bio: 'Senior Pastor & Administrator',
+    createdAt: DateTime.now().subtract(const Duration(days: 365)),
+  );
+
   // ─────────────────────────────────────────────
   // PRAYER REQUESTS
   // ─────────────────────────────────────────────

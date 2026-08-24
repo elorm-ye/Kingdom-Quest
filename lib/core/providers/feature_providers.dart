@@ -9,16 +9,21 @@ library;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../shared/models/models.dart';
 import '../../../core/providers/app_providers.dart';
+import '../../../shared/services/mock_data_service.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // PRAYER REQUESTS
 // ─────────────────────────────────────────────────────────────────────────────
 
 final prayerRequestsProvider = FutureProvider<List<PrayerRequest>>((ref) async {
-  final profile = await ref.watch(currentUserModelProvider.future);
-  return ref
-      .read(dataServiceProvider)
-      .fetchPrayerRequests(churchId: profile?.churchId);
+  try {
+    final profile = await ref.watch(currentUserModelProvider.future);
+    return await ref
+        .read(dataServiceProvider)
+        .fetchPrayerRequests(churchId: profile?.churchId);
+  } catch (_) {
+    return MockDataService.prayerRequests;
+  }
 });
 
 class PrayerRequestsNotifier extends Notifier<AsyncValue<List<PrayerRequest>>> {
@@ -35,8 +40,8 @@ class PrayerRequestsNotifier extends Notifier<AsyncValue<List<PrayerRequest>>> {
           .read(dataServiceProvider)
           .fetchPrayerRequests(churchId: profile?.churchId);
       state = AsyncValue.data(items);
-    } catch (e, st) {
-      state = AsyncValue.error(e, st);
+    } catch (_, __) {
+      state = AsyncValue.data(MockDataService.prayerRequests);
     }
   }
 
@@ -105,8 +110,8 @@ class PetitionsNotifier extends Notifier<AsyncValue<List<Petition>>> {
           .read(dataServiceProvider)
           .fetchPetitions(churchId: profile?.churchId);
       state = AsyncValue.data(items);
-    } catch (e, st) {
-      state = AsyncValue.error(e, st);
+    } catch (_, __) {
+      state = AsyncValue.data(MockDataService.petitions);
     }
   }
 
@@ -165,8 +170,8 @@ class AdviceNotifier extends Notifier<AsyncValue<List<AdviceRequest>>> {
           .read(dataServiceProvider)
           .fetchAdviceRequests(churchId: profile?.churchId);
       state = AsyncValue.data(items);
-    } catch (e, st) {
-      state = AsyncValue.error(e, st);
+    } catch (_, __) {
+      state = AsyncValue.data(MockDataService.adviceRequests);
     }
   }
 
@@ -235,8 +240,8 @@ class InspirationsNotifier extends Notifier<AsyncValue<List<Inspiration>>> {
           .read(dataServiceProvider)
           .fetchInspirations(churchId: profile?.churchId);
       state = AsyncValue.data(items);
-    } catch (e, st) {
-      state = AsyncValue.error(e, st);
+    } catch (_, __) {
+      state = AsyncValue.data(MockDataService.inspirations);
     }
   }
 
@@ -300,8 +305,8 @@ class SermonNotesNotifier extends Notifier<AsyncValue<List<SermonNote>>> {
           .read(dataServiceProvider)
           .fetchSermonNotes(churchId: profile?.churchId);
       state = AsyncValue.data(items);
-    } catch (e, st) {
-      state = AsyncValue.error(e, st);
+    } catch (_, __) {
+      state = AsyncValue.data(MockDataService.sermonNotes);
     }
   }
 
@@ -386,6 +391,8 @@ final forumPostsStreamProvider = StreamProvider<List<ForumPost>>((ref) {
           ),
         )
         .toList();
+  }).handleError((_, __) {
+    return MockDataService.forumPosts;
   });
 });
 
@@ -455,8 +462,8 @@ class EventsNotifier extends Notifier<AsyncValue<List<ChurchEvent>>> {
           .read(dataServiceProvider)
           .fetchEvents(churchId: profile?.churchId);
       state = AsyncValue.data(items);
-    } catch (e, st) {
-      state = AsyncValue.error(e, st);
+    } catch (_, __) {
+      state = AsyncValue.data(MockDataService.events);
     }
   }
 
@@ -499,8 +506,8 @@ class AnnouncementsNotifier extends Notifier<AsyncValue<List<Announcement>>> {
           .read(dataServiceProvider)
           .fetchAnnouncements(churchId: profile?.churchId);
       state = AsyncValue.data(items);
-    } catch (e, st) {
-      state = AsyncValue.error(e, st);
+    } catch (_, __) {
+      state = AsyncValue.data(MockDataService.announcements);
     }
   }
 
@@ -534,6 +541,8 @@ final notificationsStreamProvider = StreamProvider<List<AppNotification>>((
           ),
         )
         .toList();
+  }).handleError((_, __) {
+    return MockDataService.notifications;
   });
 });
 
@@ -574,8 +583,11 @@ class AdminUsersNotifier extends Notifier<AsyncValue<List<UserModel>>> {
     try {
       final users = await ref.read(dataServiceProvider).fetchAllUsers();
       state = AsyncValue.data(users);
-    } catch (e, st) {
-      state = AsyncValue.error(e, st);
+    } catch (_) {
+      state = AsyncValue.data([
+        MockDataService.currentUser,
+        MockDataService.adminUser,
+      ]);
     }
   }
 
