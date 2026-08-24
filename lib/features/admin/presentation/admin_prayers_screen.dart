@@ -1,30 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../shared/models/models.dart';
-import '../../../shared/services/mock_data_service.dart';
+import '../../../core/providers/feature_providers.dart';
 
 /// Admin prayer requests management — respond, mark answered.
-class AdminPrayersScreen extends StatefulWidget {
+class AdminPrayersScreen extends ConsumerStatefulWidget {
   const AdminPrayersScreen({super.key});
 
   @override
-  State<AdminPrayersScreen> createState() => _AdminPrayersScreenState();
+  ConsumerState<AdminPrayersScreen> createState() => _AdminPrayersScreenState();
 }
 
-class _AdminPrayersScreenState extends State<AdminPrayersScreen>
+class _AdminPrayersScreenState extends ConsumerState<AdminPrayersScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  late List<PrayerRequest> _prayers;
   final _replyController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
-    _prayers = List.from(MockDataService.prayerRequests);
   }
 
   @override
@@ -34,29 +33,11 @@ class _AdminPrayersScreenState extends State<AdminPrayersScreen>
     super.dispose();
   }
 
-  List<PrayerRequest> _filtered(String status) =>
-      _prayers.where((p) => p.status.name == status).toList();
+  List<PrayerRequest> _filtered(String status, List<PrayerRequest> prayers) =>
+      prayers.where((p) => p.status.name == status).toList();
 
   void _markAnswered(PrayerRequest p) {
-    setState(() {
-      final idx = _prayers.indexWhere((x) => x.id == p.id);
-      if (idx != -1) {
-        _prayers[idx] = PrayerRequest(
-          id: p.id,
-          userId: p.userId,
-          title: p.title,
-          description: p.description,
-          category: p.category,
-          isAnonymous: p.isAnonymous,
-          submitterName: p.submitterName,
-          anonymousDisplayName: p.anonymousDisplayName,
-          status: PrayerStatus.answered,
-          prayerCount: p.prayerCount,
-          responses: p.responses,
-          createdAt: p.createdAt,
-        );
-      }
-    });
+    ref.read(prayerRequestsNotifierProvider.notifier).markAnswered(p.id);
   }
 
   void _showReplySheet(
@@ -136,7 +117,10 @@ class _AdminPrayersScreenState extends State<AdminPrayersScreen>
                 onPressed: () {
                   if (_replyController.text.trim().isNotEmpty) {
                     Navigator.pop(ctx);
-                    _markAnswered(p);
+                    ref.read(prayerRequestsNotifierProvider.notifier).reply(
+                      prayerRequestId: p.id,
+                      message: _replyController.text.trim(),
+                    );
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text(
@@ -170,6 +154,9 @@ class _AdminPrayersScreenState extends State<AdminPrayersScreen>
     final textPrimary = isDark ? AppColors.textPrimaryDark : AppColors.umber;
     final textMuted = isDark ? AppColors.textMutedDark : AppColors.muted;
 
+    final asyncPrayers = ref.watch(prayerRequestsNotifierProvider);
+    final prayers = asyncPrayers.value ?? [];
+
     return Scaffold(
       backgroundColor: bg,
       body: NestedScrollView(
@@ -200,49 +187,56 @@ class _AdminPrayersScreenState extends State<AdminPrayersScreen>
                 fontSize: 13,
               ),
               tabs: [
-                Tab(text: 'Pending (${_filtered('pending').length})'),
-                Tab(text: 'Praying (${_filtered('praying').length})'),
-                Tab(text: 'Answered (${_filtered('answered').length})'),
+                Tab(text: 'Pending (${_filtered('pending', prayers).length})'),
+                Tab(text: 'Praying (${_filtered('praying', prayers).length})'),
+                Tab(text: 'Answered (${_filtered('answered', prayers).length})'),
               ],
             ),
           ),
         ],
-        body: TabBarView(
-          controller: _tabController,
-          children: ['pending', 'praying', 'answered'].map((status) {
-            final list = _filtered(status);
-            if (list.isEmpty) {
-              return Center(
-                child: Text(
-                  'No $status requests',
-                  style: GoogleFonts.schibstedGrotesk(color: textMuted),
+        body: asyncPrayers.when(
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (e, _) => Center(child: Text('Error: $e')),
+          data: (_) => TabBarView(
+            controller: _tabController,
+            children: ['pending', 'praying', 'answered'].map((status) {
+              final list = _filtered(status, prayers);
+              if (list.isEmpty) {
+                return Center(
+                  child: Text(
+                    'No $status requests',
+                    style: GoogleFonts.schibstedGrotesk(color: textMuted),
+                  ),
+                );
+              }
+              return RefreshIndicator(
+                onRefresh: () => ref.read(prayerRequestsNotifierProvider.notifier).refresh(),
+                child: ListView.builder(
+                  padding: const EdgeInsets.all(AppSpacing.lg),
+                  itemCount: list.length,
+                  itemBuilder: (ctx, i) => _PrayerAdminCard(
+                    prayer: list[i],
+                    isDark: isDark,
+                    primary: primary,
+                    surface: surface,
+                    textPrimary: textPrimary,
+                    textMuted: textMuted,
+                    onReply: () => _showReplySheet(
+                      context,
+                      list[i],
+                      isDark,
+                      primary,
+                      surface,
+                      textPrimary,
+                      textMuted,
+                    ),
+                    onMarkAnswered: () => _markAnswered(list[i]),
+                    index: i,
+                  ),
                 ),
               );
-            }
-            return ListView.builder(
-              padding: const EdgeInsets.all(AppSpacing.lg),
-              itemCount: list.length,
-              itemBuilder: (ctx, i) => _PrayerAdminCard(
-                prayer: list[i],
-                isDark: isDark,
-                primary: primary,
-                surface: surface,
-                textPrimary: textPrimary,
-                textMuted: textMuted,
-                onReply: () => _showReplySheet(
-                  context,
-                  list[i],
-                  isDark,
-                  primary,
-                  surface,
-                  textPrimary,
-                  textMuted,
-                ),
-                onMarkAnswered: () => _markAnswered(list[i]),
-                index: i,
-              ),
-            );
-          }).toList(),
+            }).toList(),
+          ),
         ),
       ),
     );

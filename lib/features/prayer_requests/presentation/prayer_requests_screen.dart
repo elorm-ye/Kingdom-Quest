@@ -21,7 +21,7 @@ class _PrayerRequestsScreenState extends ConsumerState<PrayerRequestsScreen> {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final asyncRequests = ref.watch(prayerRequestsNotifierProvider);
-    final allRequests = asyncRequests.valueOrNull ?? [];
+    final allRequests = asyncRequests.value ?? [];
     final requests = allRequests
         .where(
           (r) => _selectedCategory == null || r.category == _selectedCategory,

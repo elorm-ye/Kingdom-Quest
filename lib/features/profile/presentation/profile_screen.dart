@@ -1,24 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
-import '../../../shared/services/mock_data_service.dart';
+import '../../../core/providers/app_providers.dart';
 
 /// User profile screen — avatar, stats, activity feed.
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final primary = isDark ? AppColors.burntAmber : AppColors.terracotta;
     final bg = isDark ? AppColors.umberNight : AppColors.sand;
     final surface = isDark ? AppColors.espresso : AppColors.linen;
     final textPrimary = isDark ? AppColors.textPrimaryDark : AppColors.umber;
     final textMuted = isDark ? AppColors.textMutedDark : AppColors.muted;
-    final user = MockDataService.currentUser;
+    final asyncUser = ref.watch(currentUserModelProvider);
+    final user = asyncUser.value;
+    if (user == null) {
+      return Scaffold(
+        backgroundColor: bg,
+        body: const Center(child: CircularProgressIndicator()),
+      );
+    }
 
     final stats = [
       (label: 'Prayers', value: '12', icon: Icons.volunteer_activism_rounded),

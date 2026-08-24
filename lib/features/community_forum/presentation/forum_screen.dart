@@ -119,7 +119,7 @@ class _ForumList extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final asyncPosts = ref.watch(forumPostsStreamProvider);
-    final posts = asyncPosts.valueOrNull ?? [];
+    final posts = asyncPosts.value ?? [];
 
     return Column(
       children: [

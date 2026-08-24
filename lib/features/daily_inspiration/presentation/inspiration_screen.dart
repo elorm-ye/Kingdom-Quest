@@ -13,7 +13,7 @@ class InspirationScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final asyncPosts = ref.watch(inspirationsNotifierProvider);
-    final posts = asyncPosts.valueOrNull ?? [];
+    final posts = asyncPosts.value ?? [];
 
     return Scaffold(
       backgroundColor: isDark ? AppColors.umberNight : AppColors.sand,

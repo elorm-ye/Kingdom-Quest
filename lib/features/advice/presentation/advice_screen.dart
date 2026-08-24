@@ -15,7 +15,7 @@ class AdviceScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final asyncRequests = ref.watch(adviceNotifierProvider);
-    final requests = asyncRequests.valueOrNull ?? [];
+    final requests = asyncRequests.value ?? [];
 
     return Scaffold(
       backgroundColor: isDark ? AppColors.umberNight : AppColors.sand,

@@ -17,7 +17,7 @@ class SermonNotesTab extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final asyncNotes = ref.watch(sermonNotesNotifierProvider);
-    final notes = asyncNotes.valueOrNull ?? [];
+    final notes = asyncNotes.value ?? [];
 
     if (notes.isEmpty) {
       return Center(

@@ -1,19 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
-import '../../../shared/services/mock_data_service.dart';
+import '../../../core/providers/feature_providers.dart';
 
 /// Admin inspiration publisher — create and publish daily inspiration posts.
-class AdminInspirationScreen extends StatefulWidget {
+class AdminInspirationScreen extends ConsumerStatefulWidget {
   const AdminInspirationScreen({super.key});
 
   @override
-  State<AdminInspirationScreen> createState() => _AdminInspirationScreenState();
+  ConsumerState<AdminInspirationScreen> createState() => _AdminInspirationScreenState();
 }
 
-class _AdminInspirationScreenState extends State<AdminInspirationScreen> {
+class _AdminInspirationScreenState extends ConsumerState<AdminInspirationScreen> {
   final _titleController = TextEditingController();
   final _contentController = TextEditingController();
   final _bibleRefController = TextEditingController();
@@ -61,18 +62,29 @@ class _AdminInspirationScreenState extends State<AdminInspirationScreen> {
         _contentController.text.trim().isEmpty)
       return;
     setState(() => _isPublishing = true);
-    await Future.delayed(const Duration(milliseconds: 1200));
-    setState(() {
-      _isPublishing = false;
-      _published = true;
-    });
-    await Future.delayed(const Duration(milliseconds: 1500));
-    setState(() {
-      _published = false;
-      _titleController.clear();
-      _contentController.clear();
-      _bibleRefController.clear();
-    });
+    try {
+      await ref.read(inspirationsNotifierProvider.notifier).publish(
+        title: _titleController.text.trim(),
+        content: _contentController.text.trim(),
+        type: _selectedType,
+        bibleReference: _bibleRefController.text.trim().isNotEmpty
+            ? _bibleRefController.text.trim()
+            : null,
+      );
+      setState(() {
+        _isPublishing = false;
+        _published = true;
+      });
+      await Future.delayed(const Duration(milliseconds: 1500));
+      setState(() {
+        _published = false;
+        _titleController.clear();
+        _contentController.clear();
+        _bibleRefController.clear();
+      });
+    } catch (_) {
+      setState(() => _isPublishing = false);
+    }
   }
 
   @override
@@ -84,7 +96,8 @@ class _AdminInspirationScreenState extends State<AdminInspirationScreen> {
     final textPrimary = isDark ? AppColors.textPrimaryDark : AppColors.umber;
     final textMuted = isDark ? AppColors.textMutedDark : AppColors.muted;
 
-    final recentInspirations = MockDataService.inspirations.take(3).toList();
+    final asyncInspirations = ref.watch(inspirationsNotifierProvider);
+    final recentInspirations = (asyncInspirations.value ?? []).take(3).toList();
 
     return Scaffold(
       backgroundColor: bg,

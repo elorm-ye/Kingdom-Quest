@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
-import '../../../shared/services/mock_data_service.dart';
+import '../../../core/providers/feature_providers.dart';
 
 /// Admin home — stats overview, quick-action tiles, recent activity.
-class AdminHomeScreen extends StatelessWidget {
+class AdminHomeScreen extends ConsumerWidget {
   const AdminHomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final primary = isDark ? AppColors.burntAmber : AppColors.terracotta;
     final bg = isDark ? AppColors.umberNight : AppColors.sand;
@@ -19,10 +20,11 @@ class AdminHomeScreen extends StatelessWidget {
     final textPrimary = isDark ? AppColors.textPrimaryDark : AppColors.umber;
     final textMuted = isDark ? AppColors.textMutedDark : AppColors.muted;
 
-    final prayers = MockDataService.prayerRequests;
-    final petitions = MockDataService.petitions;
-    final advice = MockDataService.adviceRequests;
-    final members = 48; // mock total
+    final prayers = ref.watch(prayerRequestsNotifierProvider).value ?? [];
+    final petitions = ref.watch(petitionsNotifierProvider).value ?? [];
+    final advice = ref.watch(adviceNotifierProvider).value ?? [];
+    final asyncUsers = ref.watch(adminUsersNotifierProvider);
+    final members = asyncUsers.value?.length ?? 0;
 
     final pendingPrayers = prayers
         .where((p) => p.status.name == 'pending')

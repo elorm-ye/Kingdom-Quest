@@ -74,7 +74,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
     final textPrimary = isDark ? AppColors.textPrimaryDark : AppColors.umber;
     final textMuted = isDark ? AppColors.textMutedDark : AppColors.muted;
     final asyncNotifications = ref.watch(notificationsStreamProvider);
-    final _notifications = asyncNotifications.valueOrNull ?? [];
+    final _notifications = asyncNotifications.value ?? [];
     final unreadCount = _notifications.where((n) => !n.isRead).length;
 
     return Scaffold(

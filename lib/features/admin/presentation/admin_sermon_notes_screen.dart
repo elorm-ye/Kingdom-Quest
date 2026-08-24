@@ -1,21 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
-import '../../../shared/services/mock_data_service.dart';
+import '../../../core/providers/feature_providers.dart';
 
 /// Admin screen for publishing, editing, and deleting sermon notes.
 /// Modeled on admin_inspiration_screen.dart.
-class AdminSermonNotesScreen extends StatefulWidget {
+class AdminSermonNotesScreen extends ConsumerStatefulWidget {
   const AdminSermonNotesScreen({super.key});
 
   @override
-  State<AdminSermonNotesScreen> createState() => _AdminSermonNotesScreenState();
+  ConsumerState<AdminSermonNotesScreen> createState() => _AdminSermonNotesScreenState();
 }
 
-class _AdminSermonNotesScreenState extends State<AdminSermonNotesScreen> {
+class _AdminSermonNotesScreenState extends ConsumerState<AdminSermonNotesScreen> {
   final _titleController = TextEditingController();
   final _preacherController = TextEditingController();
   final _scriptureController = TextEditingController();
@@ -49,20 +50,30 @@ class _AdminSermonNotesScreenState extends State<AdminSermonNotesScreen> {
         _scriptureController.text.trim().isEmpty ||
         _contentController.text.trim().isEmpty) return;
     setState(() => _isPublishing = true);
-    await Future.delayed(const Duration(milliseconds: 1200));
-    setState(() {
-      _isPublishing = false;
-      _published = true;
-    });
-    await Future.delayed(const Duration(milliseconds: 1500));
-    setState(() {
-      _published = false;
-      _titleController.clear();
-      _preacherController.clear();
-      _scriptureController.clear();
-      _contentController.clear();
-      _sermonDate = DateTime.now();
-    });
+    try {
+      await ref.read(sermonNotesNotifierProvider.notifier).publish(
+        title: _titleController.text.trim(),
+        preacherName: _preacherController.text.trim(),
+        scriptureReference: _scriptureController.text.trim(),
+        content: _contentController.text.trim(),
+        sermonDate: _sermonDate,
+      );
+      setState(() {
+        _isPublishing = false;
+        _published = true;
+      });
+      await Future.delayed(const Duration(milliseconds: 1500));
+      setState(() {
+        _published = false;
+        _titleController.clear();
+        _preacherController.clear();
+        _scriptureController.clear();
+        _contentController.clear();
+        _sermonDate = DateTime.now();
+      });
+    } catch (_) {
+      setState(() => _isPublishing = false);
+    }
   }
 
   @override
@@ -74,7 +85,8 @@ class _AdminSermonNotesScreenState extends State<AdminSermonNotesScreen> {
     final textPrimary = isDark ? AppColors.textPrimaryDark : AppColors.umber;
     final textMuted = isDark ? AppColors.textMutedDark : AppColors.muted;
 
-    final recentNotes = MockDataService.sermonNotes.take(3).toList();
+    final asyncNotes = ref.watch(sermonNotesNotifierProvider);
+    final recentNotes = (asyncNotes.value ?? []).take(3).toList();
 
     return Scaffold(
       backgroundColor: bg,

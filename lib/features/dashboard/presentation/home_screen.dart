@@ -1,21 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
-import '../../../shared/services/mock_data_service.dart';
+import '../../../core/providers/feature_providers.dart';
+import '../../../core/providers/app_providers.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final verse = MockDataService.getDailyVerse();
-    final user = MockDataService.currentUser;
-    final events = MockDataService.events.take(2).toList();
-    final announcements = MockDataService.announcements;
+    final verse = ref.watch(dailyVerseProvider);
+    final asyncUser = ref.watch(currentUserModelProvider);
+    final user = asyncUser.value;
+    final displayName = user?.displayName ?? 'Friend';
+    final asyncEvents = ref.watch(eventsNotifierProvider);
+    final events = (asyncEvents.value ?? []).take(2).toList();
+    final asyncAnnouncements = ref.watch(announcementsNotifierProvider);
+    final announcements = asyncAnnouncements.value ?? [];
 
     return Scaffold(
       backgroundColor: isDark ? AppColors.umberNight : AppColors.sand,
@@ -78,7 +84,7 @@ class HomeScreen extends StatelessWidget {
 
                 // Welcome
                 Text(
-                      'Hey ${user.displayName} 👋',
+                      'Hey $displayName 👋',
                       style: GoogleFonts.bricolageGrotesque(
                         fontSize: 26,
                         fontWeight: FontWeight.w700,

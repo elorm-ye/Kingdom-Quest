@@ -15,7 +15,7 @@ class PetitionsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final asyncPetitions = ref.watch(petitionsNotifierProvider);
-    final petitions = asyncPetitions.valueOrNull ?? [];
+    final petitions = asyncPetitions.value ?? [];
 
     return Scaffold(
       backgroundColor: isDark ? AppColors.umberNight : AppColors.sand,

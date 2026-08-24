@@ -314,6 +314,7 @@ kingdom-quest-web/                      ← Next.js Web App (separate repo or mo
 - [x] Apply full database schema + RLS policies (`supabase_schema.sql` including `sermon_notes`)
 - [x] Supabase Auth integration (Flutter `supabase_auth_service.dart`, `auth_provider.dart`)
 - [x] Migrate presentation screens from mock data to live Riverpod providers (`feature_providers.dart` & `SupabaseDataService`)
+- [x] Replace remaining MockDataService references in the Admin dashboard screens
 - [x] Supabase Realtime subscriptions (`forumPostsStreamProvider`, `notificationsStreamProvider`)
 - [ ] Supabase Storage bucket policy enforcement (avatar upload, inspiration & sermon slide media)
 - [ ] Edge Functions: push notification dispatch (FCM), anonymous token hashing
@@ -367,5 +368,5 @@ kingdom-quest-web/                      ← Next.js Web App (separate repo or mo
 | 11 | Notifications | ✓ Live Stream | ✓ Done |
 | 12 | User Profile & Badges | ✓ Done | ✓ Done |
 | 13 | Settings | ✓ Done | To build |
-| 14 | Admin Dashboard | ✓ Done | ✓ Done |
-| 15 | Admin Sermon Notes | ✓ Done | ✓ Done |
+| 14 | Admin Dashboard | ✓ Live Provider | ✓ Done |
+| 15 | Admin Sermon Notes | ✓ Live Provider | ✓ Done |

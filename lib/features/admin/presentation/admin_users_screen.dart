@@ -1,109 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../shared/models/models.dart';
-import '../../../shared/services/mock_data_service.dart';
+import '../../../core/providers/feature_providers.dart';
 
 /// Admin user management — view members, assign roles.
-class AdminUsersScreen extends StatefulWidget {
+class AdminUsersScreen extends ConsumerStatefulWidget {
   const AdminUsersScreen({super.key});
 
   @override
-  State<AdminUsersScreen> createState() => _AdminUsersScreenState();
+  ConsumerState<AdminUsersScreen> createState() => _AdminUsersScreenState();
 }
 
-class _AdminUsersScreenState extends State<AdminUsersScreen> {
-  late List<UserModel> _users;
+class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
   String _search = '';
-
-  @override
-  void initState() {
-    super.initState();
-    // Populate with a mix of mock users
-    _users = [
-      MockDataService.currentUser,
-      UserModel(
-        id: 'u2',
-        email: 'grace@example.com',
-        displayName: 'Grace Mensah',
-        role: UserRole.member,
-        gender: Gender.female,
-        bio: 'Youth group leader',
-        createdAt: DateTime(2024, 3, 10),
-      ),
-      UserModel(
-        id: 'u3',
-        email: 'kwame@example.com',
-        displayName: 'Kwame Asante',
-        role: UserRole.member,
-        gender: Gender.male,
-        createdAt: DateTime(2024, 5, 22),
-      ),
-      UserModel(
-        id: 'u4',
-        email: 'abena@example.com',
-        displayName: 'Abena Boateng',
-        role: UserRole.admin,
-        gender: Gender.female,
-        createdAt: DateTime(2024, 1, 5),
-      ),
-      UserModel(
-        id: 'u5',
-        email: 'kofi@example.com',
-        displayName: 'Kofi Agyeman',
-        role: UserRole.member,
-        gender: Gender.male,
-        createdAt: DateTime(2024, 7, 1),
-      ),
-      UserModel(
-        id: 'u6',
-        email: 'ama@example.com',
-        displayName: 'Ama Darko',
-        role: UserRole.member,
-        gender: Gender.female,
-        createdAt: DateTime(2024, 6, 15),
-      ),
-      UserModel(
-        id: 'u7',
-        email: 'yaw@example.com',
-        displayName: 'Yaw Osei',
-        role: UserRole.member,
-        gender: Gender.male,
-        createdAt: DateTime(2024, 8, 3),
-      ),
-      UserModel(
-        id: 'u8',
-        email: 'akua@example.com',
-        displayName: 'Akua Frimpong',
-        role: UserRole.member,
-        gender: Gender.female,
-        createdAt: DateTime(2024, 9, 20),
-      ),
-    ];
-  }
-
-  void _toggleRole(int idx) {
-    final u = _users[idx];
-    setState(() {
-      _users[idx] = u.copyWith(
-        role: u.role == UserRole.admin ? UserRole.member : UserRole.admin,
-      );
-    });
-  }
-
-  List<UserModel> get _filtered {
-    if (_search.isEmpty) return _users;
-    final q = _search.toLowerCase();
-    return _users
-        .where(
-          (u) =>
-              u.displayName.toLowerCase().contains(q) ||
-              u.email.toLowerCase().contains(q),
-        )
-        .toList();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -114,8 +27,23 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
     final textPrimary = isDark ? AppColors.textPrimaryDark : AppColors.umber;
     final textMuted = isDark ? AppColors.textMutedDark : AppColors.muted;
 
-    final admins = _users.where((u) => u.isAdmin).length;
-    final members = _users.length - admins;
+    final asyncUsers = ref.watch(adminUsersNotifierProvider);
+    final users = asyncUsers.value ?? [];
+
+    List<UserModel> filtered() {
+      if (_search.isEmpty) return users;
+      final q = _search.toLowerCase();
+      return users
+          .where(
+            (u) =>
+                u.displayName.toLowerCase().contains(q) ||
+                u.email.toLowerCase().contains(q),
+          )
+          .toList();
+    }
+
+    final admins = users.where((u) => u.isAdmin).length;
+    final members = users.length - admins;
 
     return Scaffold(
       backgroundColor: bg,
@@ -143,7 +71,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
             ),
             child: Row(
               children: [
-                _StatChip(label: '${_users.length} Total', color: primary),
+                _StatChip(label: '${users.length} Total', color: primary),
                 const SizedBox(width: AppSpacing.sm),
                 _StatChip(
                   label: '$members Members',
@@ -200,9 +128,9 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                 AppSpacing.lg,
                 AppSpacing.xl,
               ),
-              itemCount: _filtered.length,
+              itemCount: filtered().length,
               itemBuilder: (ctx, i) {
-                final u = _filtered[i];
+                final u = filtered()[i];
                 final isAdmin = u.role == UserRole.admin;
 
                 return Container(
@@ -297,7 +225,12 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                             size: 18,
                           ),
                           onSelected: (action) {
-                            if (action == 'toggle') _toggleRole(i);
+                            if (action == 'toggle') {
+                            ref.read(adminUsersNotifierProvider.notifier).toggleRole(
+                              userId: u.id,
+                              makeAdmin: !u.isAdmin,
+                            );
+                          }
                           },
                           itemBuilder: (ctx) => [
                             PopupMenuItem(

@@ -33,7 +33,7 @@ class _EventsScreenState extends ConsumerState<EventsScreen>
 
   void _toggleRegistration(int index) {
     final asyncEvents = ref.read(eventsNotifierProvider);
-    final events = asyncEvents.valueOrNull ?? [];
+    final events = asyncEvents.value ?? [];
     if (index >= events.length) return;
     final e = events[index];
     ref.read(eventsNotifierProvider.notifier).toggleRegistration(
@@ -87,9 +87,9 @@ class _EventsScreenState extends ConsumerState<EventsScreen>
     final textPrimary = isDark ? AppColors.textPrimaryDark : AppColors.umber;
     final textMuted = isDark ? AppColors.textMutedDark : AppColors.muted;
     final asyncEvents = ref.watch(eventsNotifierProvider);
-    final _events = asyncEvents.valueOrNull ?? [];
+    final _events = asyncEvents.value ?? [];
     final asyncAnnouncements = ref.watch(announcementsNotifierProvider);
-    final announcements = asyncAnnouncements.valueOrNull ?? [];
+    final announcements = asyncAnnouncements.value ?? [];
 
     return Scaffold(
       backgroundColor: bg,

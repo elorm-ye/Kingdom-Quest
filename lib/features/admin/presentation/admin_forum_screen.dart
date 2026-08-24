@@ -1,32 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../shared/models/models.dart';
-import '../../../shared/services/mock_data_service.dart';
+import '../../../core/providers/feature_providers.dart';
 
 /// Admin forum moderation — review reported posts and remove content.
-class AdminForumScreen extends StatefulWidget {
+class AdminForumScreen extends ConsumerStatefulWidget {
   const AdminForumScreen({super.key});
 
   @override
-  State<AdminForumScreen> createState() => _AdminForumScreenState();
+  ConsumerState<AdminForumScreen> createState() => _AdminForumScreenState();
 }
 
-class _AdminForumScreenState extends State<AdminForumScreen>
+class _AdminForumScreenState extends ConsumerState<AdminForumScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  late List<ForumPost> _posts;
-  late List<ForumPost> _reported;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
-    _posts = List.from(MockDataService.forumPosts);
-    // Simulate 2 reported posts for the demo
-    _reported = _posts.take(2).toList();
   }
 
   @override
@@ -35,15 +31,12 @@ class _AdminForumScreenState extends State<AdminForumScreen>
     super.dispose();
   }
 
-  void _removePost(ForumPost post, bool fromReported) {
-    setState(() {
-      if (fromReported) _reported.removeWhere((p) => p.id == post.id);
-      _posts.removeWhere((p) => p.id == post.id);
-    });
+  void _removePost(ForumPost post) {
+    ref.read(forumNotifierProvider.notifier).removePost(post.id);
   }
 
   void _dismissReport(ForumPost post) {
-    setState(() => _reported.removeWhere((p) => p.id == post.id));
+    ref.read(forumNotifierProvider.notifier).dismissReport(post.id);
   }
 
   @override
@@ -54,6 +47,11 @@ class _AdminForumScreenState extends State<AdminForumScreen>
     final surface = isDark ? AppColors.espresso : AppColors.linen;
     final textPrimary = isDark ? AppColors.textPrimaryDark : AppColors.umber;
     final textMuted = isDark ? AppColors.textMutedDark : AppColors.muted;
+
+    final asyncPosts = ref.watch(forumPostsStreamProvider);
+    final posts = asyncPosts.value ?? [];
+    // For now, reported posts are a placeholder — integrate with a reports stream later
+    final reported = <ForumPost>[];
 
     return Scaffold(
       backgroundColor: bg,
@@ -82,8 +80,8 @@ class _AdminForumScreenState extends State<AdminForumScreen>
               ),
               unselectedLabelStyle: GoogleFonts.schibstedGrotesk(fontSize: 13),
               tabs: [
-                Tab(text: 'Reported (${_reported.length})'),
-                Tab(text: 'All Posts (${_posts.length})'),
+                Tab(text: 'Reported (${reported.length})'),
+                Tab(text: 'All Posts (${posts.length})'),
               ],
             ),
           ),
@@ -92,7 +90,7 @@ class _AdminForumScreenState extends State<AdminForumScreen>
           controller: _tabController,
           children: [
             // ── REPORTED TAB ──
-            _reported.isEmpty
+            reported.isEmpty
                 ? Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -115,17 +113,17 @@ class _AdminForumScreenState extends State<AdminForumScreen>
                   )
                 : ListView.builder(
                     padding: const EdgeInsets.all(AppSpacing.lg),
-                    itemCount: _reported.length,
+                    itemCount: reported.length,
                     itemBuilder: (ctx, i) => _ForumAdminCard(
-                      post: _reported[i],
+                      post: reported[i],
                       isReported: true,
                       isDark: isDark,
                       primary: primary,
                       surface: surface,
                       textPrimary: textPrimary,
                       textMuted: textMuted,
-                      onRemove: () => _removePost(_reported[i], true),
-                      onDismiss: () => _dismissReport(_reported[i]),
+                      onRemove: () => _removePost(reported[i]),
+                      onDismiss: () => _dismissReport(reported[i]),
                       index: i,
                     ),
                   ),
@@ -133,16 +131,16 @@ class _AdminForumScreenState extends State<AdminForumScreen>
             // ── ALL POSTS TAB ──
             ListView.builder(
               padding: const EdgeInsets.all(AppSpacing.lg),
-              itemCount: _posts.length,
+              itemCount: posts.length,
               itemBuilder: (ctx, i) => _ForumAdminCard(
-                post: _posts[i],
+                post: posts[i],
                 isReported: false,
                 isDark: isDark,
                 primary: primary,
                 surface: surface,
                 textPrimary: textPrimary,
                 textMuted: textMuted,
-                onRemove: () => _removePost(_posts[i], false),
+                onRemove: () => _removePost(posts[i]),
                 onDismiss: () {},
                 index: i,
               ),

@@ -1,29 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../shared/models/models.dart';
-import '../../../shared/services/mock_data_service.dart';
+import '../../../core/providers/feature_providers.dart';
 
 /// Admin advice moderation — respond to and close advice requests.
-class AdminAdviceScreen extends StatefulWidget {
+class AdminAdviceScreen extends ConsumerStatefulWidget {
   const AdminAdviceScreen({super.key});
 
   @override
-  State<AdminAdviceScreen> createState() => _AdminAdviceScreenState();
+  ConsumerState<AdminAdviceScreen> createState() => _AdminAdviceScreenState();
 }
 
-class _AdminAdviceScreenState extends State<AdminAdviceScreen> {
-  late List<AdviceRequest> _requests;
+class _AdminAdviceScreenState extends ConsumerState<AdminAdviceScreen> {
   final _replyController = TextEditingController();
   final _bibleController = TextEditingController();
-
-  @override
-  void initState() {
-    super.initState();
-    _requests = List.from(MockDataService.adviceRequests);
-  }
 
   @override
   void dispose() {
@@ -32,27 +26,13 @@ class _AdminAdviceScreenState extends State<AdminAdviceScreen> {
     super.dispose();
   }
 
-  void _closeRequest(int idx) {
-    final r = _requests[idx];
-    setState(() {
-      _requests[idx] = AdviceRequest(
-        id: r.id,
-        userId: r.userId,
-        churchId: r.churchId,
-        title: r.title,
-        description: r.description,
-        isAnonymous: r.isAnonymous,
-        anonymousDisplayName: r.anonymousDisplayName,
-        status: AdviceStatus.completed,
-        responses: r.responses,
-        createdAt: r.createdAt,
-      );
-    });
+  void _closeRequest(String id) {
+    ref.read(adviceNotifierProvider.notifier).close(id);
   }
 
   void _showReplySheet(
     BuildContext context,
-    int idx,
+    AdviceRequest request,
     bool isDark,
     Color primary,
     Color surface,
@@ -140,7 +120,16 @@ class _AdminAdviceScreenState extends State<AdminAdviceScreen> {
                 onPressed: () {
                   if (_replyController.text.trim().isNotEmpty) {
                     Navigator.pop(ctx);
-                    _closeRequest(idx);
+                    ref.read(adviceNotifierProvider.notifier).reply(
+                      adviceRequestId: request.id,
+                      message: _replyController.text.trim(),
+                      bibleReferences: _bibleController.text.trim().isNotEmpty
+                          ? _bibleController.text.split(',')
+                              .map((s) => s.trim())
+                              .where((s) => s.isNotEmpty)
+                              .toList()
+                          : [],
+                    );
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text(
@@ -199,11 +188,20 @@ class _AdminAdviceScreenState extends State<AdminAdviceScreen> {
           ),
         ),
       ),
-      body: ListView.builder(
+      body: Builder(
+        builder: (context) {
+          final asyncAdvice = ref.watch(adviceNotifierProvider);
+          final requests = asyncAdvice.value ?? [];
+          return asyncAdvice.when(
+            loading: () => const Center(child: CircularProgressIndicator()),
+            error: (e, _) => Center(child: Text('Error: $e')),
+            data: (_) => RefreshIndicator(
+              onRefresh: () => ref.read(adviceNotifierProvider.notifier).refresh(),
+              child: ListView.builder(
         padding: const EdgeInsets.all(AppSpacing.lg),
-        itemCount: _requests.length,
+        itemCount: requests.length,
         itemBuilder: (ctx, i) {
-          final r = _requests[i];
+          final r = requests[i];
           final sc = _statusColor(r.status);
           final name = r.isAnonymous
               ? (r.anonymousDisplayName ?? 'Anonymous Member')
@@ -287,7 +285,7 @@ class _AdminAdviceScreenState extends State<AdminAdviceScreen> {
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
                             OutlinedButton(
-                              onPressed: () => _closeRequest(i),
+                              onPressed: () => _closeRequest(r.id),
                               style: OutlinedButton.styleFrom(
                                 padding: const EdgeInsets.symmetric(
                                   horizontal: 12,
@@ -315,7 +313,7 @@ class _AdminAdviceScreenState extends State<AdminAdviceScreen> {
                             ElevatedButton.icon(
                               onPressed: () => _showReplySheet(
                                 context,
-                                i,
+                                r,
                                 isDark,
                                 primary,
                                 surface,
@@ -435,6 +433,10 @@ class _AdminAdviceScreenState extends State<AdminAdviceScreen> {
               .animate(delay: Duration(milliseconds: i * 60))
               .fadeIn(duration: 350.ms)
               .slideY(begin: 0.1, end: 0);
+        },
+      ),
+            ),
+          );
         },
       ),
     );
