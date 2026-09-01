@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
@@ -15,7 +13,10 @@ class SermonNotesTab extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final theme = Theme.of(context);
+    final textTheme = theme.textTheme;
+    final colorScheme = theme.colorScheme;
+    
     final asyncNotes = ref.watch(sermonNotesNotifierProvider);
     final notes = asyncNotes.value ?? [];
 
@@ -27,27 +28,20 @@ class SermonNotesTab extends ConsumerWidget {
             Icon(
               Icons.menu_book_outlined,
               size: 56,
-              color: isDark
-                  ? AppColors.textMutedDark
-                  : AppColors.muted.withValues(alpha: 0.5),
+              color: colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
             ),
             const SizedBox(height: AppSpacing.md),
             Text(
               'No sermon notes yet',
-              style: GoogleFonts.bricolageGrotesque(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-                color: isDark ? AppColors.textSecondaryDark : AppColors.muted,
+              style: textTheme.titleMedium?.copyWith(
+                color: colorScheme.onSurfaceVariant,
               ),
             ),
             const SizedBox(height: AppSpacing.xs),
             Text(
               'Sermon summaries will appear here after Sunday services.',
               textAlign: TextAlign.center,
-              style: GoogleFonts.schibstedGrotesk(
-                fontSize: 13,
-                color: isDark ? AppColors.textMutedDark : AppColors.muted,
-              ),
+              style: textTheme.bodySmall,
             ),
           ],
         ),
@@ -55,7 +49,7 @@ class SermonNotesTab extends ConsumerWidget {
     }
 
     return ListView.builder(
-      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl, vertical: AppSpacing.md),
       itemCount: notes.length,
       itemBuilder: (context, i) {
         final note = notes[i];
@@ -80,161 +74,139 @@ class _SermonNoteCardState extends State<_SermonNoteCard> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final card = isDark ? AppColors.espresso : AppColors.linen;
-    final primary = isDark ? AppColors.burntAmber : AppColors.terracotta;
-    final textPrimary = isDark ? AppColors.textPrimaryDark : AppColors.umber;
-    final textMuted = isDark ? AppColors.textMutedDark : AppColors.muted;
+    final theme = Theme.of(context);
+    final textTheme = theme.textTheme;
+    final colorScheme = theme.colorScheme;
+    
     final note = widget.note;
     final dateStr = DateFormat('EEEE, MMM d, yyyy').format(note.sermonDate);
 
-    return GestureDetector(
-      onTap: () => setState(() => _expanded = !_expanded),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-        margin: const EdgeInsets.only(bottom: AppSpacing.md),
-        padding: const EdgeInsets.all(AppSpacing.lg),
-        decoration: BoxDecoration(
-          color: card,
-          borderRadius: BorderRadius.circular(AppSpacing.radiusCard),
-          border: _expanded
-              ? Border.all(color: primary.withValues(alpha: 0.3), width: 1.5)
-              : null,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Date chip
-            Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.sm,
-                vertical: 3,
-              ),
-              decoration: BoxDecoration(
-                color: primary.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(6),
-              ),
-              child: Text(
-                dateStr,
-                style: GoogleFonts.schibstedGrotesk(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w600,
-                  color: primary,
+    return Padding(
+      padding: const EdgeInsets.only(bottom: AppSpacing.md),
+      child: GestureDetector(
+        onTap: () => setState(() => _expanded = !_expanded),
+        child: Card(
+          elevation: _expanded ? 2 : 1,
+          shape: _expanded 
+            ? RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(AppSpacing.radiusCard),
+                side: BorderSide(
+                  color: colorScheme.primary.withValues(alpha: 0.3),
+                  width: 1.5,
                 ),
-              ),
-            ),
-            const SizedBox(height: AppSpacing.sm),
-
-            // Title
-            Text(
-              note.title,
-              style: GoogleFonts.bricolageGrotesque(
-                fontSize: 16,
-                fontWeight: FontWeight.w700,
-                color: textPrimary,
-              ),
-            ),
-            const SizedBox(height: AppSpacing.xs),
-
-            // Preacher + Scripture
-            Row(
+              )
+            : null,
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
+            padding: const EdgeInsets.all(AppSpacing.lg),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(
-                  Icons.person_outline,
-                  size: 14,
-                  color: textMuted,
-                ),
-                const SizedBox(width: 4),
-                Text(
-                  note.preacherName,
-                  style: GoogleFonts.schibstedGrotesk(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                    color: textMuted,
+                // Date chip
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.sm,
+                    vertical: 3,
                   ),
-                ),
-                const SizedBox(width: AppSpacing.md),
-                Icon(
-                  Icons.menu_book_outlined,
-                  size: 14,
-                  color: primary,
-                ),
-                const SizedBox(width: 4),
-                Expanded(
+                  decoration: BoxDecoration(
+                    color: colorScheme.primary.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
                   child: Text(
-                    note.scriptureReference,
-                    style: GoogleFonts.schibstedGrotesk(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: primary,
+                    dateStr,
+                    style: textTheme.labelSmall?.copyWith(
+                      color: colorScheme.primary,
                     ),
-                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
-              ],
-            ),
-            const SizedBox(height: AppSpacing.md),
+                const SizedBox(height: AppSpacing.sm),
 
-            // Summary text (collapsed / expanded)
-            AnimatedCrossFade(
-              duration: const Duration(milliseconds: 300),
-              crossFadeState: _expanded
-                  ? CrossFadeState.showSecond
-                  : CrossFadeState.showFirst,
-              firstChild: Text(
-                note.content,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: GoogleFonts.schibstedGrotesk(
-                  fontSize: 13,
-                  height: 1.6,
-                  color: isDark
-                      ? AppColors.textSecondaryDark
-                      : AppColors.muted,
-                ),
-              ),
-              secondChild: Text(
-                note.content,
-                style: GoogleFonts.schibstedGrotesk(
-                  fontSize: 13,
-                  height: 1.6,
-                  color: isDark
-                      ? AppColors.textSecondaryDark
-                      : AppColors.muted,
-                ),
-              ),
-            ),
-
-            const SizedBox(height: AppSpacing.sm),
-
-            // Tap indicator
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  _expanded
-                      ? Icons.keyboard_arrow_up_rounded
-                      : Icons.keyboard_arrow_down_rounded,
-                  size: 18,
-                  color: textMuted,
-                ),
-                const SizedBox(width: 4),
+                // Title
                 Text(
-                  _expanded ? 'Tap to collapse' : 'Tap to read more',
-                  style: GoogleFonts.schibstedGrotesk(
-                    fontSize: 11,
-                    color: textMuted,
+                  note.title,
+                  style: textTheme.titleMedium,
+                ),
+                const SizedBox(height: AppSpacing.xs),
+
+                // Preacher + Scripture
+                Row(
+                  children: [
+                    Icon(
+                      Icons.person_outline,
+                      size: 14,
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      note.preacherName,
+                      style: textTheme.labelSmall?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                    const SizedBox(width: AppSpacing.md),
+                    Icon(
+                      Icons.menu_book_outlined,
+                      size: 14,
+                      color: colorScheme.primary,
+                    ),
+                    const SizedBox(width: 4),
+                    Expanded(
+                      child: Text(
+                        note.scriptureReference,
+                        style: textTheme.labelSmall?.copyWith(
+                          color: colorScheme.primary,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: AppSpacing.md),
+
+                // Summary text (collapsed / expanded)
+                AnimatedCrossFade(
+                  duration: const Duration(milliseconds: 300),
+                  crossFadeState: _expanded
+                      ? CrossFadeState.showSecond
+                      : CrossFadeState.showFirst,
+                  firstChild: Text(
+                    note.content,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: textTheme.bodyMedium,
                   ),
+                  secondChild: Text(
+                    note.content,
+                    style: textTheme.bodyMedium,
+                  ),
+                ),
+
+                const SizedBox(height: AppSpacing.sm),
+
+                // Tap indicator
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      _expanded
+                          ? Icons.keyboard_arrow_up_rounded
+                          : Icons.keyboard_arrow_down_rounded,
+                      size: 18,
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      _expanded ? 'Tap to collapse' : 'Tap to read more',
+                      style: textTheme.bodySmall,
+                    ),
+                  ],
                 ),
               ],
             ),
-          ],
+          ),
         ),
       ),
-    )
-        .animate(delay: Duration(milliseconds: 100 * widget.index))
-        .fadeIn(duration: 400.ms)
-        .slideY(begin: 0.05);
+    );
   }
 }

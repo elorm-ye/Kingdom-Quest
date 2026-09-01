@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
-import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
+import '../../../core/theme/app_colors.dart';
 
 class CreatePostScreen extends StatefulWidget {
   const CreatePostScreen({super.key});
@@ -38,23 +37,17 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final card = isDark ? AppColors.espresso : AppColors.linen;
+    final theme = Theme.of(context);
+    final textTheme = theme.textTheme;
+    final colorScheme = theme.colorScheme;
 
     return Scaffold(
-      backgroundColor: isDark ? AppColors.umberNight : AppColors.sand,
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.close, size: 22),
           onPressed: () => context.pop(),
         ),
-        title: Text(
-          'New Post',
-          style: GoogleFonts.bricolageGrotesque(
-            fontSize: 20,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
+        title: const Text('New Post'),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(AppSpacing.xl),
@@ -67,9 +60,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
               Container(
                 padding: const EdgeInsets.all(AppSpacing.md),
                 decoration: BoxDecoration(
-                  color: isDark
-                      ? AppColors.plumDusk
-                      : AppColors.terracotta.withValues(alpha: 0.08),
+                  color: colorScheme.tertiaryContainer,
                   borderRadius: BorderRadius.circular(AppSpacing.radiusChip),
                 ),
                 child: Row(
@@ -77,17 +68,14 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                     Icon(
                       Icons.shield_outlined,
                       size: 16,
-                      color: isDark ? AppColors.glow : AppColors.terracotta,
+                      color: colorScheme.onTertiaryContainer,
                     ),
                     const SizedBox(width: AppSpacing.sm),
                     Expanded(
                       child: Text(
                         'This post will be completely anonymous. No one can see your identity.',
-                        style: GoogleFonts.schibstedGrotesk(
-                          fontSize: 12,
-                          color: isDark
-                              ? AppColors.textSecondaryDark
-                              : AppColors.umber,
+                        style: textTheme.labelSmall?.copyWith(
+                          color: colorScheme.onTertiaryContainer,
                         ),
                       ),
                     ),
@@ -95,25 +83,24 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                 ),
               ),
               const SizedBox(height: AppSpacing.xxl),
-              _label('Title', isDark), const SizedBox(height: AppSpacing.sm),
+              _label('Title', textTheme, colorScheme), 
+              const SizedBox(height: AppSpacing.sm),
               TextFormField(
                 controller: _titleCtrl,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   hintText: 'What\'s on your mind?',
-                  fillColor: card,
                 ),
                 validator: (v) =>
                     v == null || v.isEmpty ? 'Enter a title' : null,
               ),
               const SizedBox(height: AppSpacing.xl),
-              _label('Your message', isDark),
+              _label('Your message', textTheme, colorScheme),
               const SizedBox(height: AppSpacing.sm),
               TextFormField(
                 controller: _contentCtrl,
                 maxLines: 8,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   hintText: 'Share your thoughts, questions, or struggles...',
-                  fillColor: card,
                   alignLabelWithHint: true,
                 ),
                 validator: (v) =>
@@ -145,12 +132,10 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
     );
   }
 
-  Widget _label(String t, bool isDark) => Text(
+  Widget _label(String t, TextTheme textTheme, ColorScheme colorScheme) => Text(
     t,
-    style: GoogleFonts.schibstedGrotesk(
-      fontSize: 13,
-      fontWeight: FontWeight.w500,
-      color: isDark ? AppColors.textSecondaryDark : AppColors.umber,
+    style: textTheme.labelMedium?.copyWith(
+      color: colorScheme.onSurfaceVariant,
       letterSpacing: 0.3,
     ),
   );

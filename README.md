@@ -45,8 +45,8 @@ The Kingdom Quest platform consists of three main components:
 The Flutter mobile application includes an **Offline Demo & Quick Test Mode**, allowing developers and testers to immediately evaluate all member and admin features without configuring a live Supabase instance:
 
 1. **Quick Test Buttons on Login Screen**:
-   - **👤 Demo Member**: Click **"Demo Member"** to log in immediately as a regular youth member (`David`). Explore prayer requests, petitions, advice center, sermon notes, daily inspirations, community forum, and user profile.
-   - **🛡️ Demo Admin**: Click **"Demo Admin"** to log in as an administrator (`Pastor James`). Access the Admin Dashboard, manage users, review petitions, answer advice requests, publish sermon notes & inspirations, and moderate reported forum posts.
+   - ** Demo Member**: Click **"Demo Member"** to log in immediately as a regular youth member (`David`). Explore prayer requests, petitions, advice center, sermon notes, daily inspirations, community forum, and user profile.
+   - ** Demo Admin**: Click **"Demo Admin"** to log in as an administrator (`Pastor James`). Access the Admin Dashboard, manage users, review petitions, answer advice requests, publish sermon notes & inspirations, and moderate reported forum posts.
 
 2. **Automatic Fallback**:
    - If a live Supabase backend is offline or unconfigured, all authentication attempts and feature providers gracefully fall back to local mock data (`MockDataService`), preventing error screens or crashes.

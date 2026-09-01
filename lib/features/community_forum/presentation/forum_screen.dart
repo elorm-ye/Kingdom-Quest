@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/providers/feature_providers.dart';
@@ -33,19 +31,13 @@ class _ForumScreenState extends ConsumerState<ForumScreen>
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final primary = isDark ? AppColors.burntAmber : AppColors.terracotta;
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
 
     return Scaffold(
-      backgroundColor: isDark ? AppColors.umberNight : AppColors.sand,
       appBar: AppBar(
-        title: Text(
-          'Community',
-          style: GoogleFonts.bricolageGrotesque(
-            fontSize: 20,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
+        title: const Text('Community'),
         actions: [
           IconButton(
             icon: const Icon(
@@ -60,7 +52,7 @@ class _ForumScreenState extends ConsumerState<ForumScreen>
           child: Container(
             margin: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
             decoration: BoxDecoration(
-              color: isDark ? AppColors.espresso : AppColors.linen,
+              color: colorScheme.surfaceContainerHighest,
               borderRadius: BorderRadius.circular(AppSpacing.radiusChip),
             ),
             child: TabBar(
@@ -68,20 +60,11 @@ class _ForumScreenState extends ConsumerState<ForumScreen>
               indicatorSize: TabBarIndicatorSize.tab,
               dividerColor: Colors.transparent,
               indicator: BoxDecoration(
-                color: primary,
+                color: colorScheme.primary,
                 borderRadius: BorderRadius.circular(AppSpacing.radiusChip),
               ),
-              labelColor: Colors.white,
-              unselectedLabelColor:
-                  isDark ? AppColors.textSecondaryDark : AppColors.muted,
-              labelStyle: GoogleFonts.schibstedGrotesk(
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-              ),
-              unselectedLabelStyle: GoogleFonts.schibstedGrotesk(
-                fontSize: 13,
-                fontWeight: FontWeight.w500,
-              ),
+              labelColor: colorScheme.onPrimary,
+              unselectedLabelColor: colorScheme.onSurfaceVariant,
               tabs: const [
                 Tab(text: 'Forum'),
                 Tab(text: 'Sermon Notes'),
@@ -117,7 +100,10 @@ class _ForumScreenState extends ConsumerState<ForumScreen>
 class _ForumList extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final theme = Theme.of(context);
+    final textTheme = theme.textTheme;
+    final colorScheme = theme.colorScheme;
+    
     final asyncPosts = ref.watch(forumPostsStreamProvider);
     final posts = asyncPosts.value ?? [];
 
@@ -129,9 +115,7 @@ class _ForumList extends ConsumerWidget {
           margin: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
           padding: const EdgeInsets.all(AppSpacing.md),
           decoration: BoxDecoration(
-            color: isDark
-                ? AppColors.plumDusk
-                : AppColors.terracotta.withValues(alpha: 0.08),
+            color: colorScheme.tertiaryContainer,
             borderRadius: BorderRadius.circular(AppSpacing.radiusChip),
           ),
           child: Row(
@@ -139,23 +123,20 @@ class _ForumList extends ConsumerWidget {
               Icon(
                 Icons.shield_outlined,
                 size: 16,
-                color: isDark ? AppColors.glow : AppColors.terracotta,
+                color: colorScheme.onTertiaryContainer,
               ),
               const SizedBox(width: AppSpacing.sm),
               Expanded(
                 child: Text(
                   'All posts are anonymous. Your identity is never revealed.',
-                  style: GoogleFonts.schibstedGrotesk(
-                    fontSize: 12,
-                    color: isDark
-                        ? AppColors.textSecondaryDark
-                        : AppColors.umber,
+                  style: textTheme.labelSmall?.copyWith(
+                    color: colorScheme.onTertiaryContainer,
                   ),
                 ),
               ),
             ],
           ),
-        ).animate().fadeIn(duration: 400.ms),
+        ),
         const SizedBox(height: AppSpacing.md),
         Expanded(
           child: ListView.builder(
@@ -163,17 +144,12 @@ class _ForumList extends ConsumerWidget {
             itemCount: posts.length,
             itemBuilder: (context, i) {
               final p = posts[i];
-              final card = isDark ? AppColors.espresso : AppColors.linen;
 
-              return Container(
-                    margin: const EdgeInsets.only(bottom: AppSpacing.md),
+              return Padding(
+                padding: const EdgeInsets.only(bottom: AppSpacing.md),
+                child: Card(
+                  child: Padding(
                     padding: const EdgeInsets.all(AppSpacing.lg),
-                    decoration: BoxDecoration(
-                      color: card,
-                      borderRadius: BorderRadius.circular(
-                        AppSpacing.radiusCard,
-                      ),
-                    ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -183,19 +159,13 @@ class _ForumList extends ConsumerWidget {
                               width: 32,
                               height: 32,
                               decoration: BoxDecoration(
-                                color: isDark
-                                    ? AppColors.plumDusk
-                                    : AppColors.terracotta.withValues(
-                                        alpha: 0.1,
-                                      ),
+                                color: colorScheme.primaryContainer,
                                 shape: BoxShape.circle,
                               ),
                               child: Icon(
                                 Icons.person_outline,
                                 size: 18,
-                                color: isDark
-                                    ? AppColors.textMutedDark
-                                    : AppColors.terracotta,
+                                color: colorScheme.primary,
                               ),
                             ),
                             const SizedBox(width: AppSpacing.sm),
@@ -204,22 +174,11 @@ class _ForumList extends ConsumerWidget {
                               children: [
                                 Text(
                                   p.displayName,
-                                  style: GoogleFonts.schibstedGrotesk(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w500,
-                                    color: isDark
-                                        ? AppColors.textPrimaryDark
-                                        : AppColors.umber,
-                                  ),
+                                  style: textTheme.labelMedium,
                                 ),
                                 Text(
                                   _timeAgo(p.createdAt),
-                                  style: GoogleFonts.schibstedGrotesk(
-                                    fontSize: 11,
-                                    color: isDark
-                                        ? AppColors.textMutedDark
-                                        : AppColors.muted,
-                                  ),
+                                  style: textTheme.bodySmall,
                                 ),
                               ],
                             ),
@@ -228,9 +187,7 @@ class _ForumList extends ConsumerWidget {
                               icon: Icon(
                                 Icons.more_horiz_rounded,
                                 size: 18,
-                                color: isDark
-                                    ? AppColors.textMutedDark
-                                    : AppColors.muted,
+                                color: colorScheme.onSurfaceVariant,
                               ),
                               onPressed: () {},
                               padding: EdgeInsets.zero,
@@ -241,26 +198,14 @@ class _ForumList extends ConsumerWidget {
                         const SizedBox(height: AppSpacing.md),
                         Text(
                           p.title,
-                          style: GoogleFonts.bricolageGrotesque(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w600,
-                            color: isDark
-                                ? AppColors.textPrimaryDark
-                                : AppColors.umber,
-                          ),
+                          style: textTheme.titleSmall,
                         ),
                         const SizedBox(height: AppSpacing.sm),
                         Text(
                           p.content,
                           maxLines: 3,
                           overflow: TextOverflow.ellipsis,
-                          style: GoogleFonts.schibstedGrotesk(
-                            fontSize: 13,
-                            height: 1.5,
-                            color: isDark
-                                ? AppColors.textSecondaryDark
-                                : AppColors.muted,
-                          ),
+                          style: textTheme.bodyMedium,
                         ),
                         const SizedBox(height: AppSpacing.lg),
                         Row(
@@ -268,30 +213,32 @@ class _ForumList extends ConsumerWidget {
                             _actionBtn(
                               Icons.arrow_upward,
                               '${p.voteScore}',
-                              isDark,
+                              textTheme,
+                              colorScheme,
                             ),
                             const SizedBox(width: AppSpacing.lg),
                             _actionBtn(
                               Icons.favorite_outline,
                               '${p.likeCount}',
-                              isDark,
+                              textTheme,
+                              colorScheme,
                             ),
                             const SizedBox(width: AppSpacing.lg),
                             _actionBtn(
                               Icons.chat_bubble_outline,
                               '${p.commentCount}',
-                              isDark,
+                              textTheme,
+                              colorScheme,
                             ),
                             const Spacer(),
-                            _actionBtn(Icons.flag_outlined, 'Report', isDark),
+                            _actionBtn(Icons.flag_outlined, 'Report', textTheme, colorScheme),
                           ],
                         ),
                       ],
                     ),
-                  )
-                  .animate(delay: Duration(milliseconds: 100 * i))
-                  .fadeIn(duration: 400.ms)
-                  .slideY(begin: 0.05);
+                  ),
+                ),
+              );
             },
           ),
         ),
@@ -299,19 +246,18 @@ class _ForumList extends ConsumerWidget {
     );
   }
 
-  Widget _actionBtn(IconData icon, String label, bool isDark) => Row(
+  Widget _actionBtn(IconData icon, String label, TextTheme textTheme, ColorScheme colorScheme) => Row(
     children: [
       Icon(
         icon,
         size: 16,
-        color: isDark ? AppColors.textMutedDark : AppColors.muted,
+        color: colorScheme.onSurfaceVariant,
       ),
       const SizedBox(width: 4),
       Text(
         label,
-        style: GoogleFonts.schibstedGrotesk(
-          fontSize: 12,
-          color: isDark ? AppColors.textMutedDark : AppColors.muted,
+        style: textTheme.bodySmall?.copyWith(
+          color: colorScheme.onSurfaceVariant,
         ),
       ),
     ],

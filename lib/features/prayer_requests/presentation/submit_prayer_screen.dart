@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
-import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
+import '../../../core/theme/app_colors.dart';
 import '../../../shared/models/prayer_request.dart';
 
 class SubmitPrayerScreen extends StatefulWidget {
@@ -43,11 +42,11 @@ class _SubmitPrayerScreenState extends State<SubmitPrayerScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final card = isDark ? AppColors.espresso : AppColors.linen;
+    final theme = Theme.of(context);
+    final textTheme = theme.textTheme;
+    final colorScheme = theme.colorScheme;
 
     return Scaffold(
-      backgroundColor: isDark ? AppColors.umberNight : AppColors.sand,
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(
@@ -56,13 +55,7 @@ class _SubmitPrayerScreenState extends State<SubmitPrayerScreen> {
           ),
           onPressed: () => context.pop(),
         ),
-        title: Text(
-          'Share a prayer',
-          style: GoogleFonts.bricolageGrotesque(
-            fontSize: 20,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
+        title: const Text('Share a prayer'),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(AppSpacing.xl),
@@ -73,34 +66,31 @@ class _SubmitPrayerScreenState extends State<SubmitPrayerScreen> {
             children: [
               Text(
                 'What\'s on your heart?',
-                style: GoogleFonts.schibstedGrotesk(
-                  fontSize: 14,
-                  color: isDark ? AppColors.textMutedDark : AppColors.muted,
+                style: textTheme.bodyMedium?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
                 ),
               ),
               const SizedBox(height: AppSpacing.xxl),
 
-              _label('Title', isDark),
+              _label('Title', textTheme, colorScheme),
               const SizedBox(height: AppSpacing.sm),
               TextFormField(
                 controller: _titleCtrl,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   hintText: 'Brief title for your prayer',
-                  fillColor: card,
                 ),
                 validator: (v) =>
                     v == null || v.isEmpty ? 'Please enter a title' : null,
               ),
               const SizedBox(height: AppSpacing.xl),
 
-              _label('Description', isDark),
+              _label('Description', textTheme, colorScheme),
               const SizedBox(height: AppSpacing.sm),
               TextFormField(
                 controller: _descCtrl,
                 maxLines: 5,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   hintText: 'Share what you\'d like prayer for...',
-                  fillColor: card,
                   alignLabelWithHint: true,
                 ),
                 validator: (v) => v == null || v.isEmpty
@@ -109,7 +99,7 @@ class _SubmitPrayerScreenState extends State<SubmitPrayerScreen> {
               ),
               const SizedBox(height: AppSpacing.xl),
 
-              _label('Category', isDark),
+              _label('Category', textTheme, colorScheme),
               const SizedBox(height: AppSpacing.sm),
               Wrap(
                 spacing: AppSpacing.sm,
@@ -125,24 +115,21 @@ class _SubmitPrayerScreenState extends State<SubmitPrayerScreen> {
                       ),
                       decoration: BoxDecoration(
                         color: selected
-                            ? (isDark
-                                  ? AppColors.burntAmber
-                                  : AppColors.terracotta)
-                            : card,
+                            ? colorScheme.primary
+                            : colorScheme.surfaceContainerHighest,
                         borderRadius: BorderRadius.circular(
                           AppSpacing.radiusFull,
                         ),
+                        border: selected 
+                            ? null
+                            : Border.all(color: colorScheme.outlineVariant),
                       ),
                       child: Text(
                         '${c.icon} ${c.label}',
-                        style: GoogleFonts.schibstedGrotesk(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
+                        style: textTheme.labelMedium?.copyWith(
                           color: selected
-                              ? Colors.white
-                              : (isDark
-                                    ? AppColors.textSecondaryDark
-                                    : AppColors.umber),
+                              ? colorScheme.onPrimary
+                              : colorScheme.onSurfaceVariant,
                         ),
                       ),
                     ),
@@ -152,46 +139,33 @@ class _SubmitPrayerScreenState extends State<SubmitPrayerScreen> {
               const SizedBox(height: AppSpacing.xxl),
 
               // Anonymous toggle
-              Container(
-                padding: const EdgeInsets.all(AppSpacing.lg),
-                decoration: BoxDecoration(
-                  color: card,
-                  borderRadius: BorderRadius.circular(AppSpacing.radiusCard),
-                ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Send anonymously',
-                            style: GoogleFonts.schibstedGrotesk(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                              color: isDark
-                                  ? AppColors.textPrimaryDark
-                                  : AppColors.umber,
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(AppSpacing.lg),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Send anonymously',
+                              style: textTheme.titleSmall,
                             ),
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            'Your name stays hidden',
-                            style: GoogleFonts.schibstedGrotesk(
-                              fontSize: 12,
-                              color: isDark
-                                  ? AppColors.textMutedDark
-                                  : AppColors.muted,
+                            const SizedBox(height: 2),
+                            Text(
+                              'Your name stays hidden',
+                              style: textTheme.bodySmall,
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                    Switch(
-                      value: _anonymous,
-                      onChanged: (v) => setState(() => _anonymous = v),
-                    ),
-                  ],
+                      Switch(
+                        value: _anonymous,
+                        onChanged: (v) => setState(() => _anonymous = v),
+                      ),
+                    ],
+                  ),
                 ),
               ),
               if (_anonymous)
@@ -205,19 +179,12 @@ class _SubmitPrayerScreenState extends State<SubmitPrayerScreen> {
                       Icon(
                         Icons.lock_outline_rounded,
                         size: 13,
-                        color: isDark
-                            ? AppColors.textMutedDark
-                            : AppColors.muted,
+                        color: colorScheme.onSurfaceVariant,
                       ),
                       const SizedBox(width: 4),
                       Text(
                         "Only ICGC's pastoral team can see this.",
-                        style: GoogleFonts.schibstedGrotesk(
-                          fontSize: 11,
-                          color: isDark
-                              ? AppColors.textMutedDark
-                              : AppColors.muted,
-                        ),
+                        style: textTheme.bodySmall,
                       ),
                     ],
                   ),
@@ -249,12 +216,10 @@ class _SubmitPrayerScreenState extends State<SubmitPrayerScreen> {
     );
   }
 
-  Widget _label(String t, bool isDark) => Text(
+  Widget _label(String t, TextTheme textTheme, ColorScheme colorScheme) => Text(
     t,
-    style: GoogleFonts.schibstedGrotesk(
-      fontSize: 13,
-      fontWeight: FontWeight.w500,
-      color: isDark ? AppColors.textSecondaryDark : AppColors.umber,
+    style: textTheme.labelMedium?.copyWith(
+      color: colorScheme.onSurfaceVariant,
       letterSpacing: 0.3,
     ),
   );

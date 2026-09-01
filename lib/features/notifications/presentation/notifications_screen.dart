@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/providers/feature_providers.dart';
@@ -45,13 +43,13 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
   Color _colorForType(String type, Color primary) {
     switch (type) {
       case 'prayer_response':
-        return AppColors.sage;
+        return AppColors.healing;
       case 'inspiration':
-        return AppColors.burntAmber;
+        return AppColors.education;
       case 'announcement':
         return primary;
       case 'event_reminder':
-        return const Color(0xFF6B7FD4);
+        return AppColors.financial;
       default:
         return primary;
     }
@@ -66,39 +64,26 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final primary = isDark ? AppColors.burntAmber : AppColors.terracotta;
-    final bg = isDark ? AppColors.umberNight : AppColors.sand;
-    final surface = isDark ? AppColors.espresso : AppColors.linen;
-    final textPrimary = isDark ? AppColors.textPrimaryDark : AppColors.umber;
-    final textMuted = isDark ? AppColors.textMutedDark : AppColors.muted;
+    final theme = Theme.of(context);
+    final textTheme = theme.textTheme;
+    final colorScheme = theme.colorScheme;
+    
     final asyncNotifications = ref.watch(notificationsStreamProvider);
     final _notifications = asyncNotifications.value ?? [];
     final unreadCount = _notifications.where((n) => !n.isRead).length;
 
     return Scaffold(
-      backgroundColor: bg,
       appBar: AppBar(
-        backgroundColor: bg,
         surfaceTintColor: Colors.transparent,
-        title: Text(
-          'Notifications',
-          style: GoogleFonts.bricolageGrotesque(
-            fontSize: 22,
-            fontWeight: FontWeight.w700,
-            color: textPrimary,
-          ),
-        ),
+        title: const Text('Notifications'),
         actions: [
           if (unreadCount > 0)
             TextButton(
               onPressed: _markAllRead,
               child: Text(
                 'Mark all read',
-                style: GoogleFonts.schibstedGrotesk(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                  color: primary,
+                style: textTheme.labelMedium?.copyWith(
+                  color: colorScheme.primary,
                 ),
               ),
             ),
@@ -112,15 +97,13 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                   Icon(
                     Icons.notifications_off_outlined,
                     size: 64,
-                    color: textMuted,
+                    color: colorScheme.onSurfaceVariant,
                   ),
                   const SizedBox(height: 16),
                   Text(
                     'No notifications yet',
-                    style: GoogleFonts.bricolageGrotesque(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                      color: textMuted,
+                    style: textTheme.titleMedium?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
                     ),
                   ),
                 ],
@@ -131,37 +114,25 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
               itemCount: _notifications.length,
               itemBuilder: (ctx, i) {
                 final n = _notifications[i];
-                final typeColor = _colorForType(n.type, primary);
+                final typeColor = _colorForType(n.type, colorScheme.primary);
 
-                return GestureDetector(
-                      onTap: () => _markRead(n.id),
-                      child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 300),
-                        margin: const EdgeInsets.only(bottom: AppSpacing.sm),
-                        padding: const EdgeInsets.all(AppSpacing.md),
-                        decoration: BoxDecoration(
-                          color: n.isRead
-                              ? surface
-                              : surface.withValues(alpha: 0.95),
-                          borderRadius: BorderRadius.circular(
-                            AppSpacing.radiusCard,
-                          ),
-                          border: n.isRead
-                              ? null
-                              : Border.all(
-                                  color: primary.withValues(alpha: 0.25),
-                                  width: 1,
-                                ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withValues(
-                                alpha: n.isRead ? 0.04 : (isDark ? 0.3 : 0.08),
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+                  child: GestureDetector(
+                    onTap: () => _markRead(n.id),
+                    child: Card(
+                      elevation: n.isRead ? 0 : 2,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(AppSpacing.radiusCard),
+                        side: n.isRead 
+                            ? BorderSide.none 
+                            : BorderSide(
+                                color: colorScheme.primary.withValues(alpha: 0.25),
+                                width: 1,
                               ),
-                              blurRadius: n.isRead ? 8 : 16,
-                              offset: const Offset(0, 3),
-                            ),
-                          ],
-                        ),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(AppSpacing.md),
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -188,12 +159,8 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                                       Expanded(
                                         child: Text(
                                           n.title,
-                                          style: GoogleFonts.schibstedGrotesk(
-                                            fontSize: 14,
-                                            fontWeight: n.isRead
-                                                ? FontWeight.w500
-                                                : FontWeight.w700,
-                                            color: textPrimary,
+                                          style: textTheme.titleSmall?.copyWith(
+                                            fontWeight: n.isRead ? FontWeight.normal : FontWeight.w700,
                                           ),
                                         ),
                                       ),
@@ -205,7 +172,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                                             left: 8,
                                           ),
                                           decoration: BoxDecoration(
-                                            color: primary,
+                                            color: colorScheme.primary,
                                             shape: BoxShape.circle,
                                           ),
                                         ),
@@ -214,20 +181,15 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                                   const SizedBox(height: 4),
                                   Text(
                                     n.body,
-                                    style: GoogleFonts.schibstedGrotesk(
-                                      fontSize: 13,
-                                      color: textMuted,
-                                      height: 1.4,
-                                    ),
+                                    style: textTheme.bodySmall,
                                     maxLines: 2,
                                     overflow: TextOverflow.ellipsis,
                                   ),
                                   const SizedBox(height: 6),
                                   Text(
                                     _timeAgo(n.createdAt),
-                                    style: GoogleFonts.schibstedGrotesk(
-                                      fontSize: 11,
-                                      color: textMuted,
+                                    style: textTheme.labelSmall?.copyWith(
+                                      color: colorScheme.onSurfaceVariant,
                                     ),
                                   ),
                                 ],
@@ -236,10 +198,9 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                           ],
                         ),
                       ),
-                    )
-                    .animate(delay: Duration(milliseconds: i * 60))
-                    .fadeIn(duration: 350.ms)
-                    .slideX(begin: 0.05, end: 0, curve: Curves.easeOut);
+                    ),
+                  ),
+                );
               },
             ),
     );

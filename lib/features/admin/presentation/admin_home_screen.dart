@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/providers/feature_providers.dart';
@@ -13,12 +11,9 @@ class AdminHomeScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final primary = isDark ? AppColors.burntAmber : AppColors.terracotta;
-    final bg = isDark ? AppColors.umberNight : AppColors.sand;
-    final surface = isDark ? AppColors.espresso : AppColors.linen;
-    final textPrimary = isDark ? AppColors.textPrimaryDark : AppColors.umber;
-    final textMuted = isDark ? AppColors.textMutedDark : AppColors.muted;
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
 
     final prayers = ref.watch(prayerRequestsNotifierProvider).value ?? [];
     final petitions = ref.watch(petitionsNotifierProvider).value ?? [];
@@ -26,40 +21,34 @@ class AdminHomeScreen extends ConsumerWidget {
     final asyncUsers = ref.watch(adminUsersNotifierProvider);
     final members = asyncUsers.value?.length ?? 0;
 
-    final pendingPrayers = prayers
-        .where((p) => p.status.name == 'pending')
-        .length;
-    final pendingPetitions = petitions
-        .where((p) => p.status.name == 'pending')
-        .length;
-    final pendingAdvice = advice
-        .where((a) => a.status.name == 'pending')
-        .length;
+    final pendingPrayers = prayers.where((p) => p.status.name == 'pending').length;
+    final pendingPetitions = petitions.where((p) => p.status.name == 'pending').length;
+    final pendingAdvice = advice.where((a) => a.status.name == 'pending').length;
 
     final stats = [
       (
         label: 'Members',
         value: '$members',
         icon: Icons.people_rounded,
-        color: const Color(0xFF6B7FD4),
+        color: AppColors.education,
       ),
       (
         label: 'Prayers',
         value: '${prayers.length}',
         icon: Icons.volunteer_activism_rounded,
-        color: AppColors.sage,
+        color: AppColors.healing,
       ),
       (
         label: 'Petitions',
         value: '${petitions.length}',
         icon: Icons.mail_rounded,
-        color: AppColors.burntAmber,
+        color: AppColors.family,
       ),
       (
         label: 'Advice',
         value: '${advice.length}',
         icon: Icons.lightbulb_outline_rounded,
-        color: AppColors.terracotta,
+        color: AppColors.spiritualGrowth,
       ),
     ];
 
@@ -68,55 +57,52 @@ class AdminHomeScreen extends ConsumerWidget {
         label: 'Prayers',
         subtitle: '$pendingPrayers pending',
         icon: Icons.volunteer_activism_outlined,
-        color: AppColors.sage,
+        color: AppColors.healing,
         route: '/admin/prayers',
       ),
       (
         label: 'Petitions',
         subtitle: '$pendingPetitions pending',
         icon: Icons.mail_outline_rounded,
-        color: AppColors.burntAmber,
+        color: AppColors.family,
         route: '/admin/petitions',
       ),
       (
         label: 'Advice',
         subtitle: '$pendingAdvice pending',
         icon: Icons.lightbulb_outline_rounded,
-        color: AppColors.terracotta,
+        color: AppColors.spiritualGrowth,
         route: '/admin/advice',
       ),
       (
         label: 'Inspiration',
         subtitle: 'Publish post',
         icon: Icons.auto_awesome_outlined,
-        color: const Color(0xFF6B7FD4),
+        color: AppColors.education,
         route: '/admin/inspiration',
       ),
       (
         label: 'Forum',
         subtitle: 'Moderate',
         icon: Icons.forum_outlined,
-        color: AppColors.oliveClay,
+        color: AppColors.financial,
         route: '/admin/forum',
       ),
       (
         label: 'Users',
         subtitle: 'Manage',
         icon: Icons.people_outlined,
-        color: const Color(0xFF9B7ED4),
+        color: AppColors.other,
         route: '/admin/users',
       ),
     ];
 
     return Scaffold(
-      backgroundColor: bg,
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
             pinned: true,
             expandedHeight: 140,
-            backgroundColor: bg,
-            surfaceTintColor: Colors.transparent,
             flexibleSpace: FlexibleSpaceBar(
               titlePadding: const EdgeInsets.only(
                 left: AppSpacing.lg,
@@ -132,17 +118,14 @@ class AdminHomeScreen extends ConsumerWidget {
                       vertical: 2,
                     ),
                     decoration: BoxDecoration(
-                      color: primary.withValues(alpha: 0.15),
-                      borderRadius: BorderRadius.circular(
-                        AppSpacing.radiusFull,
-                      ),
+                      color: colorScheme.primary,
+                      borderRadius: BorderRadius.circular(AppSpacing.radiusFull),
                     ),
                     child: Text(
                       'ADMIN',
-                      style: GoogleFonts.schibstedGrotesk(
+                      style: textTheme.labelSmall?.copyWith(
+                        color: colorScheme.onPrimary,
                         fontSize: 9,
-                        fontWeight: FontWeight.w800,
-                        color: primary,
                         letterSpacing: 1.2,
                       ),
                     ),
@@ -150,21 +133,14 @@ class AdminHomeScreen extends ConsumerWidget {
                   const SizedBox(height: 4),
                   Text(
                     'Dashboard',
-                    style: GoogleFonts.bricolageGrotesque(
-                      fontSize: 22,
-                      fontWeight: FontWeight.w700,
-                      color: textPrimary,
-                    ),
+                    style: textTheme.displayMedium,
                   ),
                 ],
               ),
             ),
             actions: [
               IconButton(
-                icon: Icon(
-                  Icons.logout_rounded,
-                  color: textMuted,
-                ),
+                icon: const Icon(Icons.logout_rounded),
                 tooltip: 'Back to member view',
                 onPressed: () => context.go('/home'),
               ),
@@ -185,64 +161,40 @@ class AdminHomeScreen extends ConsumerWidget {
                     mainAxisSpacing: AppSpacing.md,
                     crossAxisSpacing: AppSpacing.md,
                     childAspectRatio: 1.7,
-                    children: stats.asMap().entries.map((e) {
-                      final s = e.value;
-                      return Container(
-                            padding: const EdgeInsets.all(AppSpacing.md),
-                            decoration: BoxDecoration(
-                              color: surface,
-                              borderRadius: BorderRadius.circular(
-                                AppSpacing.radiusCard,
+                    children: stats.map((s) {
+                      return Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(AppSpacing.md),
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 44,
+                                height: 44,
+                                decoration: BoxDecoration(
+                                  color: s.color.withValues(alpha: 0.12),
+                                  borderRadius: BorderRadius.circular(AppSpacing.radiusXs),
+                                ),
+                                child: Icon(s.icon, color: s.color, size: 22),
                               ),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withValues(
-                                    alpha: isDark ? 0.2 : 0.05,
+                              const SizedBox(width: AppSpacing.sm),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    s.value,
+                                    style: textTheme.displaySmall,
                                   ),
-                                  blurRadius: 10,
-                                  offset: const Offset(0, 3),
-                                ),
-                              ],
-                            ),
-                            child: Row(
-                              children: [
-                                Container(
-                                  width: 44,
-                                  height: 44,
-                                  decoration: BoxDecoration(
-                                    color: s.color.withValues(alpha: 0.12),
-                                    borderRadius: BorderRadius.circular(12),
+                                  Text(
+                                    s.label,
+                                    style: textTheme.bodySmall,
                                   ),
-                                  child: Icon(s.icon, color: s.color, size: 22),
-                                ),
-                                const SizedBox(width: AppSpacing.sm),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      s.value,
-                                      style: GoogleFonts.bricolageGrotesque(
-                                        fontSize: 24,
-                                        fontWeight: FontWeight.w700,
-                                        color: textPrimary,
-                                      ),
-                                    ),
-                                    Text(
-                                      s.label,
-                                      style: GoogleFonts.schibstedGrotesk(
-                                        fontSize: 12,
-                                        color: textMuted,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          )
-                          .animate(delay: Duration(milliseconds: e.key * 60))
-                          .fadeIn(duration: 350.ms)
-                          .slideY(begin: 0.1, end: 0);
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
                     }).toList(),
                   ),
 
@@ -250,54 +202,41 @@ class AdminHomeScreen extends ConsumerWidget {
 
                   // ── PENDING BANNER ──
                   if (pendingPrayers + pendingPetitions + pendingAdvice > 0)
-                    Container(
-                      padding: const EdgeInsets.all(AppSpacing.md),
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [
-                            AppColors.terracotta.withValues(alpha: 0.15),
-                            AppColors.burntAmber.withValues(alpha: 0.08),
-                          ],
-                        ),
-                        borderRadius: BorderRadius.circular(
-                          AppSpacing.radiusCard,
-                        ),
-                        border: Border.all(
-                          color: AppColors.terracotta.withValues(alpha: 0.3),
-                        ),
+                    Card(
+                      color: colorScheme.surfaceContainerHighest,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(AppSpacing.radiusCard),
+                        side: BorderSide(color: colorScheme.primary, width: 1.5),
                       ),
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.access_time_rounded,
-                            color: primary,
-                            size: 20,
-                          ),
-                          const SizedBox(width: AppSpacing.sm),
-                          Expanded(
-                            child: Text(
-                              '${pendingPrayers + pendingPetitions + pendingAdvice} items need your attention',
-                              style: GoogleFonts.schibstedGrotesk(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w600,
-                                color: primary,
+                      child: Padding(
+                        padding: const EdgeInsets.all(AppSpacing.md),
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.access_time_rounded,
+                              color: colorScheme.primary,
+                              size: 20,
+                            ),
+                            const SizedBox(width: AppSpacing.sm),
+                            Expanded(
+                              child: Text(
+                                '${pendingPrayers + pendingPetitions + pendingAdvice} items need your attention',
+                                style: textTheme.labelMedium?.copyWith(
+                                  color: colorScheme.primary,
+                                ),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ).animate().fadeIn(duration: 400.ms),
+                    ),
 
                   const SizedBox(height: AppSpacing.xl),
 
                   // ── QUICK ACTIONS ──
                   Text(
                     'Quick Actions',
-                    style: GoogleFonts.bricolageGrotesque(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                      color: textPrimary,
-                    ),
+                    style: textTheme.titleLarge,
                   ),
                   const SizedBox(height: AppSpacing.md),
                   GridView.count(
@@ -307,61 +246,45 @@ class AdminHomeScreen extends ConsumerWidget {
                     mainAxisSpacing: AppSpacing.sm,
                     crossAxisSpacing: AppSpacing.sm,
                     childAspectRatio: 0.9,
-                    children: quickActions.asMap().entries.map((e) {
-                      final a = e.value;
-                      return GestureDetector(
-                            onTap: () => context.go(a.route),
-                            child: Container(
-                              padding: const EdgeInsets.all(AppSpacing.md),
-                              decoration: BoxDecoration(
-                                color: surface,
-                                borderRadius: BorderRadius.circular(
-                                  AppSpacing.radiusCard,
+                    children: quickActions.map((a) {
+                      return InkWell(
+                        onTap: () => context.go(a.route),
+                        borderRadius: BorderRadius.circular(AppSpacing.radiusCard),
+                        child: Card(
+                          child: Padding(
+                            padding: const EdgeInsets.all(AppSpacing.md),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Container(
+                                  width: 44,
+                                  height: 44,
+                                  decoration: BoxDecoration(
+                                    color: a.color.withValues(alpha: 0.12),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: Icon(
+                                    a.icon,
+                                    color: a.color,
+                                    size: 22,
+                                  ),
                                 ),
-                              ),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Container(
-                                    width: 44,
-                                    height: 44,
-                                    decoration: BoxDecoration(
-                                      color: a.color.withValues(alpha: 0.12),
-                                      shape: BoxShape.circle,
-                                    ),
-                                    child: Icon(
-                                      a.icon,
-                                      color: a.color,
-                                      size: 22,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 6),
-                                  Text(
-                                    a.label,
-                                    style: GoogleFonts.schibstedGrotesk(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w600,
-                                      color: textPrimary,
-                                    ),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                  Text(
-                                    a.subtitle,
-                                    style: GoogleFonts.schibstedGrotesk(
-                                      fontSize: 10,
-                                      color: textMuted,
-                                    ),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ],
-                              ),
+                                const SizedBox(height: 6),
+                                Text(
+                                  a.label,
+                                  style: textTheme.labelSmall?.copyWith(color: colorScheme.onSurface),
+                                  textAlign: TextAlign.center,
+                                ),
+                                Text(
+                                  a.subtitle,
+                                  style: textTheme.bodySmall,
+                                  textAlign: TextAlign.center,
+                                ),
+                              ],
                             ),
-                          )
-                          .animate(
-                            delay: Duration(milliseconds: 200 + e.key * 50),
-                          )
-                          .fadeIn(duration: 300.ms)
-                          .scale(begin: const Offset(0.95, 0.95));
+                          ),
+                        ),
+                      );
                     }).toList(),
                   ),
 

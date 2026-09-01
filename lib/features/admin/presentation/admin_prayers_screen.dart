@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../shared/models/models.dart';
@@ -43,22 +41,15 @@ class _AdminPrayersScreenState extends ConsumerState<AdminPrayersScreen>
   void _showReplySheet(
     BuildContext context,
     PrayerRequest p,
-    bool isDark,
-    Color primary,
-    Color surface,
-    Color textPrimary,
-    Color textMuted,
+    ThemeData theme,
   ) {
+    final textTheme = theme.textTheme;
+    final colorScheme = theme.colorScheme;
+    
     _replyController.clear();
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: surface,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(AppSpacing.radiusSection),
-        ),
-      ),
       builder: (ctx) => Padding(
         padding: EdgeInsets.only(
           left: AppSpacing.lg,
@@ -75,7 +66,7 @@ class _AdminPrayersScreenState extends ConsumerState<AdminPrayersScreen>
                 width: 36,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: textMuted.withValues(alpha: 0.3),
+                  color: colorScheme.onSurfaceVariant.withValues(alpha: 0.3),
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -83,31 +74,19 @@ class _AdminPrayersScreenState extends ConsumerState<AdminPrayersScreen>
             const SizedBox(height: AppSpacing.lg),
             Text(
               'Reply to Prayer Request',
-              style: GoogleFonts.bricolageGrotesque(
-                fontSize: 18,
-                fontWeight: FontWeight.w700,
-                color: textPrimary,
-              ),
+              style: textTheme.titleLarge,
             ),
             const SizedBox(height: 4),
             Text(
               p.title,
-              style: GoogleFonts.schibstedGrotesk(
-                fontSize: 13,
-                color: textMuted,
-              ),
+              style: textTheme.bodySmall,
             ),
             const SizedBox(height: AppSpacing.lg),
             TextField(
               controller: _replyController,
               maxLines: 5,
-              style: GoogleFonts.schibstedGrotesk(
-                fontSize: 14,
-                color: textPrimary,
-              ),
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 hintText: 'Write your pastoral response...',
-                hintStyle: GoogleFonts.schibstedGrotesk(color: textMuted),
               ),
             ),
             const SizedBox(height: AppSpacing.md),
@@ -122,21 +101,13 @@ class _AdminPrayersScreenState extends ConsumerState<AdminPrayersScreen>
                       message: _replyController.text.trim(),
                     );
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          'Response sent & marked as answered',
-                          style: GoogleFonts.schibstedGrotesk(),
-                        ),
+                      const SnackBar(
+                        content: Text('Response sent & marked as answered'),
                       ),
                     );
                   }
                 },
-                child: Text(
-                  'Send Response',
-                  style: GoogleFonts.schibstedGrotesk(
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
+                child: const Text('Send Response'),
               ),
             ),
           ],
@@ -147,45 +118,20 @@ class _AdminPrayersScreenState extends ConsumerState<AdminPrayersScreen>
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final primary = isDark ? AppColors.burntAmber : AppColors.terracotta;
-    final bg = isDark ? AppColors.umberNight : AppColors.sand;
-    final surface = isDark ? AppColors.espresso : AppColors.linen;
-    final textPrimary = isDark ? AppColors.textPrimaryDark : AppColors.umber;
-    final textMuted = isDark ? AppColors.textMutedDark : AppColors.muted;
+    final theme = Theme.of(context);
+    final textTheme = theme.textTheme;
 
     final asyncPrayers = ref.watch(prayerRequestsNotifierProvider);
     final prayers = asyncPrayers.value ?? [];
 
     return Scaffold(
-      backgroundColor: bg,
       body: NestedScrollView(
         headerSliverBuilder: (ctx, _) => [
           SliverAppBar(
             pinned: true,
-            backgroundColor: bg,
-            surfaceTintColor: Colors.transparent,
-            title: Text(
-              'Prayer Requests',
-              style: GoogleFonts.bricolageGrotesque(
-                fontSize: 20,
-                fontWeight: FontWeight.w700,
-                color: textPrimary,
-              ),
-            ),
+            title: const Text('Prayer Requests'),
             bottom: TabBar(
               controller: _tabController,
-              indicatorColor: primary,
-              labelColor: primary,
-              unselectedLabelColor: textMuted,
-              labelStyle: GoogleFonts.schibstedGrotesk(
-                fontWeight: FontWeight.w600,
-                fontSize: 13,
-              ),
-              unselectedLabelStyle: GoogleFonts.schibstedGrotesk(
-                fontWeight: FontWeight.w400,
-                fontSize: 13,
-              ),
               tabs: [
                 Tab(text: 'Pending (${_filtered('pending', prayers).length})'),
                 Tab(text: 'Praying (${_filtered('praying', prayers).length})'),
@@ -205,7 +151,9 @@ class _AdminPrayersScreenState extends ConsumerState<AdminPrayersScreen>
                 return Center(
                   child: Text(
                     'No $status requests',
-                    style: GoogleFonts.schibstedGrotesk(color: textMuted),
+                    style: textTheme.bodyLarge?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
                   ),
                 );
               }
@@ -216,22 +164,13 @@ class _AdminPrayersScreenState extends ConsumerState<AdminPrayersScreen>
                   itemCount: list.length,
                   itemBuilder: (ctx, i) => _PrayerAdminCard(
                     prayer: list[i],
-                    isDark: isDark,
-                    primary: primary,
-                    surface: surface,
-                    textPrimary: textPrimary,
-                    textMuted: textMuted,
+                    theme: theme,
                     onReply: () => _showReplySheet(
                       context,
                       list[i],
-                      isDark,
-                      primary,
-                      surface,
-                      textPrimary,
-                      textMuted,
+                      theme,
                     ),
                     onMarkAnswered: () => _markAnswered(list[i]),
-                    index: i,
                   ),
                 ),
               );
@@ -245,37 +184,30 @@ class _AdminPrayersScreenState extends ConsumerState<AdminPrayersScreen>
 
 class _PrayerAdminCard extends StatelessWidget {
   final PrayerRequest prayer;
-  final bool isDark;
-  final Color primary, surface, textPrimary, textMuted;
+  final ThemeData theme;
   final VoidCallback onReply, onMarkAnswered;
-  final int index;
 
   const _PrayerAdminCard({
     required this.prayer,
-    required this.isDark,
-    required this.primary,
-    required this.surface,
-    required this.textPrimary,
-    required this.textMuted,
+    required this.theme,
     required this.onReply,
     required this.onMarkAnswered,
-    required this.index,
   });
 
   Color _categoryColor() {
     switch (prayer.category) {
       case PrayerCategory.healing:
-        return AppColors.sage;
+        return AppColors.healing;
       case PrayerCategory.financial:
-        return AppColors.oliveClay;
+        return AppColors.financial;
       case PrayerCategory.education:
-        return const Color(0xFF5A7A9B);
+        return AppColors.education;
       case PrayerCategory.family:
-        return AppColors.burntAmber;
+        return AppColors.family;
       case PrayerCategory.thanksgiving:
-        return AppColors.glow;
+        return AppColors.thanksgiving;
       default:
-        return AppColors.terracotta;
+        return AppColors.other;
     }
   }
 
@@ -285,223 +217,163 @@ class _PrayerAdminCard extends StatelessWidget {
     final name = prayer.isAnonymous
         ? (prayer.anonymousDisplayName ?? 'Anonymous Member')
         : (prayer.submitterName ?? 'Member');
+    final textTheme = theme.textTheme;
 
-    return Container(
-          margin: const EdgeInsets.only(bottom: AppSpacing.md),
-          decoration: BoxDecoration(
-            color: surface,
-            borderRadius: BorderRadius.circular(AppSpacing.radiusCard),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.05),
-                blurRadius: 10,
-                offset: const Offset(0, 3),
-              ),
-            ],
-          ),
-          child: Column(
-            children: [
-              Container(
-                height: 4,
-                decoration: BoxDecoration(
-                  color: catColor,
-                  borderRadius: const BorderRadius.vertical(
-                    top: Radius.circular(AppSpacing.radiusCard),
+    return Padding(
+      padding: const EdgeInsets.only(bottom: AppSpacing.md),
+      child: Card(
+        clipBehavior: Clip.antiAlias,
+        child: Column(
+          children: [
+            Container(
+              height: 4,
+              color: catColor,
+            ),
+            Padding(
+              padding: const EdgeInsets.all(AppSpacing.md),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 3,
+                        ),
+                        decoration: BoxDecoration(
+                          color: catColor.withValues(alpha: 0.12),
+                          borderRadius: BorderRadius.circular(AppSpacing.radiusFull),
+                        ),
+                        child: Text(
+                          prayer.category.label,
+                          style: textTheme.labelSmall?.copyWith(color: catColor),
+                        ),
+                      ),
+                      const Spacer(),
+                      Icon(
+                        Icons.favorite_outline,
+                        size: 12,
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        '${prayer.prayerCount}',
+                        style: textTheme.bodySmall,
+                      ),
+                    ],
                   ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(AppSpacing.md),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
+                  const SizedBox(height: AppSpacing.sm),
+                  Text(
+                    prayer.title,
+                    style: textTheme.titleMedium,
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    prayer.description,
+                    style: textTheme.bodySmall,
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: AppSpacing.sm),
+                  Row(
+                    children: [
+                      Icon(
+                        prayer.isAnonymous
+                            ? Icons.person_off_outlined
+                            : Icons.person_outline,
+                        size: 13,
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        name,
+                        style: textTheme.bodySmall,
+                      ),
+                      const Spacer(),
+                      if (prayer.status != PrayerStatus.answered) ...[
+                        TextButton(
+                          onPressed: onMarkAnswered,
+                          style: TextButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
+                            minimumSize: Size.zero,
+                          ),
+                          child: Text(
+                            'Mark Answered',
+                            style: textTheme.labelSmall?.copyWith(
+                              color: AppColors.healing,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 4),
+                        ElevatedButton(
+                          onPressed: onReply,
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 6,
+                            ),
+                            minimumSize: Size.zero,
+                          ),
+                          child: const Text('Respond'),
+                        ),
+                      ] else
                         Container(
                           padding: const EdgeInsets.symmetric(
                             horizontal: 8,
                             vertical: 3,
                           ),
                           decoration: BoxDecoration(
-                            color: catColor.withValues(alpha: 0.12),
-                            borderRadius: BorderRadius.circular(
-                              AppSpacing.radiusFull,
-                            ),
+                            color: AppColors.healing.withValues(alpha: 0.12),
+                            borderRadius: BorderRadius.circular(AppSpacing.radiusFull),
                           ),
                           child: Text(
-                            prayer.category.label,
-                            style: GoogleFonts.schibstedGrotesk(
-                              fontSize: 10,
-                              fontWeight: FontWeight.w600,
-                              color: catColor,
+                            '✓ Answered',
+                            style: textTheme.labelSmall?.copyWith(
+                              color: AppColors.healing,
                             ),
                           ),
                         ),
-                        const Spacer(),
-                        Icon(
-                          Icons.favorite_outline,
-                          size: 12,
-                          color: textMuted,
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          '${prayer.prayerCount}',
-                          style: GoogleFonts.schibstedGrotesk(
-                            fontSize: 11,
-                            color: textMuted,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: AppSpacing.sm),
-                    Text(
-                      prayer.title,
-                      style: GoogleFonts.bricolageGrotesque(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w700,
-                        color: textPrimary,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      prayer.description,
-                      style: GoogleFonts.schibstedGrotesk(
-                        fontSize: 13,
-                        color: textMuted,
-                        height: 1.4,
-                      ),
-                      maxLines: 3,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: AppSpacing.sm),
-                    Row(
-                      children: [
-                        Icon(
-                          prayer.isAnonymous
-                              ? Icons.person_off_outlined
-                              : Icons.person_outline,
-                          size: 13,
-                          color: textMuted,
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          name,
-                          style: GoogleFonts.schibstedGrotesk(
-                            fontSize: 11,
-                            color: textMuted,
-                          ),
-                        ),
-                        const Spacer(),
-                        if (prayer.status != PrayerStatus.answered) ...[
-                          TextButton(
-                            onPressed: onMarkAnswered,
-                            style: TextButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 4,
-                              ),
-                              minimumSize: Size.zero,
-                            ),
-                            child: Text(
-                              'Mark Answered',
-                              style: GoogleFonts.schibstedGrotesk(
-                                fontSize: 11,
-                                color: AppColors.sage,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 4),
-                          ElevatedButton(
-                            onPressed: onReply,
-                            style: ElevatedButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 6,
-                              ),
-                              minimumSize: Size.zero,
-                              backgroundColor: primary,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(
-                                  AppSpacing.radiusFull,
-                                ),
-                              ),
-                            ),
-                            child: Text(
-                              'Respond',
-                              style: GoogleFonts.schibstedGrotesk(
-                                fontSize: 11,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                        ] else
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 3,
-                            ),
-                            decoration: BoxDecoration(
-                              color: AppColors.sage.withValues(alpha: 0.12),
-                              borderRadius: BorderRadius.circular(
-                                AppSpacing.radiusFull,
-                              ),
-                            ),
-                            child: Text(
-                              '✓ Answered',
-                              style: GoogleFonts.schibstedGrotesk(
-                                fontSize: 11,
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.sage,
-                              ),
-                            ),
-                          ),
-                      ],
-                    ),
-                    if (prayer.responses.isNotEmpty) ...[
-                      const Divider(height: 16),
-                      ...prayer.responses.map(
-                        (r) => Container(
-                          padding: const EdgeInsets.all(AppSpacing.sm),
-                          decoration: BoxDecoration(
-                            color: primary.withValues(alpha: 0.06),
-                            borderRadius: BorderRadius.circular(
-                              AppSpacing.radiusChip,
-                            ),
-                          ),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Icon(
-                                Icons.reply_rounded,
-                                size: 14,
-                                color: primary,
-                              ),
-                              const SizedBox(width: 6),
-                              Expanded(
-                                child: Text(
-                                  r.message,
-                                  style: GoogleFonts.schibstedGrotesk(
-                                    fontSize: 12,
-                                    color: textMuted,
-                                    height: 1.4,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
                     ],
+                  ),
+                  if (prayer.responses.isNotEmpty) ...[
+                    const Divider(height: 16),
+                    ...prayer.responses.map(
+                      (r) => Container(
+                        padding: const EdgeInsets.all(AppSpacing.sm),
+                        decoration: BoxDecoration(
+                          color: theme.colorScheme.surfaceContainerHighest,
+                          borderRadius: BorderRadius.circular(AppSpacing.radiusChip),
+                        ),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Icon(
+                              Icons.reply_rounded,
+                              size: 14,
+                              color: theme.colorScheme.primary,
+                            ),
+                            const SizedBox(width: 6),
+                            Expanded(
+                              child: Text(
+                                r.message,
+                                style: textTheme.bodySmall,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
                   ],
-                ),
+                ],
               ),
-            ],
-          ),
-        )
-        .animate(delay: Duration(milliseconds: index * 60))
-        .fadeIn(duration: 350.ms)
-        .slideY(begin: 0.1, end: 0);
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

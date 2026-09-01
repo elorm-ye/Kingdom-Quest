@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/providers/feature_providers.dart';
@@ -13,7 +11,10 @@ class HomeScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final theme = Theme.of(context);
+    final textTheme = theme.textTheme;
+    final colorScheme = theme.colorScheme;
+    
     final verse = ref.watch(dailyVerseProvider);
     final asyncUser = ref.watch(currentUserModelProvider);
     final user = asyncUser.value;
@@ -24,25 +25,19 @@ class HomeScreen extends ConsumerWidget {
     final announcements = asyncAnnouncements.value ?? [];
 
     return Scaffold(
-      backgroundColor: isDark ? AppColors.umberNight : AppColors.sand,
       body: CustomScrollView(
         slivers: [
           // App bar with church name
           SliverAppBar(
             floating: true,
             snap: true,
-            backgroundColor: isDark ? AppColors.umberNight : AppColors.sand,
             title: Row(
               children: [
-                _buildSmallMark(isDark),
+                _buildSmallMark(theme),
                 const SizedBox(width: AppSpacing.md),
                 Text(
                   'ICGC',
-                  style: GoogleFonts.bricolageGrotesque(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w600,
-                    color: isDark ? AppColors.textPrimaryDark : AppColors.umber,
-                  ),
+                  style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
                 ),
               ],
             ),
@@ -50,20 +45,15 @@ class HomeScreen extends ConsumerWidget {
               IconButton(
                 icon: Stack(
                   children: [
-                    Icon(
-                      Icons.notifications_outlined,
-                      color: isDark
-                          ? AppColors.textPrimaryDark
-                          : AppColors.umber,
-                    ),
+                    const Icon(Icons.notifications_outlined),
                     Positioned(
                       right: 0,
                       top: 0,
                       child: Container(
                         width: 8,
                         height: 8,
-                        decoration: const BoxDecoration(
-                          color: AppColors.alert,
+                        decoration: BoxDecoration(
+                          color: colorScheme.error,
                           shape: BoxShape.circle,
                         ),
                       ),
@@ -84,52 +74,32 @@ class HomeScreen extends ConsumerWidget {
 
                 // Welcome
                 Text(
-                      'Hey $displayName 👋',
-                      style: GoogleFonts.bricolageGrotesque(
-                        fontSize: 26,
-                        fontWeight: FontWeight.w700,
-                        color: isDark
-                            ? AppColors.textPrimaryDark
-                            : AppColors.umber,
-                      ),
-                    )
-                    .animate()
-                    .fadeIn(duration: 500.ms)
-                    .slideX(begin: -0.1, duration: 500.ms),
+                  'Hey $displayName 👋',
+                  style: textTheme.displayLarge,
+                ),
                 const SizedBox(height: AppSpacing.xs),
                 Text(
                   'What\'s on your heart today?',
-                  style: GoogleFonts.schibstedGrotesk(
-                    fontSize: 14,
-                    color: isDark ? AppColors.textMutedDark : AppColors.muted,
-                  ),
-                ).animate(delay: 100.ms).fadeIn(duration: 500.ms),
+                  style: textTheme.bodyLarge?.copyWith(color: colorScheme.onSurfaceVariant),
+                ),
 
                 const SizedBox(height: AppSpacing.xxl),
 
                 // Verse of the day card
-                _verseCard(verse, isDark, context)
-                    .animate(delay: 200.ms)
-                    .fadeIn(duration: 600.ms)
-                    .slideY(begin: 0.05, duration: 600.ms),
+                _verseCard(verse, theme),
 
                 const SizedBox(height: AppSpacing.xxl),
 
                 // Quick actions
                 Text(
                   'QUICK ACTIONS',
-                  style: GoogleFonts.schibstedGrotesk(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w600,
-                    color: isDark ? AppColors.textMutedDark : AppColors.muted,
+                  style: textTheme.labelSmall?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
                     letterSpacing: 1.2,
                   ),
-                ).animate(delay: 300.ms).fadeIn(duration: 400.ms),
+                ),
                 const SizedBox(height: AppSpacing.md),
-                _quickActionsGrid(
-                  isDark,
-                  context,
-                ).animate(delay: 350.ms).fadeIn(duration: 500.ms),
+                _quickActionsGrid(context, theme),
 
                 const SizedBox(height: AppSpacing.xxl),
 
@@ -137,31 +107,18 @@ class HomeScreen extends ConsumerWidget {
                 if (announcements.isNotEmpty) ...[
                   Text(
                     'ANNOUNCEMENTS',
-                    style: GoogleFonts.schibstedGrotesk(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w600,
-                      color: isDark ? AppColors.textMutedDark : AppColors.muted,
+                    style: textTheme.labelSmall?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
                       letterSpacing: 1.2,
                     ),
-                  ).animate(delay: 400.ms).fadeIn(duration: 400.ms),
+                  ),
                   const SizedBox(height: AppSpacing.md),
-                  ...announcements
-                      .map(
-                        (a) => Padding(
-                          padding: const EdgeInsets.only(bottom: AppSpacing.md),
-                          child: _announcementCard(
-                            a.title,
-                            a.content,
-                            a.adminName,
-                            a.isPinned,
-                            isDark,
-                          ),
-                        ),
-                      )
-                      .toList()
-                      .animate(interval: 100.ms, delay: 450.ms)
-                      .fadeIn(duration: 400.ms)
-                      .slideY(begin: 0.05),
+                  ...announcements.map(
+                    (a) => Padding(
+                      padding: const EdgeInsets.only(bottom: AppSpacing.md),
+                      child: _announcementCard(a.title, a.content, a.adminName, a.isPinned, theme),
+                    ),
+                  ),
                 ],
 
                 const SizedBox(height: AppSpacing.xxl),
@@ -169,30 +126,18 @@ class HomeScreen extends ConsumerWidget {
                 // Upcoming events
                 Text(
                   'UPCOMING EVENTS',
-                  style: GoogleFonts.schibstedGrotesk(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w600,
-                    color: isDark ? AppColors.textMutedDark : AppColors.muted,
+                  style: textTheme.labelSmall?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
                     letterSpacing: 1.2,
                   ),
-                ).animate(delay: 500.ms).fadeIn(duration: 400.ms),
+                ),
                 const SizedBox(height: AppSpacing.md),
-                ...events
-                    .map(
-                      (e) => Padding(
-                        padding: const EdgeInsets.only(bottom: AppSpacing.md),
-                        child: _eventCard(
-                          e.title,
-                          e.location ?? '',
-                          e.startTime,
-                          isDark,
-                        ),
-                      ),
-                    )
-                    .toList()
-                    .animate(interval: 100.ms, delay: 550.ms)
-                    .fadeIn(duration: 400.ms)
-                    .slideY(begin: 0.05),
+                ...events.map(
+                  (e) => Padding(
+                    padding: const EdgeInsets.only(bottom: AppSpacing.md),
+                    child: _eventCard(e.title, e.location ?? '', e.startTime, theme),
+                  ),
+                ),
 
                 const SizedBox(height: AppSpacing.massive),
               ]),
@@ -203,19 +148,19 @@ class HomeScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildSmallMark(bool isDark) => Container(
+  Widget _buildSmallMark(ThemeData theme) => Container(
     width: 32,
     height: 32,
     decoration: BoxDecoration(
-      gradient: AppColors.brandGradient,
-      borderRadius: BorderRadius.circular(8),
+      color: theme.colorScheme.primary,
+      borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
     ),
     child: Center(
       child: Container(
         width: 16,
         height: 16,
         decoration: BoxDecoration(
-          color: AppColors.linen.withValues(alpha: 0.9),
+          color: theme.colorScheme.onPrimary.withValues(alpha: 0.9),
           borderRadius: const BorderRadius.only(
             topLeft: Radius.circular(8),
             topRight: Radius.circular(8),
@@ -228,8 +173,8 @@ class HomeScreen extends ConsumerWidget {
             width: 6,
             height: 6,
             margin: const EdgeInsets.only(bottom: 2),
-            decoration: const BoxDecoration(
-              color: AppColors.terracotta,
+            decoration: BoxDecoration(
+              color: theme.colorScheme.primary,
               shape: BoxShape.circle,
             ),
           ),
@@ -238,138 +183,97 @@ class HomeScreen extends ConsumerWidget {
     ),
   );
 
-  Widget _verseCard(
-    Map<String, String> verse,
-    bool isDark,
-    BuildContext context,
-  ) {
-    final cardBg = isDark ? AppColors.espresso : AppColors.linen;
-    return Container(
-      padding: const EdgeInsets.all(AppSpacing.xxl),
-      decoration: BoxDecoration(
-        color: cardBg,
-        borderRadius: BorderRadius.circular(AppSpacing.radiusCard),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'VERSE OF THE DAY',
-            style: GoogleFonts.schibstedGrotesk(
-              fontSize: 10,
-              fontWeight: FontWeight.w600,
-              color: isDark ? AppColors.textMutedDark : AppColors.muted,
-              letterSpacing: 1.5,
-            ),
-          ),
-          const SizedBox(height: AppSpacing.lg),
-          Text(
-            verse['text']!,
-            style: GoogleFonts.bricolageGrotesque(
-              fontSize: 20,
-              fontWeight: FontWeight.w600,
-              color: isDark ? AppColors.textPrimaryDark : AppColors.umber,
-              height: 1.4,
-            ),
-          ),
-          const SizedBox(height: AppSpacing.md),
-          Text(
-            verse['reference']!,
-            style: GoogleFonts.schibstedGrotesk(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: isDark ? AppColors.accentLinkDark : AppColors.terracotta,
-            ),
-          ),
-          const SizedBox(height: AppSpacing.lg),
-          Text(
-            'Start here. The rest can wait.',
-            style: GoogleFonts.schibstedGrotesk(
-              fontSize: 13,
-              color: isDark ? AppColors.textMutedDark : AppColors.muted,
-            ),
-          ),
-          const SizedBox(height: AppSpacing.xl),
-          Row(
-            children: [
-              _verseButton(
-                'Amen',
-                isDark ? AppColors.burntAmber : AppColors.terracotta,
-                Colors.white,
+  Widget _verseCard(Map<String, String> verse, ThemeData theme) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.xxl),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'VERSE OF THE DAY',
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+                letterSpacing: 1.5,
               ),
-              const SizedBox(width: AppSpacing.md),
-              _verseButton(
-                'Save',
-                isDark ? AppColors.plumDusk : const Color(0xFFE5D9C9),
-                isDark ? AppColors.textPrimaryDark : AppColors.umber,
+            ),
+            const SizedBox(height: AppSpacing.lg),
+            Text(
+              verse['text']!,
+              style: theme.textTheme.titleLarge?.copyWith(height: 1.4),
+            ),
+            const SizedBox(height: AppSpacing.md),
+            Text(
+              verse['reference']!,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+                color: theme.colorScheme.primary,
               ),
-            ],
-          ),
-        ],
+            ),
+            const SizedBox(height: AppSpacing.lg),
+            Text(
+              'Start here. The rest can wait.',
+              style: theme.textTheme.bodySmall,
+            ),
+            const SizedBox(height: AppSpacing.xl),
+            Row(
+              children: [
+                ElevatedButton(
+                  onPressed: () {},
+                  child: const Text('Amen'),
+                ),
+                const SizedBox(width: AppSpacing.md),
+                FilledButton.tonal(
+                  onPressed: () {},
+                  child: const Text('Save'),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _verseButton(String label, Color bg, Color fg) => Container(
-    padding: const EdgeInsets.symmetric(
-      horizontal: AppSpacing.xl,
-      vertical: AppSpacing.md,
-    ),
-    decoration: BoxDecoration(
-      color: bg,
-      borderRadius: BorderRadius.circular(AppSpacing.radiusChip),
-    ),
-    child: Text(
-      label,
-      style: GoogleFonts.schibstedGrotesk(
-        fontSize: 14,
-        fontWeight: FontWeight.w600,
-        color: fg,
-      ),
-    ),
-  );
-
-  Widget _quickActionsGrid(bool isDark, BuildContext context) {
+  Widget _quickActionsGrid(BuildContext context, ThemeData theme) {
     final actions = [
       (
         icon: Icons.volunteer_activism_outlined,
         label: 'Prayer\nRequest',
         route: '/prayer-requests',
-        color: AppColors.terracotta,
+        color: AppColors.healing,
       ),
       (
         icon: Icons.description_outlined,
         label: 'Submit\nPetition',
         route: '/petitions',
-        color: AppColors.burntAmber,
+        color: AppColors.family,
       ),
       (
         icon: Icons.psychology_outlined,
         label: 'Ask for\nAdvice',
         route: '/advice',
-        color: AppColors.oliveClay,
+        color: AppColors.spiritualGrowth,
       ),
       (
         icon: Icons.forum_outlined,
         label: 'Community\nForum',
         route: '/community',
-        color: AppColors.sage,
+        color: AppColors.education,
       ),
       (
         icon: Icons.auto_awesome,
         label: 'Daily\nInspiration',
         route: '/inspiration',
-        color: const Color(0xFFC7784E),
+        color: AppColors.thanksgiving,
       ),
       (
         icon: Icons.event_outlined,
         label: 'Church\nEvents',
         route: '/events',
-        color: const Color(0xFF5A7A9B),
+        color: AppColors.financial,
       ),
     ];
-
-    final cardBg = isDark ? AppColors.espresso : AppColors.linen;
 
     return GridView.count(
       crossAxisCount: 3,
@@ -378,228 +282,163 @@ class HomeScreen extends ConsumerWidget {
       crossAxisSpacing: AppSpacing.md,
       mainAxisSpacing: AppSpacing.md,
       childAspectRatio: 0.95,
-      children: actions
-          .map(
-            (a) => GestureDetector(
-              onTap: () {
-                if (a.route == '/community' ||
-                    a.route == '/inspiration' ||
-                    a.route == '/events') {
-                  context.go(a.route);
-                } else {
-                  context.push(a.route);
-                }
-              },
-              child: Container(
-                padding: const EdgeInsets.all(AppSpacing.md),
-                decoration: BoxDecoration(
-                  color: cardBg,
-                  borderRadius: BorderRadius.circular(AppSpacing.radiusCard),
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      width: 44,
-                      height: 44,
-                      decoration: BoxDecoration(
-                        color: a.color.withValues(alpha: 0.12),
-                        borderRadius: BorderRadius.circular(
-                          AppSpacing.radiusChip,
-                        ),
-                      ),
-                      child: Icon(a.icon, color: a.color, size: 22),
+      children: actions.map((a) {
+        return InkWell(
+          onTap: () {
+            if (['/community', '/inspiration', '/events'].contains(a.route)) {
+              context.go(a.route);
+            } else {
+              context.push(a.route);
+            }
+          },
+          borderRadius: BorderRadius.circular(AppSpacing.radiusCard),
+          child: Card(
+            child: Padding(
+              padding: const EdgeInsets.all(AppSpacing.md),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    width: 44,
+                    height: 44,
+                    decoration: BoxDecoration(
+                      color: a.color.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(AppSpacing.radiusXs),
                     ),
-                    const SizedBox(height: AppSpacing.sm),
-                    Text(
-                      a.label,
-                      textAlign: TextAlign.center,
-                      style: GoogleFonts.schibstedGrotesk(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w500,
-                        height: 1.3,
-                        color: isDark
-                            ? AppColors.textPrimaryDark
-                            : AppColors.umber,
-                      ),
+                    child: Icon(a.icon, color: a.color, size: 22),
+                  ),
+                  const SizedBox(height: AppSpacing.sm),
+                  Text(
+                    a.label,
+                    textAlign: TextAlign.center,
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: theme.colorScheme.onSurface,
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
-          )
-          .toList(),
+          ),
+        );
+      }).toList(),
     );
   }
 
-  Widget _announcementCard(
-    String title,
-    String content,
-    String admin,
-    bool pinned,
-    bool isDark,
-  ) {
-    final cardBg = isDark ? AppColors.espresso : AppColors.linen;
-    return Container(
-      padding: const EdgeInsets.all(AppSpacing.lg),
-      decoration: BoxDecoration(
-        color: cardBg,
-        borderRadius: BorderRadius.circular(AppSpacing.radiusCard),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              if (pinned) ...[
-                Icon(
-                  Icons.push_pin_outlined,
-                  size: 14,
-                  color: isDark ? AppColors.glow : AppColors.terracotta,
-                ),
-                const SizedBox(width: AppSpacing.xs),
-              ],
-              Expanded(
-                child: Text(
-                  title,
-                  style: GoogleFonts.bricolageGrotesque(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
-                    color: isDark ? AppColors.textPrimaryDark : AppColors.umber,
+  Widget _announcementCard(String title, String content, String admin, bool pinned, ThemeData theme) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.lg),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                if (pinned) ...[
+                  Icon(
+                    Icons.push_pin_outlined,
+                    size: 14,
+                    color: theme.colorScheme.secondary,
+                  ),
+                  const SizedBox(width: AppSpacing.xs),
+                ],
+                Expanded(
+                  child: Text(
+                    title,
+                    style: theme.textTheme.titleMedium,
                   ),
                 ),
+              ],
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            Text(
+              content,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
               ),
-            ],
-          ),
-          const SizedBox(height: AppSpacing.sm),
-          Text(
-            content,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: GoogleFonts.schibstedGrotesk(
-              fontSize: 13,
-              color: isDark ? AppColors.textSecondaryDark : AppColors.muted,
-              height: 1.5,
             ),
-          ),
-          const SizedBox(height: AppSpacing.sm),
-          Text(
-            '— $admin',
-            style: GoogleFonts.schibstedGrotesk(
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
-              color: isDark ? AppColors.accentLinkDark : AppColors.terracotta,
+            const SizedBox(height: AppSpacing.sm),
+            Text(
+              '— $admin',
+              style: theme.textTheme.labelMedium?.copyWith(
+                color: theme.colorScheme.primary,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 
-  Widget _eventCard(String title, String location, DateTime time, bool isDark) {
-    final cardBg = isDark ? AppColors.espresso : AppColors.linen;
-    final months = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec',
-    ];
+  Widget _eventCard(String title, String location, DateTime time, ThemeData theme) {
+    final months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
-    return Container(
-      padding: const EdgeInsets.all(AppSpacing.lg),
-      decoration: BoxDecoration(
-        color: cardBg,
-        borderRadius: BorderRadius.circular(AppSpacing.radiusCard),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 48,
-            height: 52,
-            decoration: BoxDecoration(
-              color: isDark
-                  ? AppColors.plumDusk
-                  : AppColors.terracotta.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(AppSpacing.radiusChip),
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.lg),
+        child: Row(
+          children: [
+            Container(
+              width: 48,
+              height: 52,
+              decoration: BoxDecoration(
+                color: theme.colorScheme.primaryContainer,
+                borderRadius: BorderRadius.circular(AppSpacing.radiusXs),
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    '${time.day}',
+                    style: theme.textTheme.titleLarge?.copyWith(
+                      color: theme.colorScheme.onPrimaryContainer,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  Text(
+                    months[time.month - 1],
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: theme.colorScheme.onPrimaryContainer,
+                    ),
+                  ),
+                ],
+              ),
             ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  '${time.day}',
-                  style: GoogleFonts.bricolageGrotesque(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
-                    color: isDark
-                        ? AppColors.textPrimaryDark
-                        : AppColors.terracotta,
+            const SizedBox(width: AppSpacing.lg),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: theme.textTheme.titleMedium,
                   ),
-                ),
-                Text(
-                  months[time.month - 1],
-                  style: GoogleFonts.schibstedGrotesk(
-                    fontSize: 10,
-                    fontWeight: FontWeight.w600,
-                    color: isDark
-                        ? AppColors.textMutedDark
-                        : AppColors.terracotta,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(width: AppSpacing.lg),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: GoogleFonts.bricolageGrotesque(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: isDark ? AppColors.textPrimaryDark : AppColors.umber,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                if (location.isNotEmpty)
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.location_on_outlined,
-                        size: 13,
-                        color: isDark
-                            ? AppColors.textMutedDark
-                            : AppColors.muted,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        location,
-                        style: GoogleFonts.schibstedGrotesk(
-                          fontSize: 12,
-                          color: isDark
-                              ? AppColors.textMutedDark
-                              : AppColors.muted,
+                  const SizedBox(height: 2),
+                  if (location.isNotEmpty)
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.location_on_outlined,
+                          size: 13,
+                          color: theme.colorScheme.onSurfaceVariant,
                         ),
-                      ),
-                    ],
-                  ),
-              ],
+                        const SizedBox(width: 4),
+                        Text(
+                          location,
+                          style: theme.textTheme.bodySmall,
+                        ),
+                      ],
+                    ),
+                ],
+              ),
             ),
-          ),
-          Icon(
-            Icons.chevron_right_rounded,
-            color: isDark ? AppColors.textMutedDark : AppColors.muted,
-          ),
-        ],
+            Icon(
+              Icons.chevron_right_rounded,
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ],
+        ),
       ),
     );
   }

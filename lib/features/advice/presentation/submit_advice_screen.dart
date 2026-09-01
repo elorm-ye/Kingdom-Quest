@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
-import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
+import '../../../core/theme/app_colors.dart';
 
 class SubmitAdviceScreen extends StatefulWidget {
   const SubmitAdviceScreen({super.key});
@@ -39,11 +38,11 @@ class _SubmitAdviceScreenState extends State<SubmitAdviceScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final card = isDark ? AppColors.espresso : AppColors.linen;
+    final theme = Theme.of(context);
+    final textTheme = theme.textTheme;
+    final colorScheme = theme.colorScheme;
 
     return Scaffold(
-      backgroundColor: isDark ? AppColors.umberNight : AppColors.sand,
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(
@@ -52,13 +51,7 @@ class _SubmitAdviceScreenState extends State<SubmitAdviceScreen> {
           ),
           onPressed: () => context.pop(),
         ),
-        title: Text(
-          'Ask for Advice',
-          style: GoogleFonts.bricolageGrotesque(
-            fontSize: 20,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
+        title: const Text('Ask for Advice'),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(AppSpacing.xl),
@@ -69,32 +62,29 @@ class _SubmitAdviceScreenState extends State<SubmitAdviceScreen> {
             children: [
               Text(
                 'Ask a question, request counseling, or seek biblical guidance.',
-                style: GoogleFonts.schibstedGrotesk(
-                  fontSize: 14,
-                  color: isDark ? AppColors.textMutedDark : AppColors.muted,
+                style: textTheme.bodyMedium?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
                 ),
               ),
               const SizedBox(height: AppSpacing.xxl),
-              _label('Question Title', isDark),
+              _label('Question Title', textTheme, colorScheme),
               const SizedBox(height: AppSpacing.sm),
               TextFormField(
                 controller: _titleCtrl,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   hintText: 'What would you like guidance on?',
-                  fillColor: card,
                 ),
                 validator: (v) =>
                     v == null || v.isEmpty ? 'Enter a title' : null,
               ),
               const SizedBox(height: AppSpacing.xl),
-              _label('Detailed Description', isDark),
+              _label('Detailed Description', textTheme, colorScheme),
               const SizedBox(height: AppSpacing.sm),
               TextFormField(
                 controller: _descCtrl,
                 maxLines: 6,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   hintText: 'Share more details so we can help...',
-                  fillColor: card,
                   alignLabelWithHint: true,
                 ),
                 validator: (v) => v == null || v.isEmpty
@@ -102,45 +92,32 @@ class _SubmitAdviceScreenState extends State<SubmitAdviceScreen> {
                     : null,
               ),
               const SizedBox(height: AppSpacing.xxl),
-              Container(
-                padding: const EdgeInsets.all(AppSpacing.lg),
-                decoration: BoxDecoration(
-                  color: card,
-                  borderRadius: BorderRadius.circular(AppSpacing.radiusCard),
-                ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Ask anonymously',
-                            style: GoogleFonts.schibstedGrotesk(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                              color: isDark
-                                  ? AppColors.textPrimaryDark
-                                  : AppColors.umber,
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(AppSpacing.lg),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Ask anonymously',
+                              style: textTheme.titleSmall,
                             ),
-                          ),
-                          Text(
-                            'Your identity is kept private',
-                            style: GoogleFonts.schibstedGrotesk(
-                              fontSize: 12,
-                              color: isDark
-                                  ? AppColors.textMutedDark
-                                  : AppColors.muted,
+                            Text(
+                              'Your identity is kept private',
+                              style: textTheme.bodySmall,
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                    Switch(
-                      value: _anonymous,
-                      onChanged: (v) => setState(() => _anonymous = v),
-                    ),
-                  ],
+                      Switch(
+                        value: _anonymous,
+                        onChanged: (v) => setState(() => _anonymous = v),
+                      ),
+                    ],
+                  ),
                 ),
               ),
               const SizedBox(height: AppSpacing.xxxl),
@@ -169,12 +146,10 @@ class _SubmitAdviceScreenState extends State<SubmitAdviceScreen> {
     );
   }
 
-  Widget _label(String t, bool isDark) => Text(
+  Widget _label(String t, TextTheme textTheme, ColorScheme colorScheme) => Text(
     t,
-    style: GoogleFonts.schibstedGrotesk(
-      fontSize: 13,
-      fontWeight: FontWeight.w500,
-      color: isDark ? AppColors.textSecondaryDark : AppColors.umber,
+    style: textTheme.labelMedium?.copyWith(
+      color: colorScheme.onSurfaceVariant,
       letterSpacing: 0.3,
     ),
   );

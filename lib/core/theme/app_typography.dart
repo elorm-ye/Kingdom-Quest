@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'app_colors.dart';
 
 /// Kingdom Quest Design System — Typography
 ///
-/// Display: Bricolage Grotesque (characterful grotesque for display)
-/// Body: Schibsted Grotesk (sturdy, even-toned grotesque for reading)
+/// Uses standard Material 3 text styles.
 
 class AppTypography {
   AppTypography._();
@@ -14,98 +12,109 @@ class AppTypography {
   // FONT FAMILIES
   // ─────────────────────────────────────────────
 
-  static String get displayFamily =>
-      GoogleFonts.bricolageGrotesque().fontFamily!;
-  static String get bodyFamily => GoogleFonts.schibstedGrotesk().fontFamily!;
+  static const String displayFamily = 'DM Sans';
+  static const String bodyFamily = 'Source Sans 3';
 
   // ─────────────────────────────────────────────
   // LIGHT MODE TEXT STYLES
   // ─────────────────────────────────────────────
 
-  static TextStyle get h1 => GoogleFonts.bricolageGrotesque(
-    fontSize: 32,
+  static const TextStyle h1 = TextStyle(
+    fontFamily: displayFamily,
+    fontSize: 28,
     fontWeight: FontWeight.w700,
     color: AppColors.umber,
-    height: 1.15,
-    letterSpacing: -0.3,
+    height: 1.2,
+    letterSpacing: -0.4,
   );
 
-  static TextStyle get h2 => GoogleFonts.bricolageGrotesque(
-    fontSize: 24,
+  static const TextStyle h2 = TextStyle(
+    fontFamily: displayFamily,
+    fontSize: 22,
     fontWeight: FontWeight.w600,
     color: AppColors.umber,
-    height: 1.2,
+    height: 1.25,
     letterSpacing: -0.2,
   );
 
-  static TextStyle get h3 => GoogleFonts.bricolageGrotesque(
-    fontSize: 20,
+  static const TextStyle h3 = TextStyle(
+    fontFamily: displayFamily,
+    fontSize: 18,
     fontWeight: FontWeight.w600,
     color: AppColors.umber,
     height: 1.3,
   );
 
-  static TextStyle get bodyLarge => GoogleFonts.schibstedGrotesk(
+  static const TextStyle bodyLarge = TextStyle(
+    fontFamily: bodyFamily,
     fontSize: 16,
     fontWeight: FontWeight.w400,
     color: AppColors.umber,
-    height: 1.6,
+    height: 1.55,
   );
 
-  static TextStyle get bodyMedium => GoogleFonts.schibstedGrotesk(
+  static const TextStyle bodyMedium = TextStyle(
+    fontFamily: bodyFamily,
     fontSize: 14,
     fontWeight: FontWeight.w400,
     color: AppColors.umber,
     height: 1.5,
   );
 
-  static TextStyle get bodySmall => GoogleFonts.schibstedGrotesk(
+  static const TextStyle bodySmall = TextStyle(
+    fontFamily: bodyFamily,
     fontSize: 12,
     fontWeight: FontWeight.w400,
     color: AppColors.muted,
     height: 1.4,
   );
 
-  static TextStyle get label => GoogleFonts.schibstedGrotesk(
+  static const TextStyle label = TextStyle(
+    fontFamily: bodyFamily,
     fontSize: 14,
-    fontWeight: FontWeight.w500,
+    fontWeight: FontWeight.w600,
     color: AppColors.umber,
     height: 1.4,
   );
 
-  static TextStyle get labelSmall => GoogleFonts.schibstedGrotesk(
+  static const TextStyle labelSmall = TextStyle(
+    fontFamily: bodyFamily,
     fontSize: 12,
-    fontWeight: FontWeight.w500,
+    fontWeight: FontWeight.w600,
     color: AppColors.muted,
     height: 1.3,
-    letterSpacing: 0.5,
+    letterSpacing: 0.3,
   );
 
-  static TextStyle get caption => GoogleFonts.schibstedGrotesk(
+  static const TextStyle caption = TextStyle(
+    fontFamily: bodyFamily,
     fontSize: 11,
-    fontWeight: FontWeight.w500,
+    fontWeight: FontWeight.w600,
     color: AppColors.muted,
     height: 1.3,
-    letterSpacing: 1.0,
+    letterSpacing: 0.8,
   );
 
-  static TextStyle get button => GoogleFonts.schibstedGrotesk(
+  static const TextStyle button = TextStyle(
+    fontFamily: displayFamily,
     fontSize: 15,
     fontWeight: FontWeight.w600,
     color: Colors.white,
     height: 1.2,
-    letterSpacing: 0.3,
+    letterSpacing: 0.1,
   );
 
-  static TextStyle get verseText => GoogleFonts.bricolageGrotesque(
-    fontSize: 22,
+  static const TextStyle verseText = TextStyle(
+    fontFamily: displayFamily,
+    fontSize: 20,
     fontWeight: FontWeight.w600,
     color: AppColors.umber,
-    height: 1.4,
+    height: 1.45,
     letterSpacing: -0.2,
   );
 
-  static TextStyle get verseRef => GoogleFonts.schibstedGrotesk(
+  static const TextStyle verseRef = TextStyle(
+    fontFamily: bodyFamily,
     fontSize: 14,
     fontWeight: FontWeight.w600,
     color: AppColors.terracotta,
@@ -116,7 +125,7 @@ class AppTypography {
   // TEXT THEME (for ThemeData)
   // ─────────────────────────────────────────────
 
-  static TextTheme get lightTextTheme => TextTheme(
+  static const TextTheme lightTextTheme = TextTheme(
     displayLarge: h1,
     displayMedium: h2,
     displaySmall: h3,
@@ -134,7 +143,7 @@ class AppTypography {
     labelSmall: caption,
   );
 
-  static TextTheme get darkTextTheme => TextTheme(
+  static final TextTheme darkTextTheme = TextTheme(
     displayLarge: h1.copyWith(color: AppColors.textPrimaryDark),
     displayMedium: h2.copyWith(color: AppColors.textPrimaryDark),
     displaySmall: h3.copyWith(color: AppColors.textPrimaryDark),
@@ -156,7 +165,7 @@ class AppTypography {
   // PINK TEXT THEMES
   // ─────────────────────────────────────────────
 
-  static TextTheme get pinkLightTextTheme => TextTheme(
+  static final TextTheme pinkLightTextTheme = TextTheme(
     displayLarge: h1.copyWith(color: AppColors.pinkInk),
     displayMedium: h2.copyWith(color: AppColors.pinkInk),
     displaySmall: h3.copyWith(color: AppColors.pinkInk),
@@ -174,7 +183,7 @@ class AppTypography {
     labelSmall: caption.copyWith(color: AppColors.pinkMuted),
   );
 
-  static TextTheme get pinkDarkTextTheme => TextTheme(
+  static final TextTheme pinkDarkTextTheme = TextTheme(
     displayLarge: h1.copyWith(color: AppColors.pinkTextPrimaryDark),
     displayMedium: h2.copyWith(color: AppColors.pinkTextPrimaryDark),
     displaySmall: h3.copyWith(color: AppColors.pinkTextPrimaryDark),

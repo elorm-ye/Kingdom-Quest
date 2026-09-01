@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/providers/feature_providers.dart';
 
 /// Admin screen for publishing, editing, and deleting sermon notes.
-/// Modeled on admin_inspiration_screen.dart.
 class AdminSermonNotesScreen extends ConsumerStatefulWidget {
   const AdminSermonNotesScreen({super.key});
 
@@ -78,29 +75,16 @@ class _AdminSermonNotesScreenState extends ConsumerState<AdminSermonNotesScreen>
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final primary = isDark ? AppColors.burntAmber : AppColors.terracotta;
-    final bg = isDark ? AppColors.umberNight : AppColors.sand;
-    final surface = isDark ? AppColors.espresso : AppColors.linen;
-    final textPrimary = isDark ? AppColors.textPrimaryDark : AppColors.umber;
-    final textMuted = isDark ? AppColors.textMutedDark : AppColors.muted;
+    final theme = Theme.of(context);
+    final textTheme = theme.textTheme;
+    final colorScheme = theme.colorScheme;
 
     final asyncNotes = ref.watch(sermonNotesNotifierProvider);
     final recentNotes = (asyncNotes.value ?? []).take(3).toList();
 
     return Scaffold(
-      backgroundColor: bg,
       appBar: AppBar(
-        backgroundColor: bg,
-        surfaceTintColor: Colors.transparent,
-        title: Text(
-          'Sermon Notes Publisher',
-          style: GoogleFonts.bricolageGrotesque(
-            fontSize: 18,
-            fontWeight: FontWeight.w700,
-            color: textPrimary,
-          ),
-        ),
+        title: const Text('Sermon Notes Publisher'),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(AppSpacing.lg),
@@ -108,215 +92,175 @@ class _AdminSermonNotesScreenState extends ConsumerState<AdminSermonNotesScreen>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // ── COMPOSE FORM ──
-            Container(
-              padding: const EdgeInsets.all(AppSpacing.lg),
-              decoration: BoxDecoration(
-                color: surface,
-                borderRadius: BorderRadius.circular(AppSpacing.radiusCard),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Sermon Date picker
-                  Text(
-                    'Sermon Date',
-                    style: GoogleFonts.schibstedGrotesk(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: textMuted,
-                    ),
-                  ),
-                  const SizedBox(height: AppSpacing.xs),
-                  GestureDetector(
-                    onTap: _pickDate,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: AppSpacing.md,
-                        vertical: AppSpacing.md,
-                      ),
-                      decoration: BoxDecoration(
-                        color: primary.withValues(alpha: 0.08),
-                        borderRadius:
-                            BorderRadius.circular(AppSpacing.radiusChip),
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(Icons.calendar_today_rounded,
-                              size: 18, color: primary),
-                          const SizedBox(width: AppSpacing.sm),
-                          Text(
-                            DateFormat('EEEE, MMM d, yyyy')
-                                .format(_sermonDate),
-                            style: GoogleFonts.schibstedGrotesk(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              color: textPrimary,
-                            ),
-                          ),
-                          const Spacer(),
-                          Icon(Icons.edit_rounded,
-                              size: 16, color: textMuted),
-                        ],
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(AppSpacing.lg),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Sermon Date picker
+                    Text(
+                      'Sermon Date',
+                      style: textTheme.labelSmall?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
                       ),
                     ),
-                  ),
-
-                  const SizedBox(height: AppSpacing.lg),
-
-                  // Title
-                  Text(
-                    'Sermon Title',
-                    style: GoogleFonts.schibstedGrotesk(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: textMuted,
-                    ),
-                  ),
-                  const SizedBox(height: AppSpacing.xs),
-                  TextField(
-                    controller: _titleController,
-                    style: GoogleFonts.bricolageGrotesque(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: textPrimary,
-                    ),
-                    decoration: InputDecoration(
-                      hintText: 'e.g. Walking by Faith',
-                      hintStyle:
-                          GoogleFonts.schibstedGrotesk(color: textMuted, fontSize: 14),
-                    ),
-                  ),
-
-                  const SizedBox(height: AppSpacing.lg),
-
-                  // Preacher
-                  Text(
-                    'Preacher',
-                    style: GoogleFonts.schibstedGrotesk(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: textMuted,
-                    ),
-                  ),
-                  const SizedBox(height: AppSpacing.xs),
-                  TextField(
-                    controller: _preacherController,
-                    style: GoogleFonts.schibstedGrotesk(
-                      fontSize: 14,
-                      color: textPrimary,
-                    ),
-                    decoration: InputDecoration(
-                      hintText: 'e.g. Pastor James',
-                      hintStyle: GoogleFonts.schibstedGrotesk(color: textMuted),
-                      prefixIcon: Icon(
-                        Icons.person_outline,
-                        size: 18,
-                        color: primary,
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(height: AppSpacing.lg),
-
-                  // Scripture
-                  Text(
-                    'Scripture Reference(s)',
-                    style: GoogleFonts.schibstedGrotesk(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: textMuted,
-                    ),
-                  ),
-                  const SizedBox(height: AppSpacing.xs),
-                  TextField(
-                    controller: _scriptureController,
-                    style: GoogleFonts.schibstedGrotesk(
-                      fontSize: 14,
-                      color: textPrimary,
-                    ),
-                    decoration: InputDecoration(
-                      hintText: 'e.g. 2 Corinthians 5:7',
-                      hintStyle: GoogleFonts.schibstedGrotesk(color: textMuted),
-                      prefixIcon: Icon(
-                        Icons.menu_book_outlined,
-                        size: 18,
-                        color: primary,
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(height: AppSpacing.lg),
-
-                  // Summary
-                  Text(
-                    'Summary',
-                    style: GoogleFonts.schibstedGrotesk(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: textMuted,
-                    ),
-                  ),
-                  const SizedBox(height: AppSpacing.xs),
-                  TextField(
-                    controller: _contentController,
-                    maxLines: 8,
-                    style: GoogleFonts.schibstedGrotesk(
-                      fontSize: 14,
-                      color: textPrimary,
-                    ),
-                    decoration: InputDecoration(
-                      hintText:
-                          'Write a summary of the sermon for members who missed it...',
-                      hintStyle: GoogleFonts.schibstedGrotesk(color: textMuted),
-                    ),
-                  ),
-
-                  const SizedBox(height: AppSpacing.lg),
-
-                  // Image upload placeholder
-                  Text(
-                    'Slide Image (optional)',
-                    style: GoogleFonts.schibstedGrotesk(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: textMuted,
-                    ),
-                  ),
-                  const SizedBox(height: AppSpacing.xs),
-                  GestureDetector(
-                    onTap: () {
-                      // Image picker will be wired via Supabase Storage
-                    },
-                    child: Container(
-                      height: 60,
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          color: primary.withValues(alpha: 0.3),
-                          style: BorderStyle.solid,
+                    const SizedBox(height: AppSpacing.xs),
+                    GestureDetector(
+                      onTap: _pickDate,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: AppSpacing.md,
+                          vertical: AppSpacing.md,
                         ),
-                        borderRadius:
-                            BorderRadius.circular(AppSpacing.radiusChip),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.add_photo_alternate_outlined,
-                              size: 20, color: primary),
-                          const SizedBox(width: AppSpacing.sm),
-                          Text(
-                            'Tap to upload an image',
-                            style: GoogleFonts.schibstedGrotesk(
-                              fontSize: 13,
-                              color: textMuted,
+                        decoration: BoxDecoration(
+                          color: colorScheme.primaryContainer,
+                          borderRadius: BorderRadius.circular(AppSpacing.radiusChip),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(Icons.calendar_today_rounded,
+                                size: 18, color: colorScheme.onPrimaryContainer),
+                            const SizedBox(width: AppSpacing.sm),
+                            Text(
+                              DateFormat('EEEE, MMM d, yyyy')
+                                  .format(_sermonDate),
+                              style: textTheme.bodyMedium?.copyWith(
+                                color: colorScheme.onPrimaryContainer,
+                              ),
                             ),
-                          ),
-                        ],
+                            const Spacer(),
+                            Icon(Icons.edit_rounded,
+                                size: 16, color: colorScheme.onSurfaceVariant),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                ],
+
+                    const SizedBox(height: AppSpacing.lg),
+
+                    // Title
+                    Text(
+                      'Sermon Title',
+                      style: textTheme.labelSmall?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.xs),
+                    TextField(
+                      controller: _titleController,
+                      style: textTheme.titleMedium,
+                      decoration: const InputDecoration(
+                        hintText: 'e.g. Walking by Faith',
+                      ),
+                    ),
+
+                    const SizedBox(height: AppSpacing.lg),
+
+                    // Preacher
+                    Text(
+                      'Preacher',
+                      style: textTheme.labelSmall?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.xs),
+                    TextField(
+                      controller: _preacherController,
+                      style: textTheme.bodyMedium,
+                      decoration: InputDecoration(
+                        hintText: 'e.g. Pastor James',
+                        prefixIcon: Icon(
+                          Icons.person_outline,
+                          size: 18,
+                          color: colorScheme.primary,
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: AppSpacing.lg),
+
+                    // Scripture
+                    Text(
+                      'Scripture Reference(s)',
+                      style: textTheme.labelSmall?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.xs),
+                    TextField(
+                      controller: _scriptureController,
+                      style: textTheme.bodyMedium,
+                      decoration: InputDecoration(
+                        hintText: 'e.g. 2 Corinthians 5:7',
+                        prefixIcon: Icon(
+                          Icons.menu_book_outlined,
+                          size: 18,
+                          color: colorScheme.primary,
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: AppSpacing.lg),
+
+                    // Summary
+                    Text(
+                      'Summary',
+                      style: textTheme.labelSmall?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.xs),
+                    TextField(
+                      controller: _contentController,
+                      maxLines: 8,
+                      style: textTheme.bodyMedium,
+                      decoration: const InputDecoration(
+                        hintText: 'Write a summary of the sermon for members who missed it...',
+                      ),
+                    ),
+
+                    const SizedBox(height: AppSpacing.lg),
+
+                    // Image upload placeholder
+                    Text(
+                      'Slide Image (optional)',
+                      style: textTheme.labelSmall?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.xs),
+                    GestureDetector(
+                      onTap: () {
+                        // Image picker will be wired via Supabase Storage
+                      },
+                      child: Container(
+                        height: 60,
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: colorScheme.outline,
+                            style: BorderStyle.solid,
+                          ),
+                          borderRadius: BorderRadius.circular(AppSpacing.radiusChip),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.add_photo_alternate_outlined,
+                                size: 20, color: colorScheme.primary),
+                            const SizedBox(width: AppSpacing.sm),
+                            Text(
+                              'Tap to upload an image',
+                              style: textTheme.bodySmall,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ).animate(delay: 100.ms).fadeIn(duration: 350.ms),
+            ),
 
             const SizedBox(height: AppSpacing.lg),
 
@@ -330,7 +274,7 @@ class _AdminSermonNotesScreenState extends ConsumerState<AdminSermonNotesScreen>
                         key: const ValueKey('success'),
                         height: AppSpacing.buttonHeight,
                         decoration: BoxDecoration(
-                          color: AppColors.sage,
+                          color: AppColors.healing,
                           borderRadius: BorderRadius.circular(
                             AppSpacing.radiusChip,
                           ),
@@ -345,10 +289,8 @@ class _AdminSermonNotesScreenState extends ConsumerState<AdminSermonNotesScreen>
                             const SizedBox(width: AppSpacing.sm),
                             Text(
                               'Published!',
-                              style: GoogleFonts.schibstedGrotesk(
-                                fontWeight: FontWeight.w700,
+                              style: textTheme.titleMedium?.copyWith(
                                 color: Colors.white,
-                                fontSize: 16,
                               ),
                             ),
                           ],
@@ -372,10 +314,6 @@ class _AdminSermonNotesScreenState extends ConsumerState<AdminSermonNotesScreen>
                               ),
                         label: Text(
                           _isPublishing ? 'Publishing...' : 'Publish Sermon Note',
-                          style: GoogleFonts.schibstedGrotesk(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 15,
-                          ),
                         ),
                         style: ElevatedButton.styleFrom(
                           minimumSize: const Size(
@@ -385,44 +323,35 @@ class _AdminSermonNotesScreenState extends ConsumerState<AdminSermonNotesScreen>
                         ),
                       ),
               ),
-            ).animate(delay: 150.ms).fadeIn(duration: 350.ms),
+            ),
 
             const SizedBox(height: AppSpacing.xl),
 
             // ── RECENT NOTES ──
             Text(
               'Recent Sermon Notes',
-              style: GoogleFonts.bricolageGrotesque(
-                fontSize: 16,
-                fontWeight: FontWeight.w700,
-                color: textPrimary,
-              ),
+              style: textTheme.titleMedium,
             ),
             const SizedBox(height: AppSpacing.md),
-            ...recentNotes.asMap().entries.map((e) {
-              final note = e.value;
-              return Container(
-                    margin: const EdgeInsets.only(bottom: AppSpacing.sm),
+            ...recentNotes.map((note) {
+              return Padding(
+                padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+                child: Card(
+                  child: Padding(
                     padding: const EdgeInsets.all(AppSpacing.md),
-                    decoration: BoxDecoration(
-                      color: surface,
-                      borderRadius: BorderRadius.circular(
-                        AppSpacing.radiusCard,
-                      ),
-                    ),
                     child: Row(
                       children: [
                         Container(
                           width: 40,
                           height: 40,
                           decoration: BoxDecoration(
-                            color: primary.withValues(alpha: 0.1),
+                            color: colorScheme.primaryContainer,
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: Icon(
                             Icons.menu_book_rounded,
                             size: 18,
-                            color: primary,
+                            color: colorScheme.primary,
                           ),
                         ),
                         const SizedBox(width: AppSpacing.md),
@@ -432,20 +361,13 @@ class _AdminSermonNotesScreenState extends ConsumerState<AdminSermonNotesScreen>
                             children: [
                               Text(
                                 note.title,
-                                style: GoogleFonts.schibstedGrotesk(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w600,
-                                  color: textPrimary,
-                                ),
+                                style: textTheme.titleSmall,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                               ),
                               Text(
                                 '${note.preacherName} · ${DateFormat('MMM d').format(note.sermonDate)}',
-                                style: GoogleFonts.schibstedGrotesk(
-                                  fontSize: 11,
-                                  color: textMuted,
-                                ),
+                                style: textTheme.bodySmall,
                               ),
                             ],
                           ),
@@ -456,23 +378,22 @@ class _AdminSermonNotesScreenState extends ConsumerState<AdminSermonNotesScreen>
                             vertical: 2,
                           ),
                           decoration: BoxDecoration(
-                            color: AppColors.sage.withValues(alpha: 0.1),
+                            color: AppColors.healing.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(4),
                           ),
                           child: Text(
                             'Live',
-                            style: GoogleFonts.schibstedGrotesk(
+                            style: textTheme.labelSmall?.copyWith(
+                              color: AppColors.healing,
                               fontSize: 10,
-                              color: AppColors.sage,
-                              fontWeight: FontWeight.w600,
                             ),
                           ),
                         ),
                       ],
                     ),
-                  )
-                  .animate(delay: Duration(milliseconds: 200 + e.key * 60))
-                  .fadeIn(duration: 300.ms);
+                  ),
+                ),
+              );
             }),
 
             const SizedBox(height: AppSpacing.xxl),

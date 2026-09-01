@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 
@@ -11,39 +9,35 @@ class AdminMoreScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final primary = isDark ? AppColors.burntAmber : AppColors.terracotta;
-    final bg = isDark ? AppColors.umberNight : AppColors.sand;
-    final surface = isDark ? AppColors.espresso : AppColors.linen;
-    final textPrimary = isDark ? AppColors.textPrimaryDark : AppColors.umber;
-    final textMuted = isDark ? AppColors.textMutedDark : AppColors.muted;
-    final divider = isDark ? const Color(0xFF3D2E25) : const Color(0xFFE5D9C9);
+    final theme = Theme.of(context);
+    final textTheme = theme.textTheme;
+    final colorScheme = theme.colorScheme;
 
     final modules = [
       (
         icon: Icons.lightbulb_outline_rounded,
-        color: AppColors.terracotta,
+        color: AppColors.other,
         title: 'Advice Center',
         subtitle: 'Review & respond to spiritual advice requests',
         route: '/admin/advice',
       ),
       (
         icon: Icons.auto_awesome_rounded,
-        color: const Color(0xFF6B7FD4),
+        color: AppColors.education,
         title: 'Inspiration Publisher',
         subtitle: 'Create and schedule daily inspirations',
         route: '/admin/inspiration',
       ),
       (
         icon: Icons.forum_outlined,
-        color: AppColors.oliveClay,
+        color: AppColors.financial,
         title: 'Forum Moderation',
         subtitle: 'Review reported posts and moderate content',
         route: '/admin/forum',
       ),
       (
         icon: Icons.menu_book_rounded,
-        color: const Color(0xFF7B6B8A),
+        color: AppColors.family,
         title: 'Sermon Notes',
         subtitle: 'Publish sermon summaries for members',
         route: '/admin/sermon-notes',
@@ -51,28 +45,15 @@ class AdminMoreScreen extends StatelessWidget {
     ];
 
     return Scaffold(
-      backgroundColor: bg,
       appBar: AppBar(
-        backgroundColor: bg,
-        surfaceTintColor: Colors.transparent,
-        title: Text(
-          'More Tools',
-          style: GoogleFonts.bricolageGrotesque(
-            fontSize: 20,
-            fontWeight: FontWeight.w700,
-            color: textPrimary,
-          ),
-        ),
+        title: const Text('More Tools'),
       ),
       body: ListView(
         padding: const EdgeInsets.all(AppSpacing.lg),
         children: [
           // ── MODULE TILES ──
-          Container(
-            decoration: BoxDecoration(
-              color: surface,
-              borderRadius: BorderRadius.circular(AppSpacing.radiusCard),
-            ),
+          Card(
+            clipBehavior: Clip.antiAlias,
             child: Column(
               children: modules.asMap().entries.map((entry) {
                 final i = entry.key;
@@ -80,45 +61,35 @@ class AdminMoreScreen extends StatelessWidget {
                 return Column(
                   children: [
                     ListTile(
-                          onTap: () => context.go(m.route),
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: AppSpacing.lg,
-                            vertical: AppSpacing.sm,
-                          ),
-                          leading: Container(
-                            width: 44,
-                            height: 44,
-                            decoration: BoxDecoration(
-                              color: m.color.withValues(alpha: 0.12),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Icon(m.icon, color: m.color, size: 22),
-                          ),
-                          title: Text(
-                            m.title,
-                            style: GoogleFonts.schibstedGrotesk(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              color: textPrimary,
-                            ),
-                          ),
-                          subtitle: Text(
-                            m.subtitle,
-                            style: GoogleFonts.schibstedGrotesk(
-                              fontSize: 12,
-                              color: textMuted,
-                            ),
-                          ),
-                          trailing: Icon(
-                            Icons.chevron_right_rounded,
-                            color: textMuted,
-                          ),
-                        )
-                        .animate(delay: Duration(milliseconds: i * 60))
-                        .fadeIn(duration: 300.ms)
-                        .slideX(begin: 0.05, end: 0),
+                      onTap: () => context.go(m.route),
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.lg,
+                        vertical: AppSpacing.sm,
+                      ),
+                      leading: Container(
+                        width: 44,
+                        height: 44,
+                        decoration: BoxDecoration(
+                          color: m.color.withValues(alpha: 0.12),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Icon(m.icon, color: m.color, size: 22),
+                      ),
+                      title: Text(
+                        m.title,
+                        style: textTheme.titleMedium,
+                      ),
+                      subtitle: Text(
+                        m.subtitle,
+                        style: textTheme.bodySmall,
+                      ),
+                      trailing: Icon(
+                        Icons.chevron_right_rounded,
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                    ),
                     if (i < modules.length - 1)
-                      Divider(height: 1, color: divider, indent: 72),
+                      const Divider(height: 1, indent: 72),
                   ],
                 );
               }).toList(),
@@ -130,19 +101,14 @@ class AdminMoreScreen extends StatelessWidget {
           // ── CHURCH SETTINGS ──
           Text(
             'Church Settings',
-            style: GoogleFonts.schibstedGrotesk(
-              fontSize: 11,
-              fontWeight: FontWeight.w700,
-              color: textMuted,
+            style: textTheme.labelSmall?.copyWith(
+              color: colorScheme.onSurfaceVariant,
               letterSpacing: 0.8,
             ),
           ),
           const SizedBox(height: AppSpacing.sm),
-          Container(
-            decoration: BoxDecoration(
-              color: surface,
-              borderRadius: BorderRadius.circular(AppSpacing.radiusCard),
-            ),
+          Card(
+            clipBehavior: Clip.antiAlias,
             child: Column(
               children: [
                 ListTile(
@@ -155,36 +121,29 @@ class AdminMoreScreen extends StatelessWidget {
                     width: 44,
                     height: 44,
                     decoration: BoxDecoration(
-                      color: primary.withValues(alpha: 0.1),
+                      color: colorScheme.primaryContainer,
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Icon(
                       Icons.account_balance_outlined,
-                      color: primary,
+                      color: colorScheme.primary,
                       size: 22,
                     ),
                   ),
                   title: Text(
                     'Church Profile',
-                    style: GoogleFonts.schibstedGrotesk(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: textPrimary,
-                    ),
+                    style: textTheme.titleMedium,
                   ),
                   subtitle: Text(
                     'Name, logo, contact info',
-                    style: GoogleFonts.schibstedGrotesk(
-                      fontSize: 12,
-                      color: textMuted,
-                    ),
+                    style: textTheme.bodySmall,
                   ),
                   trailing: Icon(
                     Icons.chevron_right_rounded,
-                    color: textMuted,
+                    color: colorScheme.onSurfaceVariant,
                   ),
                 ),
-                Divider(height: 1, color: divider, indent: 72),
+                const Divider(height: 1, indent: 72),
                 ListTile(
                   onTap: () {},
                   contentPadding: const EdgeInsets.symmetric(
@@ -195,36 +154,29 @@ class AdminMoreScreen extends StatelessWidget {
                     width: 44,
                     height: 44,
                     decoration: BoxDecoration(
-                      color: primary.withValues(alpha: 0.1),
+                      color: colorScheme.primaryContainer,
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Icon(
                       Icons.calendar_month_outlined,
-                      color: primary,
+                      color: colorScheme.primary,
                       size: 22,
                     ),
                   ),
                   title: Text(
                     'Event Management',
-                    style: GoogleFonts.schibstedGrotesk(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: textPrimary,
-                    ),
+                    style: textTheme.titleMedium,
                   ),
                   subtitle: Text(
                     'Create and manage events',
-                    style: GoogleFonts.schibstedGrotesk(
-                      fontSize: 12,
-                      color: textMuted,
-                    ),
+                    style: textTheme.bodySmall,
                   ),
                   trailing: Icon(
                     Icons.chevron_right_rounded,
-                    color: textMuted,
+                    color: colorScheme.onSurfaceVariant,
                   ),
                 ),
-                Divider(height: 1, color: divider, indent: 72),
+                const Divider(height: 1, indent: 72),
                 ListTile(
                   onTap: () {},
                   contentPadding: const EdgeInsets.symmetric(
@@ -235,38 +187,31 @@ class AdminMoreScreen extends StatelessWidget {
                     width: 44,
                     height: 44,
                     decoration: BoxDecoration(
-                      color: primary.withValues(alpha: 0.1),
+                      color: colorScheme.primaryContainer,
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Icon(
                       Icons.campaign_outlined,
-                      color: primary,
+                      color: colorScheme.primary,
                       size: 22,
                     ),
                   ),
                   title: Text(
                     'Announcements',
-                    style: GoogleFonts.schibstedGrotesk(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: textPrimary,
-                    ),
+                    style: textTheme.titleMedium,
                   ),
                   subtitle: Text(
                     'Publish church announcements',
-                    style: GoogleFonts.schibstedGrotesk(
-                      fontSize: 12,
-                      color: textMuted,
-                    ),
+                    style: textTheme.bodySmall,
                   ),
                   trailing: Icon(
                     Icons.chevron_right_rounded,
-                    color: textMuted,
+                    color: colorScheme.onSurfaceVariant,
                   ),
                 ),
               ],
             ),
-          ).animate(delay: 200.ms).fadeIn(duration: 350.ms),
+          ),
         ],
       ),
     );

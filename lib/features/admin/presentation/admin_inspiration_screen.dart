@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/providers/feature_providers.dart';
@@ -27,25 +25,25 @@ class _AdminInspirationScreenState extends ConsumerState<AdminInspirationScreen>
       value: 'motivation',
       label: 'Motivation',
       icon: Icons.local_fire_department_rounded,
-      color: AppColors.terracotta,
+      color: AppColors.other,
     ),
     (
       value: 'devotional',
       label: 'Devotional',
       icon: Icons.menu_book_rounded,
-      color: AppColors.sage,
+      color: AppColors.healing,
     ),
     (
       value: 'verse',
       label: 'Bible Verse',
       icon: Icons.format_quote_rounded,
-      color: AppColors.burntAmber,
+      color: AppColors.family,
     ),
     (
       value: 'challenge',
       label: 'Challenge',
       icon: Icons.emoji_events_rounded,
-      color: const Color(0xFF6B7FD4),
+      color: AppColors.education,
     ),
   ];
 
@@ -59,8 +57,7 @@ class _AdminInspirationScreenState extends ConsumerState<AdminInspirationScreen>
 
   Future<void> _publish() async {
     if (_titleController.text.trim().isEmpty ||
-        _contentController.text.trim().isEmpty)
-      return;
+        _contentController.text.trim().isEmpty) return;
     setState(() => _isPublishing = true);
     try {
       await ref.read(inspirationsNotifierProvider.notifier).publish(
@@ -89,29 +86,16 @@ class _AdminInspirationScreenState extends ConsumerState<AdminInspirationScreen>
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final primary = isDark ? AppColors.burntAmber : AppColors.terracotta;
-    final bg = isDark ? AppColors.umberNight : AppColors.sand;
-    final surface = isDark ? AppColors.espresso : AppColors.linen;
-    final textPrimary = isDark ? AppColors.textPrimaryDark : AppColors.umber;
-    final textMuted = isDark ? AppColors.textMutedDark : AppColors.muted;
+    final theme = Theme.of(context);
+    final textTheme = theme.textTheme;
+    final colorScheme = theme.colorScheme;
 
     final asyncInspirations = ref.watch(inspirationsNotifierProvider);
     final recentInspirations = (asyncInspirations.value ?? []).take(3).toList();
 
     return Scaffold(
-      backgroundColor: bg,
       appBar: AppBar(
-        backgroundColor: bg,
-        surfaceTintColor: Colors.transparent,
-        title: Text(
-          'Inspiration Publisher',
-          style: GoogleFonts.bricolageGrotesque(
-            fontSize: 18,
-            fontWeight: FontWeight.w700,
-            color: textPrimary,
-          ),
-        ),
+        title: const Text('Inspiration Publisher'),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(AppSpacing.lg),
@@ -121,10 +105,8 @@ class _AdminInspirationScreenState extends ConsumerState<AdminInspirationScreen>
             // ── TYPE SELECTOR ──
             Text(
               'Post Type',
-              style: GoogleFonts.schibstedGrotesk(
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-                color: textMuted,
+              style: textTheme.labelSmall?.copyWith(
+                color: colorScheme.onSurfaceVariant,
                 letterSpacing: 0.5,
               ),
             ),
@@ -137,21 +119,15 @@ class _AdminInspirationScreenState extends ConsumerState<AdminInspirationScreen>
                   final active = _selectedType == t.value;
                   return GestureDetector(
                     onTap: () => setState(() => _selectedType = t.value),
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 200),
+                    child: Container(
                       margin: const EdgeInsets.only(right: AppSpacing.sm),
                       padding: const EdgeInsets.symmetric(
                         horizontal: AppSpacing.md,
                         vertical: AppSpacing.sm,
                       ),
                       decoration: BoxDecoration(
-                        color: active ? t.color : surface,
-                        borderRadius: BorderRadius.circular(
-                          AppSpacing.radiusCard,
-                        ),
-                        border: active
-                            ? null
-                            : Border.all(color: t.color.withValues(alpha: 0.3)),
+                        color: active ? t.color : t.color.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(AppSpacing.radiusCard),
                       ),
                       child: Row(
                         children: [
@@ -163,9 +139,7 @@ class _AdminInspirationScreenState extends ConsumerState<AdminInspirationScreen>
                           const SizedBox(width: 6),
                           Text(
                             t.label,
-                            style: GoogleFonts.schibstedGrotesk(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w600,
+                            style: textTheme.labelLarge?.copyWith(
                               color: active ? Colors.white : t.color,
                             ),
                           ),
@@ -175,99 +149,75 @@ class _AdminInspirationScreenState extends ConsumerState<AdminInspirationScreen>
                   );
                 }).toList(),
               ),
-            ).animate().fadeIn(duration: 300.ms),
+            ),
 
             const SizedBox(height: AppSpacing.lg),
 
             // ── COMPOSE FORM ──
-            Container(
-              padding: const EdgeInsets.all(AppSpacing.lg),
-              decoration: BoxDecoration(
-                color: surface,
-                borderRadius: BorderRadius.circular(AppSpacing.radiusCard),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Title',
-                    style: GoogleFonts.schibstedGrotesk(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: textMuted,
-                    ),
-                  ),
-                  const SizedBox(height: AppSpacing.xs),
-                  TextField(
-                    controller: _titleController,
-                    style: GoogleFonts.bricolageGrotesque(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: textPrimary,
-                    ),
-                    decoration: InputDecoration(
-                      hintText: 'Give your post a title...',
-                      hintStyle: GoogleFonts.schibstedGrotesk(
-                        color: textMuted,
-                        fontSize: 14,
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(AppSpacing.lg),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Title',
+                      style: textTheme.labelSmall?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
                       ),
                     ),
-                  ),
-
-                  const SizedBox(height: AppSpacing.lg),
-
-                  Text(
-                    'Content',
-                    style: GoogleFonts.schibstedGrotesk(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: textMuted,
-                    ),
-                  ),
-                  const SizedBox(height: AppSpacing.xs),
-                  TextField(
-                    controller: _contentController,
-                    maxLines: 6,
-                    style: GoogleFonts.schibstedGrotesk(
-                      fontSize: 14,
-                      color: textPrimary,
-                    ),
-                    decoration: InputDecoration(
-                      hintText: 'Write your message...',
-                      hintStyle: GoogleFonts.schibstedGrotesk(color: textMuted),
-                    ),
-                  ),
-
-                  const SizedBox(height: AppSpacing.lg),
-
-                  Text(
-                    'Bible Reference (optional)',
-                    style: GoogleFonts.schibstedGrotesk(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: textMuted,
-                    ),
-                  ),
-                  const SizedBox(height: AppSpacing.xs),
-                  TextField(
-                    controller: _bibleRefController,
-                    style: GoogleFonts.schibstedGrotesk(
-                      fontSize: 14,
-                      color: textPrimary,
-                    ),
-                    decoration: InputDecoration(
-                      hintText: 'e.g. Philippians 4:13',
-                      hintStyle: GoogleFonts.schibstedGrotesk(color: textMuted),
-                      prefixIcon: Icon(
-                        Icons.menu_book_outlined,
-                        size: 18,
-                        color: primary,
+                    const SizedBox(height: AppSpacing.xs),
+                    TextField(
+                      controller: _titleController,
+                      style: textTheme.titleMedium,
+                      decoration: const InputDecoration(
+                        hintText: 'Give your post a title...',
                       ),
                     ),
-                  ),
-                ],
+
+                    const SizedBox(height: AppSpacing.lg),
+
+                    Text(
+                      'Content',
+                      style: textTheme.labelSmall?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.xs),
+                    TextField(
+                      controller: _contentController,
+                      maxLines: 6,
+                      style: textTheme.bodyMedium,
+                      decoration: const InputDecoration(
+                        hintText: 'Write your message...',
+                      ),
+                    ),
+
+                    const SizedBox(height: AppSpacing.lg),
+
+                    Text(
+                      'Bible Reference (optional)',
+                      style: textTheme.labelSmall?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.xs),
+                    TextField(
+                      controller: _bibleRefController,
+                      style: textTheme.bodyMedium,
+                      decoration: InputDecoration(
+                        hintText: 'e.g. Philippians 4:13',
+                        prefixIcon: Icon(
+                          Icons.menu_book_outlined,
+                          size: 18,
+                          color: colorScheme.primary,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ).animate(delay: 100.ms).fadeIn(duration: 350.ms),
+            ),
 
             const SizedBox(height: AppSpacing.lg),
 
@@ -281,10 +231,8 @@ class _AdminInspirationScreenState extends ConsumerState<AdminInspirationScreen>
                         key: const ValueKey('success'),
                         height: AppSpacing.buttonHeight,
                         decoration: BoxDecoration(
-                          color: AppColors.sage,
-                          borderRadius: BorderRadius.circular(
-                            AppSpacing.radiusChip,
-                          ),
+                          color: AppColors.healing,
+                          borderRadius: BorderRadius.circular(AppSpacing.radiusChip),
                         ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -296,10 +244,8 @@ class _AdminInspirationScreenState extends ConsumerState<AdminInspirationScreen>
                             const SizedBox(width: AppSpacing.sm),
                             Text(
                               'Published!',
-                              style: GoogleFonts.schibstedGrotesk(
-                                fontWeight: FontWeight.w700,
+                              style: textTheme.titleMedium?.copyWith(
                                 color: Colors.white,
-                                fontSize: 16,
                               ),
                             ),
                           ],
@@ -323,10 +269,6 @@ class _AdminInspirationScreenState extends ConsumerState<AdminInspirationScreen>
                               ),
                         label: Text(
                           _isPublishing ? 'Publishing...' : 'Publish Now',
-                          style: GoogleFonts.schibstedGrotesk(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 15,
-                          ),
                         ),
                         style: ElevatedButton.styleFrom(
                           minimumSize: const Size(
@@ -336,67 +278,51 @@ class _AdminInspirationScreenState extends ConsumerState<AdminInspirationScreen>
                         ),
                       ),
               ),
-            ).animate(delay: 150.ms).fadeIn(duration: 350.ms),
+            ),
 
             const SizedBox(height: AppSpacing.xl),
 
             // ── RECENT POSTS ──
             Text(
               'Recent Posts',
-              style: GoogleFonts.bricolageGrotesque(
-                fontSize: 16,
-                fontWeight: FontWeight.w700,
-                color: textPrimary,
-              ),
+              style: textTheme.titleMedium,
             ),
             const SizedBox(height: AppSpacing.md),
-            ...recentInspirations.asMap().entries.map((e) {
-              final ins = e.value;
-              return Container(
-                    margin: const EdgeInsets.only(bottom: AppSpacing.sm),
+            ...recentInspirations.map((ins) {
+              return Padding(
+                padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+                child: Card(
+                  child: Padding(
                     padding: const EdgeInsets.all(AppSpacing.md),
-                    decoration: BoxDecoration(
-                      color: surface,
-                      borderRadius: BorderRadius.circular(
-                        AppSpacing.radiusCard,
-                      ),
-                    ),
                     child: Row(
                       children: [
                         Container(
                           width: 40,
                           height: 40,
                           decoration: BoxDecoration(
-                            color: primary.withValues(alpha: 0.1),
+                            color: colorScheme.primaryContainer,
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: Icon(
                             Icons.auto_awesome_rounded,
                             size: 18,
-                            color: primary,
+                            color: colorScheme.primary,
                           ),
                         ),
                         const SizedBox(width: AppSpacing.md),
                         Expanded(
                           child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                           crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
                                 ins.title,
-                                style: GoogleFonts.schibstedGrotesk(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w600,
-                                  color: textPrimary,
-                                ),
+                                style: textTheme.titleSmall,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                               ),
                               Text(
                                 ins.type.label,
-                                style: GoogleFonts.schibstedGrotesk(
-                                  fontSize: 11,
-                                  color: textMuted,
-                                ),
+                                style: textTheme.bodySmall,
                               ),
                             ],
                           ),
@@ -407,23 +333,22 @@ class _AdminInspirationScreenState extends ConsumerState<AdminInspirationScreen>
                             vertical: 2,
                           ),
                           decoration: BoxDecoration(
-                            color: AppColors.sage.withValues(alpha: 0.1),
+                            color: AppColors.healing.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(4),
                           ),
                           child: Text(
                             'Live',
-                            style: GoogleFonts.schibstedGrotesk(
+                            style: textTheme.labelSmall?.copyWith(
+                              color: AppColors.healing,
                               fontSize: 10,
-                              color: AppColors.sage,
-                              fontWeight: FontWeight.w600,
                             ),
                           ),
                         ),
                       ],
                     ),
-                  )
-                  .animate(delay: Duration(milliseconds: 200 + e.key * 60))
-                  .fadeIn(duration: 300.ms);
+                  ),
+                ),
+              );
             }),
 
             const SizedBox(height: AppSpacing.xxl),

@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../core/providers/app_providers.dart';
-import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 
 class RegisterScreen extends ConsumerStatefulWidget {
@@ -45,7 +42,6 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
     if (!mounted) return;
     if (ok) {
-      // Show email-confirmation notice, then go to login
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text(
@@ -62,7 +58,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(msg),
-          backgroundColor: AppColors.alert,
+          backgroundColor: Theme.of(context).colorScheme.error,
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -73,17 +69,14 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   Widget build(BuildContext context) {
     final authState = ref.watch(authNotifierProvider);
     final isLoading = authState.isLoading;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final card = isDark ? AppColors.espresso : AppColors.linen;
+    final theme = Theme.of(context);
+    final textTheme = theme.textTheme;
+    final colorScheme = theme.colorScheme;
 
     return Scaffold(
-      backgroundColor: isDark ? AppColors.umberNight : AppColors.sand,
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(
-            Icons.arrow_back,
-            size: 20,
-          ),
+          icon: const Icon(Icons.arrow_back, size: 20),
           onPressed: () => context.pop(),
         ),
         title: const Text('Create Account'),
@@ -99,54 +92,39 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 const SizedBox(height: AppSpacing.xxl),
                 Text(
                   'Join Kingdom Quest',
-                  style: GoogleFonts.bricolageGrotesque(
-                    fontSize: 24,
-                    fontWeight: FontWeight.w700,
-                    color: isDark ? AppColors.textPrimaryDark : AppColors.umber,
-                  ),
-                ).animate().fadeIn(duration: 500.ms),
+                  style: textTheme.displayLarge,
+                ),
                 const SizedBox(height: AppSpacing.sm),
                 Text(
                   'A safe, sacred space for young people',
-                  style: GoogleFonts.schibstedGrotesk(
-                    fontSize: 14,
-                    color: isDark ? AppColors.textMutedDark : AppColors.muted,
+                  style: textTheme.bodyLarge?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
                   ),
-                ).animate(delay: 100.ms).fadeIn(duration: 500.ms),
+                ),
                 const SizedBox(height: AppSpacing.xxxl),
 
-                _label('Full Name', isDark),
+                _label('Full Name', theme),
                 const SizedBox(height: AppSpacing.sm),
                 TextFormField(
                   controller: _nameCtrl,
                   textCapitalization: TextCapitalization.words,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     hintText: 'Enter your name',
-                    fillColor: card,
-                    prefixIcon: Icon(
-                      Icons.person_outline,
-                      size: 20,
-                      color: isDark ? AppColors.textMutedDark : AppColors.muted,
-                    ),
+                    prefixIcon: Icon(Icons.person_outline, size: 20),
                   ),
                   validator: (v) =>
                       v == null || v.isEmpty ? 'Enter your name' : null,
                 ),
                 const SizedBox(height: AppSpacing.xl),
 
-                _label('Email', isDark),
+                _label('Email', theme),
                 const SizedBox(height: AppSpacing.sm),
                 TextFormField(
                   controller: _emailCtrl,
                   keyboardType: TextInputType.emailAddress,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     hintText: 'your@email.com',
-                    fillColor: card,
-                    prefixIcon: Icon(
-                      Icons.email_outlined,
-                      size: 20,
-                      color: isDark ? AppColors.textMutedDark : AppColors.muted,
-                    ),
+                    prefixIcon: Icon(Icons.email_outlined, size: 20),
                   ),
                   validator: (v) => v == null || !v.contains('@')
                       ? 'Enter a valid email'
@@ -154,67 +132,44 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 ),
                 const SizedBox(height: AppSpacing.xl),
 
-                _label('Gender', isDark),
+                _label('Gender', theme),
                 const SizedBox(height: AppSpacing.sm),
-                Container(
-                  decoration: BoxDecoration(
-                    color: card,
-                    borderRadius: BorderRadius.circular(AppSpacing.radiusChip),
-                  ),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.lg,
-                  ),
-                  child: DropdownButtonFormField<String>(
-                    initialValue: _gender,
-                    decoration: const InputDecoration(
-                      border: InputBorder.none,
-                      enabledBorder: InputBorder.none,
-                      focusedBorder: InputBorder.none,
-                      fillColor: Colors.transparent,
+                DropdownButtonFormField<String>(
+                  initialValue: _gender,
+                  decoration: const InputDecoration(),
+                  items: const [
+                    DropdownMenuItem(
+                      value: 'male',
+                      child: Text('Brother (Male)'),
                     ),
-                    dropdownColor: card,
-                    items: const [
-                      DropdownMenuItem(
-                        value: 'male',
-                        child: Text('Brother (Male)'),
-                      ),
-                      DropdownMenuItem(
-                        value: 'female',
-                        child: Text('Sister (Female)'),
-                      ),
-                      DropdownMenuItem(
-                        value: 'preferNotToSay',
-                        child: Text('Prefer not to say'),
-                      ),
-                    ],
-                    onChanged: (v) =>
-                        setState(() => _gender = v ?? 'preferNotToSay'),
-                  ),
+                    DropdownMenuItem(
+                      value: 'female',
+                      child: Text('Sister (Female)'),
+                    ),
+                    DropdownMenuItem(
+                      value: 'preferNotToSay',
+                      child: Text('Prefer not to say'),
+                    ),
+                  ],
+                  onChanged: (v) =>
+                      setState(() => _gender = v ?? 'preferNotToSay'),
                 ),
                 const SizedBox(height: AppSpacing.xl),
 
-                _label('Password', isDark),
+                _label('Password', theme),
                 const SizedBox(height: AppSpacing.sm),
                 TextFormField(
                   controller: _passCtrl,
                   obscureText: _obscure,
                   decoration: InputDecoration(
                     hintText: 'Min 6 characters',
-                    fillColor: card,
-                    prefixIcon: Icon(
-                      Icons.lock_outline_rounded,
-                      size: 20,
-                      color: isDark ? AppColors.textMutedDark : AppColors.muted,
-                    ),
+                    prefixIcon: const Icon(Icons.lock_outline_rounded, size: 20),
                     suffixIcon: IconButton(
                       icon: Icon(
                         _obscure
                             ? Icons.visibility_off_outlined
                             : Icons.visibility_outlined,
                         size: 20,
-                        color: isDark
-                            ? AppColors.textMutedDark
-                            : AppColors.muted,
                       ),
                       onPressed: () => setState(() => _obscure = !_obscure),
                     ),
@@ -224,19 +179,14 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 ),
                 const SizedBox(height: AppSpacing.xl),
 
-                _label('Confirm Password', isDark),
+                _label('Confirm Password', theme),
                 const SizedBox(height: AppSpacing.sm),
                 TextFormField(
                   controller: _confirmCtrl,
                   obscureText: true,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     hintText: 'Re-enter password',
-                    fillColor: card,
-                    prefixIcon: Icon(
-                      Icons.lock_outline_rounded,
-                      size: 20,
-                      color: isDark ? AppColors.textMutedDark : AppColors.muted,
-                    ),
+                    prefixIcon: Icon(Icons.lock_outline_rounded, size: 20),
                   ),
                   validator: (v) =>
                       v != _passCtrl.text ? 'Passwords do not match' : null,
@@ -245,16 +195,15 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
                 SizedBox(
                   width: double.infinity,
-                  height: AppSpacing.buttonHeight,
                   child: ElevatedButton(
                     onPressed: isLoading ? null : _register,
                     child: isLoading
-                        ? const SizedBox(
+                        ? SizedBox(
                             width: 20,
                             height: 20,
                             child: CircularProgressIndicator(
                               strokeWidth: 2,
-                              valueColor: AlwaysStoppedAnimation(Colors.white),
+                              valueColor: AlwaysStoppedAnimation(colorScheme.onPrimary),
                             ),
                           )
                         : const Text('Create Account'),
@@ -268,23 +217,17 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     children: [
                       Text(
                         'Already have an account? ',
-                        style: GoogleFonts.schibstedGrotesk(
-                          fontSize: 14,
-                          color: isDark
-                              ? AppColors.textMutedDark
-                              : AppColors.muted,
+                        style: textTheme.bodyMedium?.copyWith(
+                          color: colorScheme.onSurfaceVariant,
                         ),
                       ),
                       GestureDetector(
                         onTap: () => context.pop(),
                         child: Text(
                           'Sign In',
-                          style: GoogleFonts.schibstedGrotesk(
-                            fontSize: 14,
+                          style: textTheme.bodyMedium?.copyWith(
                             fontWeight: FontWeight.w600,
-                            color: isDark
-                                ? AppColors.accentLinkDark
-                                : AppColors.terracotta,
+                            color: colorScheme.primary,
                           ),
                         ),
                       ),
@@ -300,13 +243,10 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     );
   }
 
-  Widget _label(String t, bool isDark) => Text(
+  Widget _label(String t, ThemeData theme) => Text(
     t,
-    style: GoogleFonts.schibstedGrotesk(
-      fontSize: 13,
-      fontWeight: FontWeight.w500,
-      color: isDark ? AppColors.textSecondaryDark : AppColors.umber,
-      letterSpacing: 0.3,
+    style: theme.textTheme.labelMedium?.copyWith(
+      color: theme.colorScheme.onSurface,
     ),
   );
 }

@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../shared/models/models.dart';
@@ -33,23 +31,17 @@ class _AdminAdviceScreenState extends ConsumerState<AdminAdviceScreen> {
   void _showReplySheet(
     BuildContext context,
     AdviceRequest request,
-    bool isDark,
-    Color primary,
-    Color surface,
-    Color textPrimary,
-    Color textMuted,
+    ThemeData theme,
   ) {
+    final textTheme = theme.textTheme;
+    final colorScheme = theme.colorScheme;
+    
     _replyController.clear();
     _bibleController.clear();
+    
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: surface,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(AppSpacing.radiusSection),
-        ),
-      ),
       builder: (ctx) => Padding(
         padding: EdgeInsets.only(
           left: AppSpacing.lg,
@@ -66,7 +58,7 @@ class _AdminAdviceScreenState extends ConsumerState<AdminAdviceScreen> {
                 width: 36,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: textMuted.withValues(alpha: 0.3),
+                  color: colorScheme.onSurfaceVariant.withValues(alpha: 0.3),
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -74,41 +66,24 @@ class _AdminAdviceScreenState extends ConsumerState<AdminAdviceScreen> {
             const SizedBox(height: AppSpacing.lg),
             Text(
               'Spiritual Response',
-              style: GoogleFonts.bricolageGrotesque(
-                fontSize: 18,
-                fontWeight: FontWeight.w700,
-                color: textPrimary,
-              ),
+              style: textTheme.titleLarge,
             ),
             const SizedBox(height: AppSpacing.md),
             TextField(
               controller: _replyController,
               maxLines: 4,
-              style: GoogleFonts.schibstedGrotesk(
-                fontSize: 14,
-                color: textPrimary,
-              ),
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 hintText: 'Write pastoral guidance...',
-                hintStyle: GoogleFonts.schibstedGrotesk(color: textMuted),
               ),
             ),
             const SizedBox(height: AppSpacing.sm),
             TextField(
               controller: _bibleController,
-              style: GoogleFonts.schibstedGrotesk(
-                fontSize: 14,
-                color: textPrimary,
-              ),
               decoration: InputDecoration(
                 hintText: 'Bible references (e.g. John 3:16, Psalm 23)',
-                hintStyle: GoogleFonts.schibstedGrotesk(
-                  color: textMuted,
-                  fontSize: 13,
-                ),
                 prefixIcon: Icon(
                   Icons.menu_book_outlined,
-                  color: primary,
+                  color: colorScheme.primary,
                   size: 18,
                 ),
               ),
@@ -131,21 +106,13 @@ class _AdminAdviceScreenState extends ConsumerState<AdminAdviceScreen> {
                           : [],
                     );
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          'Response sent',
-                          style: GoogleFonts.schibstedGrotesk(),
-                        ),
+                      const SnackBar(
+                        content: Text('Response sent'),
                       ),
                     );
                   }
                 },
-                child: Text(
-                  'Send Response',
-                  style: GoogleFonts.schibstedGrotesk(
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
+                child: const Text('Send Response'),
               ),
             ),
           ],
@@ -167,26 +134,13 @@ class _AdminAdviceScreenState extends ConsumerState<AdminAdviceScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final primary = isDark ? AppColors.burntAmber : AppColors.terracotta;
-    final bg = isDark ? AppColors.umberNight : AppColors.sand;
-    final surface = isDark ? AppColors.espresso : AppColors.linen;
-    final textPrimary = isDark ? AppColors.textPrimaryDark : AppColors.umber;
-    final textMuted = isDark ? AppColors.textMutedDark : AppColors.muted;
+    final theme = Theme.of(context);
+    final textTheme = theme.textTheme;
+    final colorScheme = theme.colorScheme;
 
     return Scaffold(
-      backgroundColor: bg,
       appBar: AppBar(
-        backgroundColor: bg,
-        surfaceTintColor: Colors.transparent,
-        title: Text(
-          'Advice Center',
-          style: GoogleFonts.bricolageGrotesque(
-            fontSize: 20,
-            fontWeight: FontWeight.w700,
-            color: textPrimary,
-          ),
-        ),
+        title: const Text('Advice Center'),
       ),
       body: Builder(
         builder: (context) {
@@ -198,243 +152,160 @@ class _AdminAdviceScreenState extends ConsumerState<AdminAdviceScreen> {
             data: (_) => RefreshIndicator(
               onRefresh: () => ref.read(adviceNotifierProvider.notifier).refresh(),
               child: ListView.builder(
-        padding: const EdgeInsets.all(AppSpacing.lg),
-        itemCount: requests.length,
-        itemBuilder: (ctx, i) {
-          final r = requests[i];
-          final sc = _statusColor(r.status);
-          final name = r.isAnonymous
-              ? (r.anonymousDisplayName ?? 'Anonymous Member')
-              : 'Member';
+                padding: const EdgeInsets.all(AppSpacing.lg),
+                itemCount: requests.length,
+                itemBuilder: (ctx, i) {
+                  final r = requests[i];
+                  final sc = _statusColor(r.status);
+                  final name = r.isAnonymous
+                      ? (r.anonymousDisplayName ?? 'Anonymous Member')
+                      : 'Member';
 
-          return Container(
-                margin: const EdgeInsets.only(bottom: AppSpacing.md),
-                decoration: BoxDecoration(
-                  color: surface,
-                  borderRadius: BorderRadius.circular(AppSpacing.radiusCard),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(
-                        alpha: isDark ? 0.2 : 0.05,
-                      ),
-                      blurRadius: 10,
-                      offset: const Offset(0, 3),
-                    ),
-                  ],
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(AppSpacing.md),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 3,
-                            ),
-                            decoration: BoxDecoration(
-                              color: sc.withValues(alpha: 0.12),
-                              borderRadius: BorderRadius.circular(
-                                AppSpacing.radiusFull,
-                              ),
-                            ),
-                            child: Text(
-                              r.status.label,
-                              style: GoogleFonts.schibstedGrotesk(
-                                fontSize: 10,
-                                fontWeight: FontWeight.w700,
-                                color: sc,
-                              ),
-                            ),
-                          ),
-                          const Spacer(),
-                          Text(
-                            name,
-                            style: GoogleFonts.schibstedGrotesk(
-                              fontSize: 11,
-                              color: textMuted,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: AppSpacing.sm),
-                      Text(
-                        r.title,
-                        style: GoogleFonts.bricolageGrotesque(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w700,
-                          color: textPrimary,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        r.description,
-                        style: GoogleFonts.schibstedGrotesk(
-                          fontSize: 13,
-                          color: textMuted,
-                          height: 1.4,
-                        ),
-                        maxLines: 3,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      const SizedBox(height: AppSpacing.md),
-                      if (r.status != AdviceStatus.completed)
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: AppSpacing.md),
+                    child: Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(AppSpacing.md),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            OutlinedButton(
-                              onPressed: () => _closeRequest(r.id),
-                              style: OutlinedButton.styleFrom(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                  vertical: 6,
-                                ),
-                                minimumSize: Size.zero,
-                                side: BorderSide(
-                                  color: textMuted.withValues(alpha: 0.4),
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(
-                                    AppSpacing.radiusFull,
-                                  ),
-                                ),
-                              ),
-                              child: Text(
-                                'Close',
-                                style: GoogleFonts.schibstedGrotesk(
-                                  fontSize: 11,
-                                  color: textMuted,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: AppSpacing.sm),
-                            ElevatedButton.icon(
-                              onPressed: () => _showReplySheet(
-                                context,
-                                r,
-                                isDark,
-                                primary,
-                                surface,
-                                textPrimary,
-                                textMuted,
-                              ),
-                              icon: const Icon(
-                                Icons.reply_rounded,
-                                size: 14,
-                              ),
-                              label: Text(
-                                'Respond',
-                                style: GoogleFonts.schibstedGrotesk(
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                              style: ElevatedButton.styleFrom(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                  vertical: 6,
-                                ),
-                                minimumSize: Size.zero,
-                                backgroundColor: primary,
-                                foregroundColor: Colors.white,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(
-                                    AppSpacing.radiusFull,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        )
-                      else
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            Icon(
-                              Icons.check_circle_outline,
-                              size: 14,
-                              color: AppColors.sage,
-                            ),
-                            const SizedBox(width: 4),
-                            Text(
-                              'Closed',
-                              style: GoogleFonts.schibstedGrotesk(
-                                fontSize: 11,
-                                color: AppColors.sage,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ],
-                        ),
-                      if (r.responses.isNotEmpty) ...[
-                        const SizedBox(height: AppSpacing.sm),
-                        ...r.responses.map(
-                          (resp) => Container(
-                            padding: const EdgeInsets.all(AppSpacing.sm),
-                            decoration: BoxDecoration(
-                              color: primary.withValues(alpha: 0.06),
-                              borderRadius: BorderRadius.circular(
-                                AppSpacing.radiusChip,
-                              ),
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                            Row(
                               children: [
-                                Text(
-                                  resp.message,
-                                  style: GoogleFonts.schibstedGrotesk(
-                                    fontSize: 12,
-                                    color: textMuted,
-                                    height: 1.4,
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                    vertical: 3,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: sc.withValues(alpha: 0.12),
+                                    borderRadius: BorderRadius.circular(AppSpacing.radiusFull),
+                                  ),
+                                  child: Text(
+                                    r.status.label,
+                                    style: textTheme.labelSmall?.copyWith(color: sc),
                                   ),
                                 ),
-                                if (resp.bibleReferences.isNotEmpty) ...[
-                                  const SizedBox(height: 4),
-                                  Wrap(
-                                    spacing: 4,
-                                    children: resp.bibleReferences
-                                        .map(
-                                          (ref) => Container(
-                                            padding: const EdgeInsets.symmetric(
-                                              horizontal: 6,
-                                              vertical: 2,
-                                            ),
-                                            decoration: BoxDecoration(
-                                              color: primary.withValues(
-                                                alpha: 0.1,
-                                              ),
-                                              borderRadius:
-                                                  BorderRadius.circular(4),
-                                            ),
-                                            child: Text(
-                                              ref,
-                                              style:
-                                                  GoogleFonts.schibstedGrotesk(
-                                                    fontSize: 10,
-                                                    color: primary,
-                                                  ),
-                                            ),
-                                          ),
-                                        )
-                                        .toList(),
-                                  ),
-                                ],
+                                const Spacer(),
+                                Text(
+                                  name,
+                                  style: textTheme.bodySmall,
+                                ),
                               ],
                             ),
-                          ),
+                            const SizedBox(height: AppSpacing.sm),
+                            Text(
+                              r.title,
+                              style: textTheme.titleMedium,
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              r.description,
+                              style: textTheme.bodySmall,
+                              maxLines: 3,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            const SizedBox(height: AppSpacing.md),
+                            if (r.status != AdviceStatus.completed)
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  FilledButton.tonal(
+                                    onPressed: () => _closeRequest(r.id),
+                                    style: FilledButton.styleFrom(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 12,
+                                        vertical: 6,
+                                      ),
+                                      minimumSize: Size.zero,
+                                    ),
+                                    child: const Text('Close'),
+                                  ),
+                                  const SizedBox(width: AppSpacing.sm),
+                                  ElevatedButton.icon(
+                                    onPressed: () => _showReplySheet(context, r, theme),
+                                    icon: const Icon(Icons.reply_rounded, size: 14),
+                                    label: const Text('Respond'),
+                                    style: ElevatedButton.styleFrom(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 12,
+                                        vertical: 6,
+                                      ),
+                                      minimumSize: Size.zero,
+                                    ),
+                                  ),
+                                ],
+                              )
+                            else
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  Icon(
+                                    Icons.check_circle_outline,
+                                    size: 14,
+                                    color: AppColors.sage,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    'Closed',
+                                    style: textTheme.labelMedium?.copyWith(
+                                      color: AppColors.sage,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            if (r.responses.isNotEmpty) ...[
+                              const SizedBox(height: AppSpacing.sm),
+                              ...r.responses.map(
+                                (resp) => Container(
+                                  padding: const EdgeInsets.all(AppSpacing.sm),
+                                  decoration: BoxDecoration(
+                                    color: colorScheme.surfaceContainerHighest,
+                                    borderRadius: BorderRadius.circular(AppSpacing.radiusChip),
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        resp.message,
+                                        style: textTheme.bodySmall,
+                                      ),
+                                      if (resp.bibleReferences.isNotEmpty) ...[
+                                        const SizedBox(height: 4),
+                                        Wrap(
+                                          spacing: 4,
+                                          children: resp.bibleReferences.map(
+                                            (ref) => Container(
+                                              padding: const EdgeInsets.symmetric(
+                                                horizontal: 6,
+                                                vertical: 2,
+                                              ),
+                                              decoration: BoxDecoration(
+                                                color: colorScheme.primaryContainer,
+                                                borderRadius: BorderRadius.circular(4),
+                                              ),
+                                              child: Text(
+                                                ref,
+                                                style: textTheme.labelSmall?.copyWith(
+                                                  color: colorScheme.onPrimaryContainer,
+                                                  fontSize: 10,
+                                                ),
+                                              ),
+                                            ),
+                                          ).toList(),
+                                        ),
+                                      ],
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ],
                         ),
-                      ],
-                    ],
-                  ),
-                ),
-              )
-              .animate(delay: Duration(milliseconds: i * 60))
-              .fadeIn(duration: 350.ms)
-              .slideY(begin: 0.1, end: 0);
-        },
-      ),
+                      ),
+                    ),
+                  );
+                },
+              ),
             ),
           );
         },

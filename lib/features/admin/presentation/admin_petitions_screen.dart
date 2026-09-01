@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../shared/models/models.dart';
@@ -24,41 +22,25 @@ class AdminPetitionsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final primary = isDark ? AppColors.burntAmber : AppColors.terracotta;
-    final bg = isDark ? AppColors.umberNight : AppColors.sand;
-    final surface = isDark ? AppColors.espresso : AppColors.linen;
-    final textPrimary = isDark ? AppColors.textPrimaryDark : AppColors.umber;
-    final textMuted = isDark ? AppColors.textMutedDark : AppColors.muted;
+    final theme = Theme.of(context);
+    final textTheme = theme.textTheme;
+    final colorScheme = theme.colorScheme;
 
     final asyncPetitions = ref.watch(petitionsNotifierProvider);
     final petitions = asyncPetitions.value ?? [];
 
     return Scaffold(
-      backgroundColor: bg,
       appBar: AppBar(
-        backgroundColor: bg,
-        surfaceTintColor: Colors.transparent,
-        title: Text(
-          'Petitions',
-          style: GoogleFonts.bricolageGrotesque(
-            fontSize: 20,
-            fontWeight: FontWeight.w700,
-            color: textPrimary,
-          ),
-        ),
+        title: const Text('Petitions'),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: AppSpacing.md),
             child: Chip(
               label: Text(
                 '${petitions.length} total',
-                style: GoogleFonts.schibstedGrotesk(
-                  fontSize: 11,
-                  color: primary,
-                ),
+                style: textTheme.labelSmall?.copyWith(color: colorScheme.primary),
               ),
-              backgroundColor: primary.withValues(alpha: 0.1),
+              backgroundColor: colorScheme.primaryContainer,
               side: BorderSide.none,
             ),
           ),
@@ -71,7 +53,7 @@ class AdminPetitionsScreen extends ConsumerWidget {
             ? Center(
                 child: Text(
                   'No petitions yet',
-                  style: GoogleFonts.schibstedGrotesk(color: textMuted),
+                  style: textTheme.bodyLarge?.copyWith(color: colorScheme.onSurfaceVariant),
                 ),
               )
             : RefreshIndicator(
@@ -86,152 +68,105 @@ class AdminPetitionsScreen extends ConsumerWidget {
                         ? (p.anonymousDisplayName ?? 'Anonymous Member')
                         : (p.submitterName ?? 'Member');
 
-                    return Container(
-                          margin: const EdgeInsets.only(bottom: AppSpacing.md),
-                          decoration: BoxDecoration(
-                            color: surface,
-                            borderRadius: BorderRadius.circular(
-                              AppSpacing.radiusCard,
-                            ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withValues(
-                                  alpha: isDark ? 0.2 : 0.05,
-                                ),
-                                blurRadius: 10,
-                                offset: const Offset(0, 3),
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: AppSpacing.md),
+                      child: Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(AppSpacing.md),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 8,
+                                      vertical: 3,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: statusColor.withValues(alpha: 0.12),
+                                      borderRadius: BorderRadius.circular(AppSpacing.radiusFull),
+                                    ),
+                                    child: Text(
+                                      p.status.label,
+                                      style: textTheme.labelSmall?.copyWith(
+                                        color: statusColor,
+                                      ),
+                                    ),
+                                  ),
+                                  const Spacer(),
+                                  Icon(
+                                    p.isAnonymous ? Icons.person_off_outlined : Icons.person_outline,
+                                    size: 13,
+                                    color: colorScheme.onSurfaceVariant,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    name,
+                                    style: textTheme.bodySmall,
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(AppSpacing.md),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  children: [
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 8,
-                                        vertical: 3,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: statusColor.withValues(alpha: 0.12),
-                                        borderRadius: BorderRadius.circular(
-                                          AppSpacing.radiusFull,
-                                        ),
-                                      ),
-                                      child: Text(
-                                        p.status.label,
-                                        style: GoogleFonts.schibstedGrotesk(
-                                          fontSize: 10,
-                                          fontWeight: FontWeight.w700,
-                                          color: statusColor,
-                                        ),
-                                      ),
-                                    ),
-                                    const Spacer(),
-                                    Icon(
-                                      p.isAnonymous
-                                          ? Icons.person_off_outlined
-                                          : Icons.person_outline,
-                                      size: 13,
-                                      color: textMuted,
-                                    ),
-                                    const SizedBox(width: 4),
-                                    Text(
-                                      name,
-                                      style: GoogleFonts.schibstedGrotesk(
-                                        fontSize: 11,
-                                        color: textMuted,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: AppSpacing.sm),
-                                Text(
-                                  p.subject,
-                                  style: GoogleFonts.bricolageGrotesque(
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.w700,
-                                    color: textPrimary,
+                              const SizedBox(height: AppSpacing.sm),
+                              Text(
+                                p.subject,
+                                style: textTheme.titleMedium,
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                p.description,
+                                style: textTheme.bodySmall,
+                                maxLines: 3,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              const SizedBox(height: AppSpacing.md),
+                              // Status update buttons
+                              Row(
+                                children: [
+                                  Text(
+                                    'Update:',
+                                    style: textTheme.bodySmall,
                                   ),
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  p.description,
-                                  style: GoogleFonts.schibstedGrotesk(
-                                    fontSize: 13,
-                                    color: textMuted,
-                                    height: 1.4,
-                                  ),
-                                  maxLines: 3,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                                const SizedBox(height: AppSpacing.md),
-                                // Status update buttons
-                                Row(
-                                  children: [
-                                    Text(
-                                      'Update:',
-                                      style: GoogleFonts.schibstedGrotesk(
-                                        fontSize: 11,
-                                        color: textMuted,
-                                      ),
-                                    ),
-                                    const SizedBox(width: AppSpacing.sm),
-                                    ...PetitionStatus.values.map((s) {
-                                      final isActive = p.status == s;
-                                      final sc = _statusColor(s);
-                                      return Padding(
-                                        padding: const EdgeInsets.only(right: 6),
-                                        child: GestureDetector(
-                                          onTap: isActive
-                                              ? null
-                                              : () => ref.read(petitionsNotifierProvider.notifier).updateStatus(
-                                                    id: p.id,
-                                                    status: s.name,
-                                                  ),
-                                          child: AnimatedContainer(
-                                            duration: const Duration(
-                                              milliseconds: 200,
+                                  const SizedBox(width: AppSpacing.sm),
+                                  ...PetitionStatus.values.map((s) {
+                                    final isActive = p.status == s;
+                                    final sc = _statusColor(s);
+                                    return Padding(
+                                      padding: const EdgeInsets.only(right: 6),
+                                      child: GestureDetector(
+                                        onTap: isActive
+                                            ? null
+                                            : () => ref.read(petitionsNotifierProvider.notifier).updateStatus(
+                                                  id: p.id,
+                                                  status: s.name,
+                                                ),
+                                        child: AnimatedContainer(
+                                          duration: const Duration(milliseconds: 200),
+                                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                          decoration: BoxDecoration(
+                                            color: isActive ? sc : colorScheme.surface,
+                                            borderRadius: BorderRadius.circular(AppSpacing.radiusFull),
+                                            border: Border.all(
+                                              color: isActive ? sc : sc.withValues(alpha: 0.5),
                                             ),
-                                            padding: const EdgeInsets.symmetric(
-                                              horizontal: 8,
-                                              vertical: 4,
-                                            ),
-                                            decoration: BoxDecoration(
-                                              color: isActive
-                                                  ? sc
-                                                  : sc.withValues(alpha: 0.08),
-                                              borderRadius: BorderRadius.circular(
-                                                AppSpacing.radiusFull,
-                                              ),
-                                              border: Border.all(
-                                                color: sc.withValues(alpha: 0.4),
-                                              ),
-                                            ),
-                                            child: Text(
-                                              s.label,
-                                              style: GoogleFonts.schibstedGrotesk(
-                                                fontSize: 10,
-                                                fontWeight: FontWeight.w600,
-                                                color: isActive ? Colors.white : sc,
-                                              ),
+                                          ),
+                                          child: Text(
+                                            s.label,
+                                            style: textTheme.labelSmall?.copyWith(
+                                              color: isActive ? Colors.white : sc,
                                             ),
                                           ),
                                         ),
-                                      );
-                                    }),
-                                  ],
-                                ),
-                              ],
-                            ),
+                                      ),
+                                    );
+                                  }),
+                                ],
+                              ),
+                            ],
                           ),
-                        )
-                        .animate(delay: Duration(milliseconds: i * 60))
-                        .fadeIn(duration: 350.ms)
-                        .slideY(begin: 0.1, end: 0);
+                        ),
+                      ),
+                    );
                   },
                 ),
               ),

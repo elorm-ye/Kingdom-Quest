@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/providers/feature_providers.dart';
@@ -79,25 +77,21 @@ class _EventsScreenState extends ConsumerState<EventsScreen>
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final primary = isDark ? AppColors.burntAmber : AppColors.terracotta;
-    final bg = isDark ? AppColors.umberNight : AppColors.sand;
-    final surface = isDark ? AppColors.espresso : AppColors.linen;
-    final textPrimary = isDark ? AppColors.textPrimaryDark : AppColors.umber;
-    final textMuted = isDark ? AppColors.textMutedDark : AppColors.muted;
+    final theme = Theme.of(context);
+    final textTheme = theme.textTheme;
+    final colorScheme = theme.colorScheme;
+    
     final asyncEvents = ref.watch(eventsNotifierProvider);
     final _events = asyncEvents.value ?? [];
     final asyncAnnouncements = ref.watch(announcementsNotifierProvider);
     final announcements = asyncAnnouncements.value ?? [];
 
     return Scaffold(
-      backgroundColor: bg,
       body: NestedScrollView(
         headerSliverBuilder: (ctx, _) => [
           SliverAppBar(
             pinned: true,
             expandedHeight: 120,
-            backgroundColor: bg,
             surfaceTintColor: Colors.transparent,
             flexibleSpace: FlexibleSpaceBar(
               titlePadding: const EdgeInsets.only(
@@ -106,27 +100,11 @@ class _EventsScreenState extends ConsumerState<EventsScreen>
               ),
               title: Text(
                 'Events & News',
-                style: GoogleFonts.bricolageGrotesque(
-                  fontSize: 22,
-                  fontWeight: FontWeight.w700,
-                  color: textPrimary,
-                ),
+                style: textTheme.titleLarge,
               ),
             ),
             bottom: TabBar(
               controller: _tabController,
-              indicatorColor: primary,
-              indicatorWeight: 2.5,
-              labelColor: primary,
-              unselectedLabelColor: textMuted,
-              labelStyle: GoogleFonts.schibstedGrotesk(
-                fontWeight: FontWeight.w600,
-                fontSize: 14,
-              ),
-              unselectedLabelStyle: GoogleFonts.schibstedGrotesk(
-                fontWeight: FontWeight.w400,
-                fontSize: 14,
-              ),
               tabs: const [
                 Tab(text: 'Upcoming Events'),
                 Tab(text: 'Announcements'),
@@ -144,210 +122,161 @@ class _EventsScreenState extends ConsumerState<EventsScreen>
               itemBuilder: (ctx, i) {
                 final e = _events[i];
                 final days = e.startTime.difference(DateTime.now()).inDays;
-                return Container(
-                      margin: const EdgeInsets.only(bottom: AppSpacing.md),
-                      decoration: BoxDecoration(
-                        color: surface,
-                        borderRadius: BorderRadius.circular(
-                          AppSpacing.radiusCard,
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: AppSpacing.md),
+                  child: Card(
+                    clipBehavior: Clip.antiAlias,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          height: 5,
+                          color: colorScheme.primary,
                         ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withValues(
-                              alpha: isDark ? 0.25 : 0.06,
-                            ),
-                            blurRadius: 12,
-                            offset: const Offset(0, 4),
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            height: 5,
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                colors: [
-                                  AppColors.terracotta,
-                                  AppColors.burntAmber,
-                                ],
-                              ),
-                              borderRadius: const BorderRadius.vertical(
-                                top: Radius.circular(AppSpacing.radiusCard),
-                              ),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(AppSpacing.lg),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  children: [
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            e.title,
-                                            style:
-                                                GoogleFonts.bricolageGrotesque(
-                                                  fontSize: 16,
-                                                  fontWeight: FontWeight.w700,
-                                                  color: textPrimary,
-                                                ),
-                                          ),
-                                          const SizedBox(height: 4),
-                                          Text(
-                                            _formatDateTime(e.startTime),
-                                            style: GoogleFonts.schibstedGrotesk(
-                                              fontSize: 12,
-                                              color: textMuted,
-                                            ),
-                                          ),
-                                        ],
+                        Padding(
+                          padding: const EdgeInsets.all(AppSpacing.lg),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          e.title,
+                                          style: textTheme.titleMedium,
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          _formatDateTime(e.startTime),
+                                          style: textTheme.bodySmall,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 10,
+                                      vertical: 4,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: days <= 3
+                                          ? colorScheme.primaryContainer
+                                          : colorScheme.surface,
+                                      border: Border.all(
+                                        color: days <= 3
+                                            ? colorScheme.primary
+                                            : colorScheme.outlineVariant,
+                                      ),
+                                      borderRadius: BorderRadius.circular(
+                                        AppSpacing.radiusFull,
                                       ),
                                     ),
-                                    Container(
+                                    child: Text(
+                                      _daysLabel(e.startTime),
+                                      style: textTheme.labelSmall?.copyWith(
+                                        color: days <= 3
+                                            ? colorScheme.onPrimaryContainer
+                                            : colorScheme.onSurfaceVariant,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: AppSpacing.sm),
+                              Text(
+                                e.description,
+                                style: textTheme.bodyMedium,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              const SizedBox(height: AppSpacing.md),
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.location_on_outlined,
+                                    size: 13,
+                                    color: colorScheme.onSurfaceVariant,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Expanded(
+                                    child: Text(
+                                      e.location ?? 'TBA',
+                                      style: textTheme.bodySmall,
+                                    ),
+                                  ),
+                                  Icon(
+                                    Icons.people_outline_rounded,
+                                    size: 13,
+                                    color: colorScheme.onSurfaceVariant,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    '${e.registrationCount}',
+                                    style: textTheme.bodySmall,
+                                  ),
+                                  const SizedBox(width: AppSpacing.md),
+                                  GestureDetector(
+                                    onTap: () => _toggleRegistration(i),
+                                    child: AnimatedContainer(
+                                      duration: const Duration(
+                                        milliseconds: 250,
+                                      ),
                                       padding: const EdgeInsets.symmetric(
-                                        horizontal: 10,
-                                        vertical: 4,
+                                        horizontal: 14,
+                                        vertical: 8,
                                       ),
                                       decoration: BoxDecoration(
-                                        color: days <= 3
-                                            ? primary.withValues(alpha: 0.12)
-                                            : surface,
-                                        border: Border.all(
-                                          color: days <= 3
-                                              ? primary
-                                              : textMuted.withValues(
-                                                  alpha: 0.3,
-                                                ),
-                                        ),
+                                        color: e.isRegistered
+                                            ? AppColors.healing
+                                            : colorScheme.primary,
                                         borderRadius: BorderRadius.circular(
                                           AppSpacing.radiusFull,
                                         ),
                                       ),
                                       child: Text(
-                                        _daysLabel(e.startTime),
-                                        style: GoogleFonts.schibstedGrotesk(
-                                          fontSize: 11,
-                                          fontWeight: FontWeight.w600,
-                                          color: days <= 3
-                                              ? primary
-                                              : textMuted,
+                                        e.isRegistered
+                                            ? '✓ Joined'
+                                            : 'Register',
+                                        style: textTheme.labelSmall?.copyWith(
+                                          color: e.isRegistered
+                                              ? Colors.white
+                                              : colorScheme.onPrimary,
                                         ),
                                       ),
                                     ),
-                                  ],
-                                ),
-                                const SizedBox(height: AppSpacing.sm),
-                                Text(
-                                  e.description,
-                                  style: GoogleFonts.schibstedGrotesk(
-                                    fontSize: 13,
-                                    color: textMuted,
-                                    height: 1.5,
                                   ),
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                                const SizedBox(height: AppSpacing.md),
+                                ],
+                              ),
+                              if (e.isRecurring == true) ...[
+                                const SizedBox(height: AppSpacing.sm),
                                 Row(
                                   children: [
                                     Icon(
-                                      Icons.location_on_outlined,
-                                      size: 13,
-                                      color: textMuted,
-                                    ),
-                                    const SizedBox(width: 4),
-                                    Expanded(
-                                      child: Text(
-                                        e.location ?? 'TBA',
-                                        style: GoogleFonts.schibstedGrotesk(
-                                          fontSize: 12,
-                                          color: textMuted,
-                                        ),
-                                      ),
-                                    ),
-                                    Icon(
-                                      Icons.people_outline_rounded,
-                                      size: 13,
-                                      color: textMuted,
+                                      Icons.repeat_rounded,
+                                      size: 12,
+                                      color: AppColors.healing,
                                     ),
                                     const SizedBox(width: 4),
                                     Text(
-                                      '${e.registrationCount}',
-                                      style: GoogleFonts.schibstedGrotesk(
-                                        fontSize: 12,
-                                        color: textMuted,
-                                      ),
-                                    ),
-                                    const SizedBox(width: AppSpacing.md),
-                                    GestureDetector(
-                                      onTap: () => _toggleRegistration(i),
-                                      child: AnimatedContainer(
-                                        duration: const Duration(
-                                          milliseconds: 250,
-                                        ),
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 14,
-                                          vertical: 8,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: e.isRegistered
-                                              ? AppColors.sage
-                                              : primary,
-                                          borderRadius: BorderRadius.circular(
-                                            AppSpacing.radiusFull,
-                                          ),
-                                        ),
-                                        child: Text(
-                                          e.isRegistered
-                                              ? '✓ Joined'
-                                              : 'Register',
-                                          style: GoogleFonts.schibstedGrotesk(
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.w600,
-                                            color: Colors.white,
-                                          ),
-                                        ),
+                                      e.recurringPattern ?? 'Recurring',
+                                      style: textTheme.labelSmall?.copyWith(
+                                        color: AppColors.healing,
                                       ),
                                     ),
                                   ],
                                 ),
-                                if (e.isRecurring == true) ...[
-                                  const SizedBox(height: AppSpacing.sm),
-                                  Row(
-                                    children: [
-                                      Icon(
-                                        Icons.repeat_rounded,
-                                        size: 12,
-                                        color: AppColors.sage,
-                                      ),
-                                      const SizedBox(width: 4),
-                                      Text(
-                                        e.recurringPattern ?? 'Recurring',
-                                        style: GoogleFonts.schibstedGrotesk(
-                                          fontSize: 11,
-                                          color: AppColors.sage,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
                               ],
-                            ),
+                            ],
                           ),
-                        ],
-                      ),
-                    )
-                    .animate(delay: Duration(milliseconds: i * 80))
-                    .fadeIn(duration: 400.ms)
-                    .slideY(begin: 0.15, end: 0, curve: Curves.easeOut);
+                        ),
+                      ],
+                    ),
+                  ),
+                );
               },
             ),
 
@@ -357,30 +286,20 @@ class _EventsScreenState extends ConsumerState<EventsScreen>
               itemCount: announcements.length,
               itemBuilder: (ctx, i) {
                 final ann = announcements[i];
-                return Container(
-                      margin: const EdgeInsets.only(bottom: AppSpacing.md),
-                      padding: const EdgeInsets.all(AppSpacing.lg),
-                      decoration: BoxDecoration(
-                        color: surface,
-                        borderRadius: BorderRadius.circular(
-                          AppSpacing.radiusCard,
-                        ),
-                        border: ann.isPinned
-                            ? Border.all(
-                                color: primary.withValues(alpha: 0.4),
-                                width: 1.5,
-                              )
-                            : null,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withValues(
-                              alpha: isDark ? 0.25 : 0.06,
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: AppSpacing.md),
+                  child: Card(
+                    shape: ann.isPinned
+                        ? RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(AppSpacing.radiusCard),
+                            side: BorderSide(
+                              color: colorScheme.primary.withValues(alpha: 0.4),
+                              width: 1.5,
                             ),
-                            blurRadius: 12,
-                            offset: const Offset(0, 4),
-                          ),
-                        ],
-                      ),
+                          )
+                        : null,
+                    child: Padding(
+                      padding: const EdgeInsets.all(AppSpacing.lg),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -390,15 +309,13 @@ class _EventsScreenState extends ConsumerState<EventsScreen>
                                 Icon(
                                   Icons.push_pin_outlined,
                                   size: 14,
-                                  color: primary,
+                                  color: colorScheme.primary,
                                 ),
                                 const SizedBox(width: 6),
                                 Text(
                                   'PINNED',
-                                  style: GoogleFonts.schibstedGrotesk(
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.w700,
-                                    color: primary,
+                                  style: textTheme.labelSmall?.copyWith(
+                                    color: colorScheme.primary,
                                     letterSpacing: 0.8,
                                   ),
                                 ),
@@ -406,30 +323,19 @@ class _EventsScreenState extends ConsumerState<EventsScreen>
                               const Spacer(),
                               Text(
                                 _timeAgo(ann.createdAt),
-                                style: GoogleFonts.schibstedGrotesk(
-                                  fontSize: 11,
-                                  color: textMuted,
-                                ),
+                                style: textTheme.bodySmall,
                               ),
                             ],
                           ),
                           const SizedBox(height: AppSpacing.sm),
                           Text(
                             ann.title,
-                            style: GoogleFonts.bricolageGrotesque(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w700,
-                              color: textPrimary,
-                            ),
+                            style: textTheme.titleMedium,
                           ),
                           const SizedBox(height: 6),
                           Text(
                             ann.content,
-                            style: GoogleFonts.schibstedGrotesk(
-                              fontSize: 14,
-                              color: textMuted,
-                              height: 1.55,
-                            ),
+                            style: textTheme.bodyMedium,
                           ),
                           const SizedBox(height: AppSpacing.md),
                           Row(
@@ -437,32 +343,29 @@ class _EventsScreenState extends ConsumerState<EventsScreen>
                               Container(
                                 padding: const EdgeInsets.all(6),
                                 decoration: BoxDecoration(
-                                  color: primary.withValues(alpha: 0.12),
+                                  color: colorScheme.primaryContainer,
                                   shape: BoxShape.circle,
                                 ),
                                 child: Icon(
                                   Icons.person_outline,
                                   size: 14,
-                                  color: primary,
+                                  color: colorScheme.primary,
                                 ),
                               ),
                               const SizedBox(width: AppSpacing.sm),
                               Text(
                                 ann.adminName,
-                                style: GoogleFonts.schibstedGrotesk(
-                                  fontSize: 12,
-                                  color: primary,
-                                  fontWeight: FontWeight.w600,
+                                style: textTheme.labelMedium?.copyWith(
+                                  color: colorScheme.primary,
                                 ),
                               ),
                             ],
                           ),
                         ],
                       ),
-                    )
-                    .animate(delay: Duration(milliseconds: i * 80))
-                    .fadeIn(duration: 400.ms)
-                    .slideY(begin: 0.15, end: 0, curve: Curves.easeOut);
+                    ),
+                  ),
+                );
               },
             ),
           ],
