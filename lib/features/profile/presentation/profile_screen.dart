@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/providers/app_providers.dart';
+import 'widgets/edit_profile_sheet.dart';
 
 /// User profile screen — avatar, stats, activity feed.
 class ProfileScreen extends ConsumerWidget {
@@ -36,6 +37,7 @@ class ProfileScreen extends ConsumerWidget {
         title: 'Prayer request answered',
         time: '2 days ago',
         subtitle: '"Healing for my grandmother"',
+        route: '/prayer-requests',
       ),
       (
         icon: Icons.auto_awesome_rounded,
@@ -43,6 +45,7 @@ class ProfileScreen extends ConsumerWidget {
         title: 'Liked a Daily Inspiration',
         time: '3 days ago',
         subtitle: '"Start here. The rest can wait."',
+        route: '/inspiration',
       ),
       (
         icon: Icons.forum_outlined,
@@ -50,6 +53,7 @@ class ProfileScreen extends ConsumerWidget {
         title: 'Commented on forum post',
         time: '5 days ago',
         subtitle: '"How do you deal with anxiety as a Christian?"',
+        route: '/community',
       ),
       (
         icon: Icons.event_rounded,
@@ -57,6 +61,7 @@ class ProfileScreen extends ConsumerWidget {
         title: 'Registered for event',
         time: '1 week ago',
         subtitle: '"Youth Sunday Service"',
+        route: '/events',
       ),
     ];
 
@@ -196,7 +201,6 @@ class ProfileScreen extends ConsumerWidget {
                       child: Padding(
                         padding: const EdgeInsets.all(AppSpacing.md),
                         child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
                             Text(
@@ -238,46 +242,63 @@ class ProfileScreen extends ConsumerWidget {
                       vertical: 4,
                     ),
                     child: Card(
-                      child: Padding(
-                        padding: const EdgeInsets.all(AppSpacing.md),
-                        child: Row(
-                          children: [
-                            Container(
-                              width: 40,
-                              height: 40,
-                              decoration: BoxDecoration(
-                                color: act.color.withValues(alpha: 0.12),
-                                shape: BoxShape.circle,
+                      clipBehavior: Clip.antiAlias,
+                      child: InkWell(
+                        onTap: () {
+                          if (['/community', '/inspiration', '/events'].contains(act.route)) {
+                            context.go(act.route);
+                          } else {
+                            context.push(act.route);
+                          }
+                        },
+                        borderRadius: BorderRadius.circular(AppSpacing.radiusCard),
+                        child: Padding(
+                          padding: const EdgeInsets.all(AppSpacing.md),
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 40,
+                                height: 40,
+                                decoration: BoxDecoration(
+                                  color: act.color.withValues(alpha: 0.12),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Icon(
+                                  act.icon,
+                                  size: 18,
+                                  color: act.color,
+                                ),
                               ),
-                              child: Icon(
-                                act.icon,
+                              const SizedBox(width: AppSpacing.md),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      act.title,
+                                      style: textTheme.titleMedium,
+                                    ),
+                                    Text(
+                                      act.subtitle,
+                                      style: textTheme.bodySmall,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Text(
+                                act.time,
+                                style: textTheme.bodySmall,
+                              ),
+                              const SizedBox(width: 4),
+                              Icon(
+                                Icons.chevron_right_rounded,
                                 size: 18,
-                                color: act.color,
+                                color: colorScheme.onSurfaceVariant,
                               ),
-                            ),
-                            const SizedBox(width: AppSpacing.md),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    act.title,
-                                    style: textTheme.titleMedium,
-                                  ),
-                                  Text(
-                                    act.subtitle,
-                                    style: textTheme.bodySmall,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Text(
-                              act.time,
-                              style: textTheme.bodySmall,
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
                     ),
@@ -292,7 +313,7 @@ class ProfileScreen extends ConsumerWidget {
                   child: SizedBox(
                     width: double.infinity,
                     child: FilledButton.tonalIcon(
-                      onPressed: () {},
+                      onPressed: () => showEditProfileSheet(context, user, ref),
                       icon: const Icon(Icons.edit_outlined, size: 16),
                       label: const Text('Edit Profile'),
                     ),

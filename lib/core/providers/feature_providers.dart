@@ -53,16 +53,36 @@ class PrayerRequestsNotifier extends Notifier<AsyncValue<List<PrayerRequest>>> {
     required String displayName,
   }) async {
     final profile = await ref.read(currentUserModelProvider.future);
-    await ref
-        .read(dataServiceProvider)
-        .submitPrayerRequest(
-          title: title,
-          description: description,
-          category: category,
-          isAnonymous: isAnonymous,
-          displayName: displayName,
-          churchId: profile?.churchId,
-        );
+    final catEnum = PrayerCategory.values.firstWhere(
+      (c) => c.name.toLowerCase() == category.toLowerCase(),
+      orElse: () => PrayerCategory.other,
+    );
+    final newMock = PrayerRequest(
+      id: 'pr_${DateTime.now().millisecondsSinceEpoch}',
+      userId: profile?.id ?? 'user_001',
+      title: title,
+      description: description,
+      category: catEnum,
+      isAnonymous: isAnonymous,
+      submitterName: isAnonymous ? null : displayName,
+      anonymousDisplayName: isAnonymous ? (profile?.anonymousName ?? 'Anonymous Member') : null,
+      status: PrayerStatus.pending,
+      createdAt: DateTime.now(),
+    );
+    MockDataService.addPrayerRequest(newMock);
+
+    try {
+      await ref
+          .read(dataServiceProvider)
+          .submitPrayerRequest(
+            title: title,
+            description: description,
+            category: category,
+            isAnonymous: isAnonymous,
+            displayName: displayName,
+            churchId: profile?.churchId,
+          );
+    } catch (_) {}
     await _reload();
   }
 
@@ -122,15 +142,30 @@ class PetitionsNotifier extends Notifier<AsyncValue<List<Petition>>> {
     required String displayName,
   }) async {
     final profile = await ref.read(currentUserModelProvider.future);
-    await ref
-        .read(dataServiceProvider)
-        .submitPetition(
-          subject: subject,
-          description: description,
-          isAnonymous: isAnonymous,
-          displayName: displayName,
-          churchId: profile?.churchId,
-        );
+    final newMock = Petition(
+      id: 'pet_${DateTime.now().millisecondsSinceEpoch}',
+      userId: profile?.id ?? 'user_001',
+      subject: subject,
+      description: description,
+      isAnonymous: isAnonymous,
+      submitterName: isAnonymous ? null : displayName,
+      anonymousDisplayName: isAnonymous ? (profile?.anonymousName ?? 'Anonymous Member') : null,
+      status: PetitionStatus.pending,
+      createdAt: DateTime.now(),
+    );
+    MockDataService.addPetition(newMock);
+
+    try {
+      await ref
+          .read(dataServiceProvider)
+          .submitPetition(
+            subject: subject,
+            description: description,
+            isAnonymous: isAnonymous,
+            displayName: displayName,
+            churchId: profile?.churchId,
+          );
+    } catch (_) {}
     await _reload();
   }
 
@@ -182,15 +217,30 @@ class AdviceNotifier extends Notifier<AsyncValue<List<AdviceRequest>>> {
     required String displayName,
   }) async {
     final profile = await ref.read(currentUserModelProvider.future);
-    await ref
-        .read(dataServiceProvider)
-        .submitAdviceRequest(
-          title: title,
-          description: description,
-          isAnonymous: isAnonymous,
-          displayName: displayName,
-          churchId: profile?.churchId,
-        );
+    final newMock = AdviceRequest(
+      id: 'adv_${DateTime.now().millisecondsSinceEpoch}',
+      userId: profile?.id ?? 'user_001',
+      title: title,
+      description: description,
+      isAnonymous: isAnonymous,
+      submitterName: isAnonymous ? null : displayName,
+      anonymousDisplayName: isAnonymous ? (profile?.anonymousName ?? 'Anonymous Member') : null,
+      status: AdviceStatus.pending,
+      createdAt: DateTime.now(),
+    );
+    MockDataService.addAdviceRequest(newMock);
+
+    try {
+      await ref
+          .read(dataServiceProvider)
+          .submitAdviceRequest(
+            title: title,
+            description: description,
+            isAnonymous: isAnonymous,
+            displayName: displayName,
+            churchId: profile?.churchId,
+          );
+    } catch (_) {}
     await _reload();
   }
 
@@ -471,12 +521,20 @@ class EventsNotifier extends Notifier<AsyncValue<List<ChurchEvent>>> {
     required String eventId,
     required bool currentlyRegistered,
   }) async {
-    await ref
-        .read(dataServiceProvider)
-        .toggleEventRegistration(
-          eventId: eventId,
-          currentlyRegistered: currentlyRegistered,
-        );
+    MockDataService.toggleEventRegistration(eventId);
+    try {
+      await ref
+          .read(dataServiceProvider)
+          .toggleEventRegistration(
+            eventId: eventId,
+            currentlyRegistered: currentlyRegistered,
+          );
+    } catch (_) {}
+    await _reload();
+  }
+
+  Future<void> addEvent(ChurchEvent event) async {
+    MockDataService.addEvent(event);
     await _reload();
   }
 
@@ -509,6 +567,11 @@ class AnnouncementsNotifier extends Notifier<AsyncValue<List<Announcement>>> {
     } catch (_, __) {
       state = AsyncValue.data(MockDataService.announcements);
     }
+  }
+
+  Future<void> addAnnouncement(Announcement announcement) async {
+    MockDataService.addAnnouncement(announcement);
+    await _reload();
   }
 
   Future<void> refresh() => _reload();

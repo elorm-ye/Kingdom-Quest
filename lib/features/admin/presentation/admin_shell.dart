@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
-import '../../../core/theme/app_spacing.dart';
 
 /// Admin navigation shell — separate from member shell.
 /// Accessible only when user has UserRole.admin.
@@ -49,26 +49,68 @@ class AdminShell extends StatelessWidget {
     return 0;
   }
 
+  Future<void> _handlePop(BuildContext context, int currentIdx) async {
+    // If not on Admin Overview tab, navigate back to /admin first
+    if (currentIdx != 0) {
+      context.go('/admin');
+      return;
+    }
+
+    // If already on Admin Overview, confirm exit
+    final shouldExit = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Exit Kingdom Quest Admin?'),
+        content: const Text('Are you sure you want to exit the app?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(
+              backgroundColor: Theme.of(ctx).colorScheme.error,
+              foregroundColor: Theme.of(ctx).colorScheme.onError,
+            ),
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: const Text('Exit'),
+          ),
+        ],
+      ),
+    );
+
+    if (shouldExit == true) {
+      await SystemNavigator.pop();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final idx = _currentIndex(context);
 
-    return Scaffold(
-      body: child,
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: idx,
-        onTap: (i) {
-          if (i != idx) context.go(_navItems[i].route);
-        },
-        items: _navItems.map((item) {
-          return BottomNavigationBarItem(
-            icon: Icon(item.icon),
-            activeIcon: Icon(item.activeIcon),
-            label: item.label,
-          );
-        }).toList(),
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) return;
+        _handlePop(context, idx);
+      },
+      child: Scaffold(
+        body: child,
+        bottomNavigationBar: BottomNavigationBar(
+          currentIndex: idx,
+          onTap: (i) {
+            if (i != idx) context.go(_navItems[i].route);
+          },
+          items: _navItems.map((item) {
+            return BottomNavigationBarItem(
+              icon: Icon(item.icon),
+              activeIcon: Icon(item.activeIcon),
+              label: item.label,
+            );
+          }).toList(),
+        ),
       ),
     );
   }
 }
+

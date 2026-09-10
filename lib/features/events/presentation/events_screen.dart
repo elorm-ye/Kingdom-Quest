@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/providers/feature_providers.dart';
+import 'widgets/event_details_sheet.dart';
 
 /// Events & Announcements screen — tabbed layout.
 class EventsScreen extends ConsumerStatefulWidget {
@@ -33,9 +34,20 @@ class _EventsScreenState extends ConsumerState<EventsScreen>
     final events = asyncEvents.value ?? [];
     if (index >= events.length) return;
     final e = events[index];
+    final isReg = e.isRegistered;
     ref.read(eventsNotifierProvider.notifier).toggleRegistration(
       eventId: e.id,
-      currentlyRegistered: e.isRegistered,
+      currentlyRegistered: isReg,
+    );
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          isReg
+              ? 'Cancelled registration for ${e.title}'
+              : 'You are registered for ${e.title}!',
+        ),
+        behavior: SnackBarBehavior.floating,
+      ),
     );
   }
 
@@ -126,13 +138,15 @@ class _EventsScreenState extends ConsumerState<EventsScreen>
                   padding: const EdgeInsets.only(bottom: AppSpacing.md),
                   child: Card(
                     clipBehavior: Clip.antiAlias,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          height: 5,
-                          color: colorScheme.primary,
-                        ),
+                    child: InkWell(
+                      onTap: () => showEventDetailsSheet(context, e, ref),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            height: 5,
+                            color: colorScheme.primary,
+                          ),
                         Padding(
                           padding: const EdgeInsets.all(AppSpacing.lg),
                           child: Column(
@@ -276,7 +290,8 @@ class _EventsScreenState extends ConsumerState<EventsScreen>
                       ],
                     ),
                   ),
-                );
+                ),
+              );
               },
             ),
 
@@ -289,6 +304,7 @@ class _EventsScreenState extends ConsumerState<EventsScreen>
                 return Padding(
                   padding: const EdgeInsets.only(bottom: AppSpacing.md),
                   child: Card(
+                    clipBehavior: Clip.antiAlias,
                     shape: ann.isPinned
                         ? RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(AppSpacing.radiusCard),
@@ -298,8 +314,10 @@ class _EventsScreenState extends ConsumerState<EventsScreen>
                             ),
                           )
                         : null,
-                    child: Padding(
-                      padding: const EdgeInsets.all(AppSpacing.lg),
+                    child: InkWell(
+                      onTap: () => showAnnouncementDetailsSheet(context, ann),
+                      child: Padding(
+                        padding: const EdgeInsets.all(AppSpacing.lg),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -365,7 +383,8 @@ class _EventsScreenState extends ConsumerState<EventsScreen>
                       ),
                     ),
                   ),
-                );
+                ),
+              );
               },
             ),
           ],

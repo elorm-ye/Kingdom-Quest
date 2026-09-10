@@ -56,10 +56,10 @@ class MockDataService {
   }
 
   // ─────────────────────────────────────────────
-  // MOCK USER
+  // MOCK USER & CHURCH PROFILE
   // ─────────────────────────────────────────────
 
-  static UserModel get currentUser => UserModel(
+  static UserModel currentUser = UserModel(
     id: 'user_001',
     email: 'youth@kingdomquest.app',
     displayName: 'David',
@@ -71,7 +71,7 @@ class MockDataService {
     createdAt: DateTime.now().subtract(const Duration(days: 90)),
   );
 
-  static UserModel get adminUser => UserModel(
+  static UserModel adminUser = UserModel(
     id: 'admin_001',
     email: 'pastor.james@kingdomquest.app',
     displayName: 'Pastor James',
@@ -83,11 +83,22 @@ class MockDataService {
     createdAt: DateTime.now().subtract(const Duration(days: 365)),
   );
 
+  static Map<String, String> churchProfile = {
+    'name': 'Kingdom Quest Youth',
+    'denomination': 'International Central Gospel Church (ICGC)',
+    'motto': 'Raising Leaders, Shaping Vision, Influencing Society Through Christ',
+    'pastor': 'Pastor James',
+    'location': 'Christ Temple, Abossey Okai, Accra',
+    'phone': '+233 30 268 8000',
+    'email': 'youth@kingdomquest.app',
+    'serviceTimes': 'Sunday: 9:00 AM - 12:00 PM\nWednesday: 6:00 PM - 7:30 PM\nFriday: 7:00 PM - 9:00 PM',
+  };
+
   // ─────────────────────────────────────────────
   // PRAYER REQUESTS
   // ─────────────────────────────────────────────
 
-  static List<PrayerRequest> get prayerRequests => [
+  static final List<PrayerRequest> _prayerRequestsList = [
     PrayerRequest(
       id: 'pr_001',
       userId: 'user_001',
@@ -164,11 +175,14 @@ class MockDataService {
     ),
   ];
 
+  static List<PrayerRequest> get prayerRequests => _prayerRequestsList;
+  static void addPrayerRequest(PrayerRequest r) => _prayerRequestsList.insert(0, r);
+
   // ─────────────────────────────────────────────
   // PETITIONS
   // ─────────────────────────────────────────────
 
-  static List<Petition> get petitions => [
+  static final List<Petition> _petitionsList = [
     Petition(
       id: 'pet_001',
       userId: 'user_001',
@@ -204,11 +218,14 @@ class MockDataService {
     ),
   ];
 
+  static List<Petition> get petitions => _petitionsList;
+  static void addPetition(Petition p) => _petitionsList.insert(0, p);
+
   // ─────────────────────────────────────────────
   // ADVICE REQUESTS
   // ─────────────────────────────────────────────
 
-  static List<AdviceRequest> get adviceRequests => [
+  static final List<AdviceRequest> _adviceRequestsList = [
     AdviceRequest(
       id: 'adv_001',
       title: 'How to handle peer pressure',
@@ -256,6 +273,9 @@ class MockDataService {
       createdAt: DateTime.now().subtract(const Duration(hours: 8)),
     ),
   ];
+
+  static List<AdviceRequest> get adviceRequests => _adviceRequestsList;
+  static void addAdviceRequest(AdviceRequest a) => _adviceRequestsList.insert(0, a);
 
   // ─────────────────────────────────────────────
   // INSPIRATIONS
@@ -362,7 +382,7 @@ class MockDataService {
   // EVENTS
   // ─────────────────────────────────────────────
 
-  static List<ChurchEvent> get events => [
+  static final List<ChurchEvent> _eventsList = [
     ChurchEvent(
       id: 'ev_001',
       title: 'Youth Sunday Service',
@@ -420,11 +440,23 @@ class MockDataService {
     ),
   ];
 
+  static List<ChurchEvent> get events => _eventsList;
+  static void addEvent(ChurchEvent e) => _eventsList.insert(0, e);
+  static void toggleEventRegistration(String eventId) {
+    final idx = _eventsList.indexWhere((e) => e.id == eventId);
+    if (idx != -1) {
+      final e = _eventsList[idx];
+      final newRegistered = !e.isRegistered;
+      final newCount = newRegistered ? e.registrationCount + 1 : (e.registrationCount > 0 ? e.registrationCount - 1 : 0);
+      _eventsList[idx] = e.copyWith(isRegistered: newRegistered, registrationCount: newCount);
+    }
+  }
+
   // ─────────────────────────────────────────────
   // ANNOUNCEMENTS
   // ─────────────────────────────────────────────
 
-  static List<Announcement> get announcements => [
+  static final List<Announcement> _announcementsList = [
     Announcement(
       id: 'ann_001',
       adminId: 'admin_001',
@@ -445,6 +477,9 @@ class MockDataService {
       createdAt: DateTime.now().subtract(const Duration(days: 3)),
     ),
   ];
+
+  static List<Announcement> get announcements => _announcementsList;
+  static void addAnnouncement(Announcement a) => _announcementsList.insert(0, a);
 
   // ─────────────────────────────────────────────
   // SERMON NOTES

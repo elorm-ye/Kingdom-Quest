@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../core/providers/app_providers.dart';
+import '../../../core/providers/feature_providers.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_colors.dart';
 
-class SubmitPetitionScreen extends StatefulWidget {
+class SubmitPetitionScreen extends ConsumerStatefulWidget {
   const SubmitPetitionScreen({super.key});
   @override
-  State<SubmitPetitionScreen> createState() => _SubmitPetitionScreenState();
+  ConsumerState<SubmitPetitionScreen> createState() => _SubmitPetitionScreenState();
 }
 
-class _SubmitPetitionScreenState extends State<SubmitPetitionScreen> {
+class _SubmitPetitionScreenState extends ConsumerState<SubmitPetitionScreen> {
   final _formKey = GlobalKey<FormState>();
   final _subjectCtrl = TextEditingController();
   final _descCtrl = TextEditingController();
@@ -26,7 +29,17 @@ class _SubmitPetitionScreenState extends State<SubmitPetitionScreen> {
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _loading = true);
-    await Future.delayed(const Duration(milliseconds: 1200));
+
+    final currentUser = await ref.read(currentUserModelProvider.future);
+    final displayName = currentUser?.displayName ?? 'Member';
+
+    await ref.read(petitionsNotifierProvider.notifier).submit(
+      subject: _subjectCtrl.text.trim(),
+      description: _descCtrl.text.trim(),
+      isAnonymous: _anonymous,
+      displayName: displayName,
+    );
+
     if (mounted) {
       setState(() => _loading = false);
       ScaffoldMessenger.of(context).showSnackBar(

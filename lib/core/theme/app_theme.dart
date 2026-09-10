@@ -53,7 +53,7 @@ class AppTheme {
       ),
 
       // Card Theme (No glassmorphism, solid color, subtle shadow)
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: AppColors.linen,
         elevation: 0,
         margin: EdgeInsets.zero,
@@ -169,7 +169,7 @@ class AppTheme {
       ),
       
       // Dialog Theme
-      dialogTheme: DialogTheme(
+      dialogTheme: DialogThemeData(
         backgroundColor: AppColors.linen,
         elevation: 0,
         shape: RoundedRectangleBorder(
@@ -221,7 +221,7 @@ class AppTheme {
         iconTheme: const IconThemeData(color: AppColors.textPrimaryDark, size: AppSpacing.iconLg),
       ),
 
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: AppColors.espresso,
         elevation: 0,
         margin: EdgeInsets.zero,
@@ -331,7 +331,7 @@ class AppTheme {
         ),
       ),
       
-      dialogTheme: DialogTheme(
+      dialogTheme: DialogThemeData(
         backgroundColor: AppColors.espresso,
         elevation: 0,
         shape: RoundedRectangleBorder(
@@ -372,7 +372,10 @@ class AppTheme {
       ),
       cardTheme: light.cardTheme.copyWith(
         color: AppColors.pinkSurface,
-        side: BorderSide(color: AppColors.pinkSecondary.withValues(alpha: 0.1)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppSpacing.radiusCard),
+          side: BorderSide(color: AppColors.pinkSecondary.withValues(alpha: 0.1)),
+        ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: light.elevatedButtonTheme.style?.copyWith(
@@ -444,7 +447,10 @@ class AppTheme {
       ),
       cardTheme: dark.cardTheme.copyWith(
         color: AppColors.pinkEspresso,
-        side: const BorderSide(color: AppColors.pinkPlumDusk),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppSpacing.radiusCard),
+          side: const BorderSide(color: AppColors.pinkPlumDusk),
+        ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: dark.elevatedButtonTheme.style?.copyWith(

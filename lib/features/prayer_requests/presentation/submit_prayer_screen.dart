@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../core/providers/app_providers.dart';
+import '../../../core/providers/feature_providers.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../shared/models/prayer_request.dart';
 
-class SubmitPrayerScreen extends StatefulWidget {
+class SubmitPrayerScreen extends ConsumerStatefulWidget {
   const SubmitPrayerScreen({super.key});
   @override
-  State<SubmitPrayerScreen> createState() => _SubmitPrayerScreenState();
+  ConsumerState<SubmitPrayerScreen> createState() => _SubmitPrayerScreenState();
 }
 
-class _SubmitPrayerScreenState extends State<SubmitPrayerScreen> {
+class _SubmitPrayerScreenState extends ConsumerState<SubmitPrayerScreen> {
   final _formKey = GlobalKey<FormState>();
   final _titleCtrl = TextEditingController();
   final _descCtrl = TextEditingController();
@@ -28,7 +31,18 @@ class _SubmitPrayerScreenState extends State<SubmitPrayerScreen> {
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _loading = true);
-    await Future.delayed(const Duration(milliseconds: 1200));
+
+    final currentUser = await ref.read(currentUserModelProvider.future);
+    final displayName = currentUser?.displayName ?? 'Member';
+
+    await ref.read(prayerRequestsNotifierProvider.notifier).submit(
+      title: _titleCtrl.text.trim(),
+      description: _descCtrl.text.trim(),
+      category: _category.name,
+      isAnonymous: _anonymous,
+      displayName: displayName,
+    );
+
     if (mounted) {
       setState(() => _loading = false);
       ScaffoldMessenger.of(context).showSnackBar(

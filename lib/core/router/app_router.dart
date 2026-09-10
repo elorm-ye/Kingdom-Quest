@@ -59,8 +59,12 @@ final routerProvider = Provider<GoRouter>((ref) {
       // Not signed in → push to login (except public routes)
       if (!isSignedIn && !isPublic) return '/login';
 
-      // Already signed in → skip login/register → go to home
+      // Already signed in → skip login/register → go to admin or home
       if (isSignedIn && (goingTo == '/login' || goingTo == '/register')) {
+        final demoUser = ref.read(demoUserModelProvider);
+        if (demoUser?.isAdmin == true) return '/admin';
+        final user = ref.read(currentUserModelProvider).value;
+        if (user?.isAdmin == true) return '/admin';
         return '/home';
       }
 

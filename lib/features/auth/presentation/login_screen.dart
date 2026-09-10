@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/providers/app_providers.dart';
 import '../../../core/theme/app_colors.dart';
@@ -12,10 +13,67 @@ class LoginScreen extends ConsumerStatefulWidget {
 }
 
 class _LoginScreenState extends ConsumerState<LoginScreen> {
+  static const _storage = FlutterSecureStorage();
   final _formKey = GlobalKey<FormState>();
   final _emailCtrl = TextEditingController();
   final _passCtrl = TextEditingController();
   bool _obscure = true;
+  bool _rememberMe = true;
+  bool _hasSavedCredentials = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSavedCredentials();
+  }
+
+  Future<void> _loadSavedCredentials() async {
+    try {
+      final savedEmail = await _storage.read(key: 'saved_email');
+      final savedPass = await _storage.read(key: 'saved_password');
+      final rememberFlag = await _storage.read(key: 'remember_me');
+      if (savedEmail != null && savedEmail.isNotEmpty) {
+        setState(() {
+          _emailCtrl.text = savedEmail;
+          if (savedPass != null) _passCtrl.text = savedPass;
+          _hasSavedCredentials = true;
+          _rememberMe = rememberFlag != 'false';
+        });
+      }
+    } catch (_) {}
+  }
+
+  Future<void> _saveCredentials(String email, String password) async {
+    try {
+      if (_rememberMe) {
+        await _storage.write(key: 'saved_email', value: email);
+        await _storage.write(key: 'saved_password', value: password);
+        await _storage.write(key: 'remember_me', value: 'true');
+      } else {
+        await _storage.delete(key: 'saved_email');
+        await _storage.delete(key: 'saved_password');
+        await _storage.write(key: 'remember_me', value: 'false');
+      }
+    } catch (_) {}
+  }
+
+  Future<void> _clearSavedCredentials() async {
+    try {
+      await _storage.delete(key: 'saved_email');
+      await _storage.delete(key: 'saved_password');
+      await _storage.delete(key: 'remember_me');
+      setState(() {
+        _hasSavedCredentials = false;
+        _emailCtrl.clear();
+        _passCtrl.clear();
+      });
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Saved login credentials cleared.')),
+        );
+      }
+    } catch (_) {}
+  }
 
   @override
   void dispose() {
@@ -27,13 +85,24 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   Future<void> _login() async {
     if (!_formKey.currentState!.validate()) return;
 
+    final email = _emailCtrl.text.trim();
+    final password = _passCtrl.text;
+
     final ok = await ref
         .read(authNotifierProvider.notifier)
-        .signIn(email: _emailCtrl.text.trim(), password: _passCtrl.text);
+        .signIn(email: email, password: password);
 
     if (!mounted) return;
     if (ok) {
-      context.go('/home');
+      await _saveCredentials(email, password);
+      final demoUser = ref.read(demoUserModelProvider);
+      final user = await ref.read(currentUserModelProvider.future);
+      final isAdmin = demoUser?.isAdmin == true ||
+          user?.isAdmin == true ||
+          email.toLowerCase().contains('admin');
+      if (mounted) {
+        context.go(isAdmin ? '/admin' : '/home');
+      }
     } else {
       final msg =
           ref.read(authNotifierProvider.notifier).errorMessage ??
@@ -144,24 +213,72 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           : 'Min 6 characters',
                     ),
                     const SizedBox(height: AppSpacing.md),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: TextButton(
-                        onPressed: _forgotPassword,
-                        style: TextButton.styleFrom(
-                          padding: EdgeInsets.zero,
-                          minimumSize: Size.zero,
-                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        ),
-                        child: Text(
-                          'Forgot password?',
-                          style: textTheme.bodyMedium?.copyWith(
-                            fontWeight: FontWeight.w600,
-                            color: colorScheme.primary,
+                    Row(
+                      children: [
+                        SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: Checkbox(
+                            value: _rememberMe,
+                            activeColor: colorScheme.primary,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            onChanged: (v) => setState(() => _rememberMe = v ?? true),
                           ),
                         ),
-                      ),
+                        const SizedBox(width: AppSpacing.sm),
+                        GestureDetector(
+                          onTap: () => setState(() => _rememberMe = !_rememberMe),
+                          child: Text(
+                            'Remember me',
+                            style: textTheme.bodySmall?.copyWith(
+                              color: colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                        ),
+                        const Spacer(),
+                        TextButton(
+                          onPressed: _forgotPassword,
+                          style: TextButton.styleFrom(
+                            padding: EdgeInsets.zero,
+                            minimumSize: Size.zero,
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          ),
+                          child: Text(
+                            'Forgot password?',
+                            style: textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.w600,
+                              color: colorScheme.primary,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
+                    if (_hasSavedCredentials) ...[
+                      const SizedBox(height: AppSpacing.sm),
+                      Row(
+                        children: [
+                          Icon(Icons.lock_clock_outlined, size: 14, color: colorScheme.primary),
+                          const SizedBox(width: 4),
+                          Text(
+                            'Saved account ready',
+                            style: textTheme.labelSmall?.copyWith(color: colorScheme.primary),
+                          ),
+                          const Spacer(),
+                          GestureDetector(
+                            onTap: _clearSavedCredentials,
+                            child: Text(
+                              'Clear saved',
+                              style: textTheme.labelSmall?.copyWith(
+                                color: colorScheme.error,
+                                decoration: TextDecoration.underline,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                     const SizedBox(height: AppSpacing.xxl),
                     SizedBox(
                       width: double.infinity,
@@ -215,7 +332,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         await ref
                             .read(authNotifierProvider.notifier)
                             .signInAsDemo(isAdmin: true);
-                        if (context.mounted) context.go('/home');
+                        if (context.mounted) context.go('/admin');
                       },
                       theme,
                     ),

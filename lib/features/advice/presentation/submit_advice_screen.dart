@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../core/providers/app_providers.dart';
+import '../../../core/providers/feature_providers.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_colors.dart';
 
-class SubmitAdviceScreen extends StatefulWidget {
+class SubmitAdviceScreen extends ConsumerStatefulWidget {
   const SubmitAdviceScreen({super.key});
   @override
-  State<SubmitAdviceScreen> createState() => _SubmitAdviceScreenState();
+  ConsumerState<SubmitAdviceScreen> createState() => _SubmitAdviceScreenState();
 }
 
-class _SubmitAdviceScreenState extends State<SubmitAdviceScreen> {
+class _SubmitAdviceScreenState extends ConsumerState<SubmitAdviceScreen> {
   final _formKey = GlobalKey<FormState>();
   final _titleCtrl = TextEditingController();
   final _descCtrl = TextEditingController();
@@ -26,7 +29,17 @@ class _SubmitAdviceScreenState extends State<SubmitAdviceScreen> {
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _loading = true);
-    await Future.delayed(const Duration(milliseconds: 1200));
+
+    final currentUser = await ref.read(currentUserModelProvider.future);
+    final displayName = currentUser?.displayName ?? 'Member';
+
+    await ref.read(adviceNotifierProvider.notifier).submit(
+      title: _titleCtrl.text.trim(),
+      description: _descCtrl.text.trim(),
+      isAnonymous: _anonymous,
+      displayName: displayName,
+    );
+
     if (mounted) {
       setState(() => _loading = false);
       ScaffoldMessenger.of(context).showSnackBar(

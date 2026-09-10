@@ -4,6 +4,10 @@ import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/providers/app_providers.dart';
+import '../../../core/providers/feature_providers.dart';
+import '../../../shared/models/event.dart';
+import '../../../shared/services/mock_data_service.dart';
+import '../../profile/presentation/widgets/edit_profile_sheet.dart';
 
 /// Settings screen — theme, account, privacy, about.
 class SettingsScreen extends ConsumerStatefulWidget {
@@ -188,32 +192,45 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
           // ── ACCOUNT ──
           sectionHeader('Account'),
-          Container(
-            margin: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-            child: Card(
-              child: Column(
-                children: [
-                  settingTile(
-                    icon: Icons.person_outline_rounded,
-                    title: 'Edit Profile',
-                    onTap: () {},
+          Consumer(
+            builder: (context, ref, _) {
+              final user = ref.watch(currentUserModelProvider).value;
+              return Container(
+                margin: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+                child: Card(
+                  child: Column(
+                    children: [
+                      settingTile(
+                        icon: Icons.person_outline_rounded,
+                        title: 'Edit Profile',
+                        subtitle: user?.displayName ?? 'Update your profile information',
+                        onTap: () {
+                          if (user != null) {
+                            showEditProfileSheet(context, user, ref);
+                          }
+                        },
+                      ),
+                      const Divider(height: 1, indent: 56),
+                      settingTile(
+                        icon: Icons.lock_outline_rounded,
+                        title: 'Change Password',
+                        onTap: () => _showChangePasswordDialog(context),
+                      ),
+                      const Divider(height: 1, indent: 56),
+                      settingTile(
+                        icon: Icons.church_outlined,
+                        title: 'My Church',
+                        subtitle: MockDataService.churchProfile['name'] ?? 'Kingdom Quest Youth',
+                        onTap: () => _showChurchProfileDialog(
+                          context,
+                          isAdmin: user?.isAdmin == true,
+                        ),
+                      ),
+                    ],
                   ),
-                  const Divider(height: 1, indent: 56),
-                  settingTile(
-                    icon: Icons.lock_outline_rounded,
-                    title: 'Change Password',
-                    onTap: () {},
-                  ),
-                  const Divider(height: 1, indent: 56),
-                  settingTile(
-                    icon: Icons.church_outlined,
-                    title: 'My Church',
-                    subtitle: 'Kingdom Quest Youth',
-                    onTap: () {},
-                  ),
-                ],
-              ),
-            ),
+                ),
+              );
+            },
           ),
 
           // ── ADMIN PANEL (admin-role only) ──
@@ -230,12 +247,43 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       Container(
                         margin: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
                         child: Card(
-                          child: settingTile(
-                            icon: Icons.admin_panel_settings_rounded,
-                            iconColor: AppColors.healing,
-                            title: 'Admin Dashboard',
-                            subtitle: 'Manage content, users & church settings',
-                            onTap: () => context.go('/admin'),
+                          child: Column(
+                            children: [
+                              settingTile(
+                                icon: Icons.admin_panel_settings_rounded,
+                                iconColor: AppColors.healing,
+                                title: 'Admin Dashboard',
+                                subtitle: 'Manage content, users & church overview',
+                                onTap: () => context.go('/admin'),
+                              ),
+                              const Divider(height: 1, indent: 56),
+                              settingTile(
+                                icon: Icons.church_rounded,
+                                iconColor: colorScheme.primary,
+                                title: 'Church Profile',
+                                subtitle: 'Edit church name, motto & contact info',
+                                onTap: () => _showChurchProfileDialog(context, isAdmin: true),
+                              ),
+                              const Divider(height: 1, indent: 56),
+                              settingTile(
+                                icon: Icons.event_available_rounded,
+                                iconColor: AppColors.family,
+                                title: 'Event Management',
+                                subtitle: 'Create and publish church events',
+                                onTap: () => _showCreateEventDialog(context),
+                              ),
+                              const Divider(height: 1, indent: 56),
+                              settingTile(
+                                icon: Icons.campaign_rounded,
+                                iconColor: AppColors.thanksgiving,
+                                title: 'Manage Announcements',
+                                subtitle: 'Post new announcements to members',
+                                onTap: () => _showCreateAnnouncementDialog(
+                                  context,
+                                  user.displayName,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ),
@@ -258,20 +306,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   settingTile(
                     icon: Icons.visibility_off_outlined,
                     title: 'Anonymous Forum',
-                    subtitle: 'Identity is always hidden',
+                    subtitle: 'Identity is always hidden for members',
                     trailing: const SizedBox.shrink(),
-                  ),
-                  const Divider(height: 1, indent: 56),
-                  settingTile(
-                    icon: Icons.shield_outlined,
-                    title: 'Privacy Policy',
-                    onTap: () {},
-                  ),
-                  const Divider(height: 1, indent: 56),
-                  settingTile(
-                    icon: Icons.description_outlined,
-                    title: 'Terms of Service',
-                    onTap: () {},
                   ),
                 ],
               ),
@@ -293,15 +329,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   ),
                   const Divider(height: 1, indent: 56),
                   settingTile(
-                    icon: Icons.star_outline_rounded,
-                    title: 'Rate the App',
-                    onTap: () {},
-                  ),
-                  const Divider(height: 1, indent: 56),
-                  settingTile(
                     icon: Icons.support_agent_outlined,
                     title: 'Contact Support',
-                    onTap: () {},
+                    subtitle: 'Get help from the church admin team',
+                    onTap: () => _showContactSupportDialog(context),
                   ),
                 ],
               ),
@@ -349,6 +380,414 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           ),
 
           const SizedBox(height: AppSpacing.xxl),
+        ],
+      ),
+    );
+  }
+
+  void _showChurchProfileDialog(BuildContext context, {required bool isAdmin}) {
+    final theme = Theme.of(context);
+    final textTheme = theme.textTheme;
+    final colorScheme = theme.colorScheme;
+    final nameCtrl = TextEditingController(text: MockDataService.churchProfile['name']);
+    final mottoCtrl = TextEditingController(text: MockDataService.churchProfile['motto']);
+    final locCtrl = TextEditingController(text: MockDataService.churchProfile['location']);
+    final phoneCtrl = TextEditingController(text: MockDataService.churchProfile['phone']);
+    final emailCtrl = TextEditingController(text: MockDataService.churchProfile['email']);
+    final serviceCtrl = TextEditingController(text: MockDataService.churchProfile['serviceTimes']);
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(AppSpacing.radiusSection)),
+      ),
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setSheetState) {
+          final bottomInset = MediaQuery.of(ctx).viewInsets.bottom;
+          return Padding(
+            padding: EdgeInsets.fromLTRB(AppSpacing.xl, AppSpacing.md, AppSpacing.xl, AppSpacing.xl + bottomInset),
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Center(
+                    child: Container(
+                      width: 40,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: colorScheme.outlineVariant,
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.lg),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        isAdmin ? 'Edit Church Profile' : 'Church Information',
+                        style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.close),
+                        onPressed: () => Navigator.pop(ctx),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: AppSpacing.md),
+                  if (isAdmin) ...[
+                    Text('Church Name', style: textTheme.labelMedium),
+                    const SizedBox(height: 4),
+                    TextFormField(controller: nameCtrl),
+                    const SizedBox(height: AppSpacing.md),
+                    Text('Motto / Vision', style: textTheme.labelMedium),
+                    const SizedBox(height: 4),
+                    TextFormField(controller: mottoCtrl),
+                    const SizedBox(height: AppSpacing.md),
+                    Text('Location / Address', style: textTheme.labelMedium),
+                    const SizedBox(height: 4),
+                    TextFormField(controller: locCtrl),
+                    const SizedBox(height: AppSpacing.md),
+                    Text('Phone Number', style: textTheme.labelMedium),
+                    const SizedBox(height: 4),
+                    TextFormField(controller: phoneCtrl),
+                    const SizedBox(height: AppSpacing.md),
+                    Text('Email', style: textTheme.labelMedium),
+                    const SizedBox(height: 4),
+                    TextFormField(controller: emailCtrl),
+                    const SizedBox(height: AppSpacing.md),
+                    Text('Service Times', style: textTheme.labelMedium),
+                    const SizedBox(height: 4),
+                    TextFormField(controller: serviceCtrl, maxLines: 3),
+                    const SizedBox(height: AppSpacing.xl),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          setState(() {
+                            MockDataService.churchProfile['name'] = nameCtrl.text.trim();
+                            MockDataService.churchProfile['motto'] = mottoCtrl.text.trim();
+                            MockDataService.churchProfile['location'] = locCtrl.text.trim();
+                            MockDataService.churchProfile['phone'] = phoneCtrl.text.trim();
+                            MockDataService.churchProfile['email'] = emailCtrl.text.trim();
+                            MockDataService.churchProfile['serviceTimes'] = serviceCtrl.text.trim();
+                          });
+                          Navigator.pop(ctx);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Church profile updated successfully!'),
+                              behavior: SnackBarBehavior.floating,
+                            ),
+                          );
+                        },
+                        child: const Text('Save Church Profile'),
+                      ),
+                    ),
+                  ] else ...[
+                    Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(AppSpacing.lg),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              MockDataService.churchProfile['name'] ?? 'Kingdom Quest Youth',
+                              style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              MockDataService.churchProfile['denomination'] ?? '',
+                              style: textTheme.bodySmall?.copyWith(color: colorScheme.primary),
+                            ),
+                            const SizedBox(height: AppSpacing.md),
+                            Text(
+                              '"${MockDataService.churchProfile['motto'] ?? ''}"',
+                              style: textTheme.bodyMedium?.copyWith(fontStyle: FontStyle.italic),
+                            ),
+                            const Divider(height: 24),
+                            Row(
+                              children: [
+                                const Icon(Icons.location_on_outlined, size: 18),
+                                const SizedBox(width: 8),
+                                Expanded(child: Text(MockDataService.churchProfile['location'] ?? '', style: textTheme.bodyMedium)),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            Row(
+                              children: [
+                                const Icon(Icons.phone_outlined, size: 18),
+                                const SizedBox(width: 8),
+                                Text(MockDataService.churchProfile['phone'] ?? '', style: textTheme.bodyMedium),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            Row(
+                              children: [
+                                const Icon(Icons.email_outlined, size: 18),
+                                const SizedBox(width: 8),
+                                Text(MockDataService.churchProfile['email'] ?? '', style: textTheme.bodyMedium),
+                              ],
+                            ),
+                            const Divider(height: 24),
+                            Text('Service Times', style: textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w700)),
+                            const SizedBox(height: 4),
+                            Text(MockDataService.churchProfile['serviceTimes'] ?? '', style: textTheme.bodyMedium?.copyWith(height: 1.5)),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  void _showCreateEventDialog(BuildContext context) {
+    final titleCtrl = TextEditingController();
+    final locCtrl = TextEditingController();
+    final descCtrl = TextEditingController();
+    final recurringCtrl = TextEditingController(text: 'Weekly');
+    bool isRecurring = false;
+    final selectedDate = DateTime.now().add(const Duration(days: 3));
+
+    showDialog(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setDlgState) => AlertDialog(
+          title: const Text('Add Church Event'),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                TextField(
+                  controller: titleCtrl,
+                  decoration: const InputDecoration(labelText: 'Event Title', hintText: 'e.g. Youth Prayer Vigil'),
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                TextField(
+                  controller: locCtrl,
+                  decoration: const InputDecoration(labelText: 'Location', hintText: 'e.g. Main Auditorium'),
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                TextField(
+                  controller: descCtrl,
+                  maxLines: 3,
+                  decoration: const InputDecoration(labelText: 'Description', hintText: 'Brief details about the event'),
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                CheckboxListTile(
+                  contentPadding: EdgeInsets.zero,
+                  title: const Text('Recurring Event'),
+                  value: isRecurring,
+                  onChanged: (v) => setDlgState(() => isRecurring = v ?? false),
+                ),
+                if (isRecurring)
+                  TextField(
+                    controller: recurringCtrl,
+                    decoration: const InputDecoration(labelText: 'Pattern', hintText: 'e.g. Weekly, Monthly'),
+                  ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+            ElevatedButton(
+              onPressed: () {
+                final title = titleCtrl.text.trim();
+                if (title.isEmpty) return;
+                final newEv = ChurchEvent(
+                  id: 'ev_${DateTime.now().millisecondsSinceEpoch}',
+                  title: title,
+                  description: descCtrl.text.trim().isNotEmpty ? descCtrl.text.trim() : 'Join us for this church event.',
+                  location: locCtrl.text.trim().isNotEmpty ? locCtrl.text.trim() : 'Main Campus',
+                  startTime: selectedDate,
+                  endTime: selectedDate.add(const Duration(hours: 2)),
+                  isRecurring: isRecurring,
+                  recurringPattern: isRecurring ? recurringCtrl.text.trim() : null,
+                  createdBy: 'admin_001',
+                  registrationCount: 0,
+                  isRegistered: false,
+                  createdAt: DateTime.now(),
+                );
+                ref.read(eventsNotifierProvider.notifier).addEvent(newEv);
+                Navigator.pop(ctx);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Event "$title" created and published!'),
+                    behavior: SnackBarBehavior.floating,
+                  ),
+                );
+              },
+              child: const Text('Create Event'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showCreateAnnouncementDialog(BuildContext context, String adminName) {
+    final titleCtrl = TextEditingController();
+    final contentCtrl = TextEditingController();
+    bool isPinned = false;
+
+    showDialog(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setDlgState) => AlertDialog(
+          title: const Text('Publish Announcement'),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                TextField(
+                  controller: titleCtrl,
+                  decoration: const InputDecoration(labelText: 'Announcement Title', hintText: 'e.g. Youth Camp Registration'),
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                TextField(
+                  controller: contentCtrl,
+                  maxLines: 4,
+                  decoration: const InputDecoration(labelText: 'Announcement Content', hintText: 'Details for church members'),
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                CheckboxListTile(
+                  contentPadding: EdgeInsets.zero,
+                  title: const Text('Pin Announcement to Top'),
+                  value: isPinned,
+                  onChanged: (v) => setDlgState(() => isPinned = v ?? false),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+            ElevatedButton(
+              onPressed: () {
+                final title = titleCtrl.text.trim();
+                final content = contentCtrl.text.trim();
+                if (title.isEmpty || content.isEmpty) return;
+                final newAnn = Announcement(
+                  id: 'ann_${DateTime.now().millisecondsSinceEpoch}',
+                  adminId: 'admin_001',
+                  adminName: adminName,
+                  title: title,
+                  content: content,
+                  isPinned: isPinned,
+                  createdAt: DateTime.now(),
+                );
+                ref.read(announcementsNotifierProvider.notifier).addAnnouncement(newAnn);
+                Navigator.pop(ctx);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Announcement "$title" published!'),
+                    behavior: SnackBarBehavior.floating,
+                  ),
+                );
+              },
+              child: const Text('Publish'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showChangePasswordDialog(BuildContext context) {
+    final passCtrl = TextEditingController();
+    final confirmCtrl = TextEditingController();
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Change Password'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: passCtrl,
+              obscureText: true,
+              decoration: const InputDecoration(labelText: 'New Password', hintText: 'Min 6 characters'),
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            TextField(
+              controller: confirmCtrl,
+              obscureText: true,
+              decoration: const InputDecoration(labelText: 'Confirm Password'),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+          ElevatedButton(
+            onPressed: () {
+              if (passCtrl.text.length < 6) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Password must be at least 6 characters.')),
+                );
+                return;
+              }
+              if (passCtrl.text != confirmCtrl.text) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Passwords do not match.')),
+                );
+                return;
+              }
+              Navigator.pop(ctx);
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Password changed successfully!'),
+                  behavior: SnackBarBehavior.floating,
+                ),
+              );
+            },
+            child: const Text('Update Password'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showContactSupportDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Contact Support'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: const [
+            Text('Need help with your Kingdom Quest app account or church activities?'),
+            SizedBox(height: AppSpacing.md),
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: Icon(Icons.email_outlined),
+              title: Text('Email Support'),
+              subtitle: Text('youth@kingdomquest.app'),
+            ),
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: Icon(Icons.phone_outlined),
+              title: Text('Church Office Phone'),
+              subtitle: Text('+233 30 268 8000'),
+            ),
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: Icon(Icons.access_time_rounded),
+              title: Text('Office Hours'),
+              subtitle: Text('Mon - Fri: 8:00 AM - 5:00 PM'),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Close')),
         ],
       ),
     );

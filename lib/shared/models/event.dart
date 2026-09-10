@@ -31,6 +31,40 @@ class ChurchEvent {
     this.isRegistered = false,
     required this.createdAt,
   });
+
+  ChurchEvent copyWith({
+    String? id,
+    String? churchId,
+    String? title,
+    String? description,
+    String? location,
+    DateTime? startTime,
+    DateTime? endTime,
+    bool? isRecurring,
+    String? recurringPattern,
+    String? imageUrl,
+    String? createdBy,
+    int? registrationCount,
+    bool? isRegistered,
+    DateTime? createdAt,
+  }) {
+    return ChurchEvent(
+      id: id ?? this.id,
+      churchId: churchId ?? this.churchId,
+      title: title ?? this.title,
+      description: description ?? this.description,
+      location: location ?? this.location,
+      startTime: startTime ?? this.startTime,
+      endTime: endTime ?? this.endTime,
+      isRecurring: isRecurring ?? this.isRecurring,
+      recurringPattern: recurringPattern ?? this.recurringPattern,
+      imageUrl: imageUrl ?? this.imageUrl,
+      createdBy: createdBy ?? this.createdBy,
+      registrationCount: registrationCount ?? this.registrationCount,
+      isRegistered: isRegistered ?? this.isRegistered,
+      createdAt: createdAt ?? this.createdAt,
+    );
+  }
 }
 
 /// Church announcement
