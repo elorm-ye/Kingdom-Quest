@@ -6,7 +6,9 @@ import '../../../core/theme/app_spacing.dart';
 import '../../../core/providers/feature_providers.dart';
 import '../../../core/providers/app_providers.dart';
 import '../../../shared/models/event.dart';
+import '../../../shared/models/church_feed_post.dart';
 import '../../events/presentation/widgets/event_details_sheet.dart';
+import '../../feed/presentation/widgets/church_feed_card.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -25,6 +27,8 @@ class HomeScreen extends ConsumerWidget {
     final events = (asyncEvents.value ?? []).take(2).toList();
     final asyncAnnouncements = ref.watch(announcementsNotifierProvider);
     final announcements = asyncAnnouncements.value ?? [];
+    final asyncFeed = ref.watch(feedPostsNotifierProvider);
+    final feedPosts = asyncFeed.value ?? [];
 
     return Scaffold(
       body: CustomScrollView(
@@ -102,6 +106,11 @@ class HomeScreen extends ConsumerWidget {
                 ),
                 const SizedBox(height: AppSpacing.md),
                 _quickActionsGrid(context, theme),
+
+                const SizedBox(height: AppSpacing.xxl),
+
+                // Sunday & Meeting Moments (Instagram feed)
+                _sundayFeedSection(context, feedPosts, theme),
 
                 const SizedBox(height: AppSpacing.xxl),
 
@@ -453,6 +462,153 @@ class HomeScreen extends ConsumerWidget {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _meetingHighlightsRow(
+    BuildContext context,
+    List<ChurchFeedPost> posts,
+    ThemeData theme,
+  ) {
+    if (posts.isEmpty) return const SizedBox.shrink();
+    return SizedBox(
+      height: 96,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        itemCount: posts.length,
+        separatorBuilder: (context, _) => const SizedBox(width: AppSpacing.md),
+        itemBuilder: (context, i) {
+          final post = posts[i];
+          final img = post.imageUrls.firstOrNull ?? '';
+          return GestureDetector(
+            onTap: () => context.push('/feed'),
+            child: Column(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(2.5),
+                  decoration: const BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: LinearGradient(
+                      colors: [
+                        AppColors.terracotta,
+                        AppColors.burntAmber,
+                        AppColors.glow,
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                  ),
+                  child: CircleAvatar(
+                    radius: 28,
+                    backgroundColor: theme.colorScheme.surface,
+                    child: ClipOval(
+                      child: img.isNotEmpty
+                          ? Image.network(
+                              img,
+                              width: 52,
+                              height: 52,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) =>
+                                  const Icon(Icons.church_rounded, size: 24),
+                            )
+                          : const Icon(Icons.church_rounded, size: 24),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 4),
+                SizedBox(
+                  width: 76,
+                  child: Text(
+                    post.meetingType,
+                    textAlign: TextAlign.center,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.labelSmall?.copyWith(fontSize: 10),
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _sundayFeedSection(
+    BuildContext context,
+    List<ChurchFeedPost> posts,
+    ThemeData theme,
+  ) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              children: [
+                const Icon(
+                  Icons.photo_camera_rounded,
+                  size: 16,
+                  color: AppColors.terracotta,
+                ),
+                const SizedBox(width: AppSpacing.xs),
+                Text(
+                  'SUNDAY & MEETING MOMENTS',
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                    letterSpacing: 1.2,
+                  ),
+                ),
+              ],
+            ),
+            TextButton(
+              onPressed: () => context.push('/feed'),
+              style: TextButton.styleFrom(
+                visualDensity: VisualDensity.compact,
+                padding: EdgeInsets.zero,
+              ),
+              child: const Text('View All'),
+            ),
+          ],
+        ),
+        const SizedBox(height: 2),
+        Text(
+          'Highlights from every Sunday and fellowship gathering',
+          style: theme.textTheme.bodySmall?.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
+        ),
+        const SizedBox(height: AppSpacing.md),
+        _meetingHighlightsRow(context, posts, theme),
+        const SizedBox(height: AppSpacing.md),
+        if (posts.isEmpty)
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(AppSpacing.xl),
+              child: Center(
+                child: Column(
+                  children: [
+                    Icon(
+                      Icons.photo_library_outlined,
+                      size: 40,
+                      color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
+                    ),
+                    const SizedBox(height: AppSpacing.sm),
+                    Text(
+                      'No meeting pictures posted yet.',
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          )
+        else
+          ...posts.take(3).map((post) => ChurchFeedCard(post: post)),
+      ],
     );
   }
 }

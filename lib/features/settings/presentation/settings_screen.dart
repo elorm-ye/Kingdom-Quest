@@ -7,6 +7,7 @@ import '../../../core/providers/app_providers.dart';
 import '../../../core/providers/feature_providers.dart';
 import '../../../shared/models/event.dart';
 import '../../../shared/services/mock_data_service.dart';
+import '../../../shared/widgets/app_pop_scope.dart';
 import '../../profile/presentation/widgets/edit_profile_sheet.dart';
 
 /// Settings screen — theme, account, privacy, about.
@@ -29,6 +30,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final textTheme = theme.textTheme;
     final colorScheme = theme.colorScheme;
     final themeMode = ref.watch(themeModeProvider);
+    final currentColorTheme = ref.watch(colorThemeProvider);
 
     Widget sectionHeader(String title) => Padding(
       padding: const EdgeInsets.fromLTRB(
@@ -104,14 +106,17 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           trailing: Switch(
             value: value,
             onChanged: onChanged,
-            activeColor: colorScheme.primary,
+            activeThumbColor: colorScheme.primary,
           ),
         );
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Settings'),
-      ),
+    return AppPopScope(
+      fallbackRoute: '/profile',
+      child: Scaffold(
+        appBar: AppBar(
+          leading: const AppBackButton(fallbackRoute: '/profile'),
+          title: const Text('Settings'),
+        ),
       body: ListView(
         children: [
           // ── APPEARANCE ──
@@ -151,6 +156,104 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         .setTheme(ThemeMode.system),
                   ),
                 ],
+              ),
+            ),
+          ),
+
+          // ── COLOR THEME ──
+          sectionHeader('Color Palette'),
+          Container(
+            margin: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+            child: Card(
+              child: Padding(
+                padding: const EdgeInsets.all(AppSpacing.md),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Choose your app accent theme:',
+                      style: textTheme.bodySmall?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.md),
+                    GridView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 3,
+                        crossAxisSpacing: AppSpacing.sm,
+                        mainAxisSpacing: AppSpacing.sm,
+                        childAspectRatio: 1.15,
+                      ),
+                      itemCount: ColorThemeName.values.length,
+                      itemBuilder: (context, i) {
+                        final themeChoice = ColorThemeName.values[i];
+                        final isSelected = currentColorTheme == themeChoice;
+                        return InkWell(
+                          onTap: () {
+                            ref
+                                .read(colorThemeProvider.notifier)
+                                .setColorTheme(themeChoice);
+                          },
+                          borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: isSelected
+                                  ? themeChoice.primaryColor.withValues(alpha: 0.12)
+                                  : colorScheme.surface,
+                              borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+                              border: Border.all(
+                                color: isSelected
+                                    ? themeChoice.primaryColor
+                                    : colorScheme.outlineVariant,
+                                width: isSelected ? 2 : 1,
+                              ),
+                            ),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: AppSpacing.xs,
+                              vertical: AppSpacing.sm,
+                            ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Stack(
+                                  alignment: Alignment.center,
+                                  children: [
+                                    CircleAvatar(
+                                      radius: 14,
+                                      backgroundColor: themeChoice.primaryColor,
+                                    ),
+                                    if (isSelected)
+                                      const Icon(
+                                        Icons.check_rounded,
+                                        size: 16,
+                                        color: Colors.white,
+                                      ),
+                                  ],
+                                ),
+                                const SizedBox(height: 6),
+                                Text(
+                                  themeChoice.label,
+                                  textAlign: TextAlign.center,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: textTheme.labelSmall?.copyWith(
+                                    fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                                    color: isSelected
+                                        ? themeChoice.primaryColor
+                                        : colorScheme.onSurface,
+                                    fontSize: 11,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -382,8 +485,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           const SizedBox(height: AppSpacing.xxl),
         ],
       ),
-    );
-  }
+    ),
+  );
+}
 
   void _showChurchProfileDialog(BuildContext context, {required bool isAdmin}) {
     final theme = Theme.of(context);

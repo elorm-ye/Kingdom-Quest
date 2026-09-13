@@ -36,6 +36,13 @@ class AdminMoreScreen extends StatelessWidget {
         route: '/admin/forum',
       ),
       (
+        icon: Icons.photo_camera_outlined,
+        color: AppColors.terracotta,
+        title: 'Meeting Photos & Feed',
+        subtitle: 'Upload and manage Sunday & meeting picture feed',
+        route: '/admin/feed',
+      ),
+      (
         icon: Icons.menu_book_rounded,
         color: AppColors.family,
         title: 'Sermon Notes',
@@ -61,7 +68,7 @@ class AdminMoreScreen extends StatelessWidget {
                 return Column(
                   children: [
                     ListTile(
-                      onTap: () => context.go(m.route),
+                      onTap: () => context.push(m.route),
                       contentPadding: const EdgeInsets.symmetric(
                         horizontal: AppSpacing.lg,
                         vertical: AppSpacing.sm,

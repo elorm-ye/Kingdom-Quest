@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/providers/app_providers.dart';
 import '../../../core/providers/feature_providers.dart';
 import '../../../core/theme/app_spacing.dart';
-import '../../../core/theme/app_colors.dart';
+import '../../../shared/widgets/app_pop_scope.dart';
 
 class SubmitPetitionScreen extends ConsumerStatefulWidget {
   const SubmitPetitionScreen({super.key});
@@ -55,17 +55,13 @@ class _SubmitPetitionScreenState extends ConsumerState<SubmitPetitionScreen> {
     final textTheme = theme.textTheme;
     final colorScheme = theme.colorScheme;
 
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(
-            Icons.arrow_back,
-            size: 20,
-          ),
-          onPressed: () => context.pop(),
+    return AppPopScope(
+      fallbackRoute: '/petitions',
+      child: Scaffold(
+        appBar: AppBar(
+          leading: const AppBackButton(fallbackRoute: '/petitions'),
+          title: const Text('Submit Petition'),
         ),
-        title: const Text('Submit Petition'),
-      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(AppSpacing.xl),
         child: Form(
@@ -155,8 +151,9 @@ class _SubmitPetitionScreenState extends ConsumerState<SubmitPetitionScreen> {
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 
   Widget _label(String t, TextTheme textTheme, ColorScheme colorScheme) => Text(
     t,

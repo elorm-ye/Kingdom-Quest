@@ -23,6 +23,9 @@ class SupabaseConfig {
   /// Storage bucket for sermon note images
   static const String sermonNotesBucket = 'sermon-notes';
 
+  /// Storage bucket for meeting and Sunday photo feed
+  static const String feedBucket = 'church-feed';
+
   /// Realtime channel names
   static const String forumChannel = 'forum-posts';
   static const String notificationsChannel = 'user-notifications';

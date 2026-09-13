@@ -5,6 +5,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/providers/feature_providers.dart';
 import '../../../shared/models/advice_request.dart';
+import '../../../shared/widgets/app_pop_scope.dart';
 
 class AdviceScreen extends ConsumerWidget {
   const AdviceScreen({super.key});
@@ -18,17 +19,13 @@ class AdviceScreen extends ConsumerWidget {
     final asyncRequests = ref.watch(adviceNotifierProvider);
     final requests = asyncRequests.value ?? [];
 
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(
-            Icons.arrow_back,
-            size: 20,
-          ),
-          onPressed: () => context.pop(),
+    return AppPopScope(
+      fallbackRoute: '/home',
+      child: Scaffold(
+        appBar: AppBar(
+          leading: const AppBackButton(fallbackRoute: '/home'),
+          title: const Text('Advice Center'),
         ),
-        title: const Text('Advice Center'),
-      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => context.push('/submit-advice'),
         child: const Icon(Icons.add),
@@ -152,6 +149,7 @@ class AdviceScreen extends ConsumerWidget {
                 },
               ),
             ),
+      ),
     );
   }
 }

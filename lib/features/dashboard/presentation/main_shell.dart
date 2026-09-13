@@ -3,10 +3,15 @@ import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 
 /// Main navigation shell with bottom nav bar and system back button handling.
-class MainShell extends StatelessWidget {
+class MainShell extends StatefulWidget {
   final Widget child;
   const MainShell({super.key, required this.child});
 
+  @override
+  State<MainShell> createState() => _MainShellState();
+}
+
+class _MainShellState extends State<MainShell> {
   static const _navItems = [
     (icon: Icons.home_outlined, activeIcon: Icons.home_rounded, label: 'Home'),
     (
@@ -31,6 +36,9 @@ class MainShell extends StatelessWidget {
     '/profile',
   ];
 
+  final List<int> _tabHistory = [0];
+  DateTime? _lastBackPressTime;
+
   int _currentIndex(BuildContext context) {
     final location = GoRouterState.of(context).uri.toString();
     for (var i = 0; i < _routes.length; i++) {
@@ -39,44 +47,56 @@ class MainShell extends StatelessWidget {
     return 0;
   }
 
+  void _syncCurrentTab(int idx) {
+    if (_tabHistory.isEmpty || _tabHistory.last != idx) {
+      _tabHistory.remove(idx);
+      _tabHistory.add(idx);
+    }
+  }
+
   Future<void> _handlePop(BuildContext context, int currentIdx) async {
-    // If not on Home tab, navigate back to Home first
+    // If the tab history has more than 1 tab, navigate to the previous tab
+    if (_tabHistory.length > 1) {
+      _tabHistory.removeLast();
+      final prevTab = _tabHistory.last;
+      context.go(_routes[prevTab]);
+      return;
+    }
+
+    // If current tab is not Home, navigate back to Home first
     if (currentIdx != 0) {
+      _tabHistory.clear();
+      _tabHistory.add(0);
       context.go('/home');
       return;
     }
 
-    // If already on Home, show exit confirmation dialog
-    final shouldExit = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Exit Kingdom Quest?'),
-        content: const Text('Are you sure you want to close the app?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Text('Cancel'),
+    // Already on Home tab: double back press to exit safely
+    final now = DateTime.now();
+    if (_lastBackPressTime == null ||
+        now.difference(_lastBackPressTime!) > const Duration(seconds: 2)) {
+      _lastBackPressTime = now;
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Press back again to exit Kingdom Quest'),
+          duration: const Duration(seconds: 2),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
           ),
-          FilledButton(
-            style: FilledButton.styleFrom(
-              backgroundColor: Theme.of(ctx).colorScheme.error,
-              foregroundColor: Theme.of(ctx).colorScheme.onError,
-            ),
-            onPressed: () => Navigator.of(ctx).pop(true),
-            child: const Text('Exit'),
-          ),
-        ],
-      ),
-    );
-
-    if (shouldExit == true) {
-      await SystemNavigator.pop();
+        ),
+      );
+      return;
     }
+
+    await SystemNavigator.pop();
   }
 
   @override
   Widget build(BuildContext context) {
     final idx = _currentIndex(context);
+    _syncCurrentTab(idx);
 
     return PopScope(
       canPop: false,
@@ -85,11 +105,14 @@ class MainShell extends StatelessWidget {
         _handlePop(context, idx);
       },
       child: Scaffold(
-        body: child,
+        body: widget.child,
         bottomNavigationBar: BottomNavigationBar(
           currentIndex: idx,
           onTap: (i) {
-            if (i != idx) context.go(_routes[i]);
+            if (i != idx) {
+              _syncCurrentTab(i);
+              context.go(_routes[i]);
+            }
           },
           items: _navItems.map((item) {
             return BottomNavigationBarItem(

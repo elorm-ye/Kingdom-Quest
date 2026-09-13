@@ -7,6 +7,7 @@ import '../../shared/services/auth_service.dart';
 import '../../shared/services/mock_data_service.dart';
 import '../../shared/services/storage_service.dart';
 import '../../shared/services/supabase_data_service.dart';
+import '../theme/app_colors.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // SUPABASE CLIENT
@@ -241,11 +242,8 @@ class ThemeModeNotifier extends Notifier<ThemeMode> {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// COLOR THEME (default / pink)
+// COLOR THEME (Terracotta, Pink, Green, Blue, Purple, Amber)
 // ─────────────────────────────────────────────────────────────────────────────
-
-/// The name of the active color theme. Currently supports 'default' and 'pink'.
-enum ColorThemeName { defaultTheme, pink }
 
 final colorThemeProvider = NotifierProvider<ColorThemeNotifier, ColorThemeName>(() {
   return ColorThemeNotifier();
@@ -260,20 +258,17 @@ class ColorThemeNotifier extends Notifier<ColorThemeName> {
 
   Future<void> _loadColorTheme() async {
     final prefs = await SharedPreferences.getInstance();
-    final saved = prefs.getString('colorTheme') ?? 'default';
-    state = saved == 'pink' ? ColorThemeName.pink : ColorThemeName.defaultTheme;
-  }
-
-  Future<void> toggle() async {
-    await setColorTheme(
-      state == ColorThemeName.defaultTheme ? ColorThemeName.pink : ColorThemeName.defaultTheme,
+    final saved = prefs.getString('colorTheme') ?? 'defaultTheme';
+    state = ColorThemeName.values.firstWhere(
+      (e) => e.name == saved,
+      orElse: () => saved == 'default' ? ColorThemeName.defaultTheme : ColorThemeName.defaultTheme,
     );
   }
 
   Future<void> setColorTheme(ColorThemeName theme) async {
     state = theme;
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('colorTheme', theme == ColorThemeName.pink ? 'pink' : 'default');
+    await prefs.setString('colorTheme', theme.name);
   }
 
   bool get isPink => state == ColorThemeName.pink;

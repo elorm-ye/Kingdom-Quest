@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/providers/app_providers.dart';
 import '../../../core/providers/feature_providers.dart';
 import '../../../core/theme/app_spacing.dart';
-import '../../../core/theme/app_colors.dart';
+import '../../../shared/widgets/app_pop_scope.dart';
 
 class SubmitAdviceScreen extends ConsumerStatefulWidget {
   const SubmitAdviceScreen({super.key});
@@ -55,17 +55,13 @@ class _SubmitAdviceScreenState extends ConsumerState<SubmitAdviceScreen> {
     final textTheme = theme.textTheme;
     final colorScheme = theme.colorScheme;
 
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(
-            Icons.arrow_back,
-            size: 20,
-          ),
-          onPressed: () => context.pop(),
+    return AppPopScope(
+      fallbackRoute: '/advice',
+      child: Scaffold(
+        appBar: AppBar(
+          leading: const AppBackButton(fallbackRoute: '/advice'),
+          title: const Text('Ask for Advice'),
         ),
-        title: const Text('Ask for Advice'),
-      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(AppSpacing.xl),
         child: Form(
@@ -156,8 +152,9 @@ class _SubmitAdviceScreenState extends ConsumerState<SubmitAdviceScreen> {
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 
   Widget _label(String t, TextTheme textTheme, ColorScheme colorScheme) => Text(
     t,

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/providers/feature_providers.dart';
+import '../../../shared/widgets/app_pop_scope.dart';
 
 /// Notification center screen — grouped by read/unread.
 class NotificationsScreen extends ConsumerStatefulWidget {
@@ -72,10 +73,13 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
     final _notifications = asyncNotifications.value ?? [];
     final unreadCount = _notifications.where((n) => !n.isRead).length;
 
-    return Scaffold(
-      appBar: AppBar(
-        surfaceTintColor: Colors.transparent,
-        title: const Text('Notifications'),
+    return AppPopScope(
+      fallbackRoute: '/home',
+      child: Scaffold(
+        appBar: AppBar(
+          leading: const AppBackButton(fallbackRoute: '/home'),
+          surfaceTintColor: Colors.transparent,
+          title: const Text('Notifications'),
         actions: [
           if (unreadCount > 0)
             TextButton(
@@ -203,6 +207,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                 );
               },
             ),
+      ),
     );
   }
 }

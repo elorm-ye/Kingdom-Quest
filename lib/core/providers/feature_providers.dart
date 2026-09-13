@@ -6,6 +6,7 @@
 /// Screens consume these providers instead of calling MockDataService directly.
 library;
 
+import 'dart:io';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../shared/models/models.dart';
 import '../../../core/providers/app_providers.dart';
@@ -670,6 +671,142 @@ class AdminUsersNotifier extends Notifier<AsyncValue<List<UserModel>>> {
 final adminUsersNotifierProvider =
     NotifierProvider<AdminUsersNotifier, AsyncValue<List<UserModel>>>(
       AdminUsersNotifier.new,
+    );
+
+// ─────────────────────────────────────────────────────────────────────────────
+// CHURCH FEED POSTS (SUNDAY & MEETING MOMENTS)
+// ─────────────────────────────────────────────────────────────────────────────
+
+final feedPostsProvider = FutureProvider<List<ChurchFeedPost>>((ref) async {
+  try {
+    final profile = await ref.watch(currentUserModelProvider.future);
+    return await ref
+        .read(dataServiceProvider)
+        .fetchFeedPosts(churchId: profile?.churchId);
+  } catch (_) {
+    return MockDataService.feedPosts;
+  }
+});
+
+class FeedPostsNotifier extends Notifier<AsyncValue<List<ChurchFeedPost>>> {
+  @override
+  AsyncValue<List<ChurchFeedPost>> build() {
+    _reload();
+    return const AsyncValue.loading();
+  }
+
+  Future<void> _reload() async {
+    final profile = await ref.read(currentUserModelProvider.future);
+    try {
+      final posts = await ref
+          .read(dataServiceProvider)
+          .fetchFeedPosts(churchId: profile?.churchId);
+      state = AsyncValue.data(posts);
+    } catch (_) {
+      state = AsyncValue.data(List.from(MockDataService.feedPosts));
+    }
+  }
+
+  Future<void> toggleLike(String postId) async {
+    // Optimistic UI update
+    final currentList = state.value ?? [];
+    final updatedList = currentList.map((post) {
+      if (post.id == postId) {
+        final newLiked = !post.isLiked;
+        final newCount = newLiked ? post.likesCount + 1 : (post.likesCount > 0 ? post.likesCount - 1 : 0);
+        return post.copyWith(isLiked: newLiked, likesCount: newCount);
+      }
+      return post;
+    }).toList();
+
+    state = AsyncValue.data(updatedList);
+    MockDataService.toggleFeedPostLike(postId);
+
+    try {
+      await ref.read(dataServiceProvider).toggleFeedPostLike(postId);
+    } catch (_) {
+      // Keep optimistic or reload
+    }
+  }
+
+  Future<void> createPost({
+    required String title,
+    required String caption,
+    required String meetingType,
+    required DateTime meetingDate,
+    required List<String> imageUrls,
+    List<File>? localFiles,
+  }) async {
+    final profile = await ref.read(currentUserModelProvider.future);
+    final uploadedUrls = <String>[...imageUrls];
+
+    // Upload local files to Supabase Storage if present
+    if (localFiles != null && localFiles.isNotEmpty) {
+      for (final file in localFiles) {
+        try {
+          final url = await ref.read(storageServiceProvider).uploadFeedImage(
+            adminId: profile?.id ?? 'admin_001',
+            file: file,
+          );
+          uploadedUrls.add(url);
+        } catch (_) {
+          // If upload fails (e.g. offline/demo), store path as fallback
+          uploadedUrls.add(file.path);
+        }
+      }
+    }
+
+    final newPost = ChurchFeedPost(
+      id: 'feed_${DateTime.now().millisecondsSinceEpoch}',
+      churchId: profile?.churchId ?? 'church_001',
+      title: title,
+      caption: caption,
+      imageUrls: uploadedUrls,
+      meetingDate: meetingDate,
+      meetingType: meetingType,
+      authorName: profile?.displayName ?? 'Media Ministry',
+      authorAvatarUrl: profile?.avatarUrl,
+      likesCount: 0,
+      isLiked: false,
+      createdAt: DateTime.now(),
+    );
+
+    MockDataService.addFeedPost(newPost);
+
+    try {
+      await ref.read(dataServiceProvider).createFeedPost(
+        title: title,
+        caption: caption,
+        imageUrls: uploadedUrls,
+        meetingDate: meetingDate,
+        meetingType: meetingType,
+        churchId: profile?.churchId,
+        authorName: profile?.displayName ?? 'Media Ministry',
+        authorAvatarUrl: profile?.avatarUrl,
+      );
+    } catch (_) {}
+
+    await _reload();
+  }
+
+  Future<void> deletePost(String postId) async {
+    final currentList = state.value ?? [];
+    state = AsyncValue.data(currentList.where((p) => p.id != postId).toList());
+    MockDataService.deleteFeedPost(postId);
+
+    try {
+      await ref.read(dataServiceProvider).deleteFeedPost(postId);
+    } catch (_) {}
+
+    await _reload();
+  }
+
+  Future<void> refresh() => _reload();
+}
+
+final feedPostsNotifierProvider =
+    NotifierProvider<FeedPostsNotifier, AsyncValue<List<ChurchFeedPost>>>(
+      FeedPostsNotifier.new,
     );
 
 // ─────────────────────────────────────────────────────────────────────────────

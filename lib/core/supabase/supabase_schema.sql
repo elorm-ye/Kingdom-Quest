@@ -613,6 +613,82 @@ create policy "Admins can upload sermon note images"
   to authenticated
   with check (bucket_id = 'sermon-notes' and is_admin(auth.uid()));
 
+-- Church-feed media bucket policies
+create policy "Church feed images are publicly accessible"
+  on storage.objects for select
+  using (bucket_id = 'church-feed');
+
+create policy "Admins can upload church feed images"
+  on storage.objects for insert
+  to authenticated
+  with check (bucket_id = 'church-feed' and is_admin(auth.uid()));
+
+create policy "Admins can delete church feed images"
+  on storage.objects for delete
+  to authenticated
+  using (bucket_id = 'church-feed' and is_admin(auth.uid()));
+
+-- ─────────────────────────────────────────────────────────────
+-- TABLE: church_feed_posts
+-- Sunday and meeting photos feed
+-- ─────────────────────────────────────────────────────────────
+create table if not exists public.church_feed_posts (
+  id                uuid primary key default gen_random_uuid(),
+  church_id         uuid references public.churches(id) on delete cascade,
+  author_id         uuid references public.profiles(id) on delete set null,
+  author_name       text not null default 'Media Ministry',
+  author_avatar_url text,
+  title             text not null,
+  caption           text,
+  image_urls        text[] not null default '{}',
+  meeting_date      date not null default current_date,
+  meeting_type      text not null default 'Sunday Service',
+  likes_count       int not null default 0,
+  created_at        timestamptz not null default now()
+);
+
+alter table public.church_feed_posts enable row level security;
+
+create policy "Anyone authenticated can view church feed posts"
+  on public.church_feed_posts for select
+  to authenticated using (true);
+
+create policy "Admins can insert church feed posts"
+  on public.church_feed_posts for insert
+  to authenticated with check (is_admin(auth.uid()));
+
+create policy "Admins can update church feed posts"
+  on public.church_feed_posts for update
+  to authenticated using (is_admin(auth.uid()));
+
+create policy "Admins can delete church feed posts"
+  on public.church_feed_posts for delete
+  to authenticated using (is_admin(auth.uid()));
+
+-- ─────────────────────────────────────────────────────────────
+-- TABLE: church_feed_likes
+-- ─────────────────────────────────────────────────────────────
+create table if not exists public.church_feed_likes (
+  post_id    uuid references public.church_feed_posts(id) on delete cascade,
+  user_id    uuid references public.profiles(id) on delete cascade,
+  created_at timestamptz not null default now(),
+  primary key (post_id, user_id)
+);
+
+alter table public.church_feed_likes enable row level security;
+
+create policy "Anyone authenticated can view church feed likes"
+  on public.church_feed_likes for select
+  to authenticated using (true);
+
+create policy "Users can like a church feed post"
+  on public.church_feed_likes for insert
+  to authenticated with check (auth.uid() = user_id);
+
+create policy "Users can unlike a church feed post"
+  on public.church_feed_likes for delete
+  to authenticated using (auth.uid() = user_id);
+
 -- ─────────────────────────────────────────────────────────────
 -- REALTIME: enable for key tables
 -- ─────────────────────────────────────────────────────────────
@@ -623,3 +699,4 @@ alter publication supabase_realtime add table public.notifications;
 alter publication supabase_realtime add table public.inspirations;
 alter publication supabase_realtime add table public.prayer_requests;
 alter publication supabase_realtime add table public.sermon_notes;
+alter publication supabase_realtime add table public.church_feed_posts;

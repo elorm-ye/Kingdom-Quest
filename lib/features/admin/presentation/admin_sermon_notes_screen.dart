@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/providers/feature_providers.dart';
+import '../../../shared/widgets/app_pop_scope.dart';
 
 /// Admin screen for publishing, editing, and deleting sermon notes.
 class AdminSermonNotesScreen extends ConsumerStatefulWidget {
@@ -82,10 +83,13 @@ class _AdminSermonNotesScreenState extends ConsumerState<AdminSermonNotesScreen>
     final asyncNotes = ref.watch(sermonNotesNotifierProvider);
     final recentNotes = (asyncNotes.value ?? []).take(3).toList();
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Sermon Notes Publisher'),
-      ),
+    return AppPopScope(
+      fallbackRoute: '/admin',
+      child: Scaffold(
+        appBar: AppBar(
+          leading: const AppBackButton(fallbackRoute: '/admin'),
+          title: const Text('Sermon Notes Publisher'),
+        ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(AppSpacing.lg),
         child: Column(
@@ -400,6 +404,7 @@ class _AdminSermonNotesScreenState extends ConsumerState<AdminSermonNotesScreen>
           ],
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 }

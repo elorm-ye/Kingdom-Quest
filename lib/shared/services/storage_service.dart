@@ -42,6 +42,24 @@ class StorageService {
         .getPublicUrl(path);
   }
 
+  /// Uploads a meeting/Sunday feed image and returns the public URL.
+  Future<String> uploadFeedImage({
+    required String adminId,
+    required File file,
+  }) async {
+    final ext = file.path.split('.').last.toLowerCase();
+    final name = '${DateTime.now().millisecondsSinceEpoch}_${file.hashCode.abs()}.$ext';
+    final path = '$adminId/$name';
+
+    await _client.storage
+        .from(SupabaseConfig.feedBucket)
+        .upload(path, file, fileOptions: const FileOptions(upsert: false));
+
+    return _client.storage
+        .from(SupabaseConfig.feedBucket)
+        .getPublicUrl(path);
+  }
+
   /// Deletes an avatar file given its public URL (best-effort).
   Future<void> deleteAvatar(String publicUrl) async {
     try {

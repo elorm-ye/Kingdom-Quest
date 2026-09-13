@@ -4,6 +4,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../shared/models/models.dart';
 import '../../../core/providers/feature_providers.dart';
+import '../../../shared/widgets/app_pop_scope.dart';
 
 /// Admin advice moderation — respond to and close advice requests.
 class AdminAdviceScreen extends ConsumerStatefulWidget {
@@ -138,10 +139,13 @@ class _AdminAdviceScreenState extends ConsumerState<AdminAdviceScreen> {
     final textTheme = theme.textTheme;
     final colorScheme = theme.colorScheme;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Advice Center'),
-      ),
+    return AppPopScope(
+      fallbackRoute: '/admin',
+      child: Scaffold(
+        appBar: AppBar(
+          leading: const AppBackButton(fallbackRoute: '/admin'),
+          title: const Text('Advice Center'),
+        ),
       body: Builder(
         builder: (context) {
           final asyncAdvice = ref.watch(adviceNotifierProvider);
@@ -310,6 +314,7 @@ class _AdminAdviceScreenState extends ConsumerState<AdminAdviceScreen> {
           );
         },
       ),
-    );
-  }
+    ),
+  );
+}
 }

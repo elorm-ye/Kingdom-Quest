@@ -33,6 +33,8 @@ import '../../features/admin/presentation/admin_advice_screen.dart';
 import '../../features/admin/presentation/admin_inspiration_screen.dart';
 import '../../features/admin/presentation/admin_forum_screen.dart';
 import '../../features/admin/presentation/admin_sermon_notes_screen.dart';
+import '../../features/admin/presentation/admin_feed_screen.dart';
+import '../../features/feed/presentation/church_feed_screen.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 final _shellNavigatorKey = GlobalKey<NavigatorState>();
@@ -144,6 +146,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (c, s) => const NotificationsScreen(),
       ),
       GoRoute(path: '/settings', builder: (c, s) => const SettingsScreen()),
+      GoRoute(path: '/feed', builder: (c, s) => const ChurchFeedScreen()),
 
       // ── ADMIN SHELL ────────────────────────────────────────────────────
       ShellRoute(
@@ -194,6 +197,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/admin/sermon-notes',
         builder: (c, s) => const AdminSermonNotesScreen(),
+      ),
+      GoRoute(
+        path: '/admin/feed',
+        builder: (c, s) => const AdminFeedScreen(),
       ),
     ],
   );

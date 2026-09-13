@@ -9,3 +9,4 @@ export 'inspiration.dart';
 export 'forum_post.dart';
 export 'event.dart';
 export 'sermon_note.dart';
+export 'church_feed_post.dart';

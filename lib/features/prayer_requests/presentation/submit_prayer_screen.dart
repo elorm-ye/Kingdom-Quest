@@ -4,8 +4,8 @@ import 'package:go_router/go_router.dart';
 import '../../../core/providers/app_providers.dart';
 import '../../../core/providers/feature_providers.dart';
 import '../../../core/theme/app_spacing.dart';
-import '../../../core/theme/app_colors.dart';
 import '../../../shared/models/prayer_request.dart';
+import '../../../shared/widgets/app_pop_scope.dart';
 
 class SubmitPrayerScreen extends ConsumerStatefulWidget {
   const SubmitPrayerScreen({super.key});
@@ -60,17 +60,13 @@ class _SubmitPrayerScreenState extends ConsumerState<SubmitPrayerScreen> {
     final textTheme = theme.textTheme;
     final colorScheme = theme.colorScheme;
 
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(
-            Icons.arrow_back,
-            size: 20,
-          ),
-          onPressed: () => context.pop(),
+    return AppPopScope(
+      fallbackRoute: '/prayer-requests',
+      child: Scaffold(
+        appBar: AppBar(
+          leading: const AppBackButton(fallbackRoute: '/prayer-requests'),
+          title: const Text('Share a prayer'),
         ),
-        title: const Text('Share a prayer'),
-      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(AppSpacing.xl),
         child: Form(
@@ -227,8 +223,9 @@ class _SubmitPrayerScreenState extends ConsumerState<SubmitPrayerScreen> {
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 
   Widget _label(String t, TextTheme textTheme, ColorScheme colorScheme) => Text(
     t,

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/providers/feature_providers.dart';
+import '../../../shared/widgets/app_pop_scope.dart';
 
 /// Admin inspiration publisher — create and publish daily inspiration posts.
 class AdminInspirationScreen extends ConsumerStatefulWidget {
@@ -93,10 +94,13 @@ class _AdminInspirationScreenState extends ConsumerState<AdminInspirationScreen>
     final asyncInspirations = ref.watch(inspirationsNotifierProvider);
     final recentInspirations = (asyncInspirations.value ?? []).take(3).toList();
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Inspiration Publisher'),
-      ),
+    return AppPopScope(
+      fallbackRoute: '/admin',
+      child: Scaffold(
+        appBar: AppBar(
+          leading: const AppBackButton(fallbackRoute: '/admin'),
+          title: const Text('Inspiration Publisher'),
+        ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(AppSpacing.lg),
         child: Column(
@@ -355,6 +359,7 @@ class _AdminInspirationScreenState extends ConsumerState<AdminInspirationScreen>
           ],
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 }

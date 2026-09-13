@@ -4,6 +4,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../shared/models/models.dart';
 import '../../../core/providers/feature_providers.dart';
+import '../../../shared/widgets/app_pop_scope.dart';
 
 /// Admin forum moderation — review reported posts and remove content.
 class AdminForumScreen extends ConsumerStatefulWidget {
@@ -47,12 +48,15 @@ class _AdminForumScreenState extends ConsumerState<AdminForumScreen>
     // For now, reported posts are a placeholder — integrate with a reports stream later
     final reported = <ForumPost>[];
 
-    return Scaffold(
-      body: NestedScrollView(
-        headerSliverBuilder: (ctx, _) => [
-          SliverAppBar(
-            pinned: true,
-            title: const Text('Forum Moderation'),
+    return AppPopScope(
+      fallbackRoute: '/admin',
+      child: Scaffold(
+        body: NestedScrollView(
+          headerSliverBuilder: (ctx, _) => [
+            SliverAppBar(
+              pinned: true,
+              leading: const AppBackButton(fallbackRoute: '/admin'),
+              title: const Text('Forum Moderation'),
             bottom: TabBar(
               controller: _tabController,
               tabs: [
@@ -113,8 +117,9 @@ class _AdminForumScreenState extends ConsumerState<AdminForumScreen>
           ],
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 }
 
 class _ForumAdminCard extends StatelessWidget {

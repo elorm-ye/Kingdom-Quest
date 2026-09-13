@@ -5,6 +5,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/providers/feature_providers.dart';
 import '../../../shared/models/petition.dart';
+import '../../../shared/widgets/app_pop_scope.dart';
 
 class PetitionsScreen extends ConsumerWidget {
   const PetitionsScreen({super.key});
@@ -17,17 +18,13 @@ class PetitionsScreen extends ConsumerWidget {
     final asyncPetitions = ref.watch(petitionsNotifierProvider);
     final petitions = asyncPetitions.value ?? [];
 
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(
-            Icons.arrow_back,
-            size: 20,
-          ),
-          onPressed: () => context.pop(),
+    return AppPopScope(
+      fallbackRoute: '/home',
+      child: Scaffold(
+        appBar: AppBar(
+          leading: const AppBackButton(fallbackRoute: '/home'),
+          title: const Text('Petitions'),
         ),
-        title: const Text('Petitions'),
-      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => context.push('/submit-petition'),
         child: const Icon(Icons.add),
@@ -118,6 +115,7 @@ class PetitionsScreen extends ConsumerWidget {
                 },
               ),
             ),
+      ),
     );
   }
 

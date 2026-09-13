@@ -493,4 +493,250 @@ class AppTheme {
       ),
     );
   }
+
+  // ─────────────────────────────────────────────
+  // THEME GENERATOR HELPER
+  // ─────────────────────────────────────────────
+
+  static ThemeData _buildCustomTheme({
+    required bool isDark,
+    required Color primary,
+    required Color accent,
+    required Color secondary,
+    required Color bg,
+    required Color surface,
+    required Color ink,
+    required Color muted,
+    required Color border,
+  }) {
+    final base = isDark ? dark : light;
+    final colorScheme = isDark
+        ? ColorScheme.dark(
+            primary: accent,
+            onPrimary: bg,
+            secondary: primary,
+            onSecondary: Colors.white,
+            tertiary: accent,
+            onTertiary: bg,
+            error: AppColors.alert,
+            onError: Colors.white,
+            surface: bg,
+            onSurface: ink,
+            surfaceContainerHighest: surface,
+          )
+        : ColorScheme.light(
+            primary: primary,
+            onPrimary: Colors.white,
+            secondary: secondary,
+            onSecondary: Colors.white,
+            tertiary: accent,
+            onTertiary: Colors.white,
+            error: AppColors.alert,
+            onError: Colors.white,
+            surface: bg,
+            onSurface: ink,
+            surfaceContainerHighest: surface,
+          );
+
+    final textTheme = isDark
+        ? AppTypography.darkTextTheme.apply(
+            bodyColor: ink,
+            displayColor: ink,
+          )
+        : AppTypography.lightTextTheme.apply(
+            bodyColor: ink,
+            displayColor: ink,
+          );
+
+    return base.copyWith(
+      colorScheme: colorScheme,
+      scaffoldBackgroundColor: bg,
+      textTheme: textTheme,
+      appBarTheme: base.appBarTheme.copyWith(
+        backgroundColor: bg,
+        foregroundColor: ink,
+        titleTextStyle: AppTypography.h3.copyWith(color: ink),
+        iconTheme: IconThemeData(color: ink, size: AppSpacing.iconLg),
+      ),
+      cardTheme: base.cardTheme.copyWith(
+        color: surface,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppSpacing.radiusCard),
+          side: BorderSide(color: border),
+        ),
+      ),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: base.elevatedButtonTheme.style?.copyWith(
+          backgroundColor: WidgetStateProperty.all(isDark ? accent : primary),
+          foregroundColor: WidgetStateProperty.all(isDark ? bg : Colors.white),
+        ),
+      ),
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: base.outlinedButtonTheme.style?.copyWith(
+          foregroundColor: WidgetStateProperty.all(isDark ? accent : primary),
+          side: WidgetStateProperty.all(BorderSide(color: isDark ? accent : primary, width: 1.5)),
+          textStyle: WidgetStateProperty.all(AppTypography.button.copyWith(color: isDark ? accent : primary)),
+        ),
+      ),
+      textButtonTheme: TextButtonThemeData(
+        style: base.textButtonTheme.style?.copyWith(
+          foregroundColor: WidgetStateProperty.all(isDark ? accent : primary),
+          textStyle: WidgetStateProperty.all(AppTypography.button.copyWith(color: isDark ? accent : primary)),
+        ),
+      ),
+      inputDecorationTheme: base.inputDecorationTheme.copyWith(
+        fillColor: surface,
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+          borderSide: BorderSide(color: isDark ? accent : primary, width: 2),
+        ),
+      ),
+      bottomNavigationBarTheme: base.bottomNavigationBarTheme.copyWith(
+        backgroundColor: surface,
+        selectedItemColor: isDark ? accent : primary,
+        unselectedItemColor: muted,
+      ),
+      bottomSheetTheme: base.bottomSheetTheme.copyWith(
+        backgroundColor: surface,
+      ),
+      dialogTheme: base.dialogTheme.copyWith(
+        backgroundColor: surface,
+        titleTextStyle: AppTypography.h3.copyWith(color: ink),
+        contentTextStyle: AppTypography.bodyMedium.copyWith(color: ink),
+      ),
+    );
+  }
+
+  // ─────────────────────────────────────────────
+  // GREEN THEME
+  // ─────────────────────────────────────────────
+
+  static ThemeData get greenLight => _buildCustomTheme(
+        isDark: false,
+        primary: AppColors.greenPrimary,
+        accent: AppColors.greenAccent,
+        secondary: AppColors.greenSecondary,
+        bg: AppColors.greenBg,
+        surface: AppColors.greenSurface,
+        ink: AppColors.greenInk,
+        muted: AppColors.greenMuted,
+        border: AppColors.greenSecondary.withValues(alpha: 0.15),
+      );
+
+  static ThemeData get greenDark => _buildCustomTheme(
+        isDark: true,
+        primary: AppColors.greenPrimary,
+        accent: AppColors.greenAccent,
+        secondary: AppColors.greenGlow,
+        bg: AppColors.greenNight,
+        surface: AppColors.greenEspresso,
+        ink: AppColors.greenTextPrimaryDark,
+        muted: AppColors.greenTextMutedDark,
+        border: AppColors.greenPlumDusk,
+      );
+
+  // ─────────────────────────────────────────────
+  // BLUE THEME
+  // ─────────────────────────────────────────────
+
+  static ThemeData get blueLight => _buildCustomTheme(
+        isDark: false,
+        primary: AppColors.bluePrimary,
+        accent: AppColors.blueAccent,
+        secondary: AppColors.blueSecondary,
+        bg: AppColors.blueBg,
+        surface: AppColors.blueSurface,
+        ink: AppColors.blueInk,
+        muted: AppColors.blueMuted,
+        border: AppColors.blueSecondary.withValues(alpha: 0.15),
+      );
+
+  static ThemeData get blueDark => _buildCustomTheme(
+        isDark: true,
+        primary: AppColors.bluePrimary,
+        accent: AppColors.blueAccent,
+        secondary: AppColors.blueGlow,
+        bg: AppColors.blueNight,
+        surface: AppColors.blueEspresso,
+        ink: AppColors.blueTextPrimaryDark,
+        muted: AppColors.blueTextMutedDark,
+        border: AppColors.bluePlumDusk,
+      );
+
+  // ─────────────────────────────────────────────
+  // PURPLE THEME
+  // ─────────────────────────────────────────────
+
+  static ThemeData get purpleLight => _buildCustomTheme(
+        isDark: false,
+        primary: AppColors.purplePrimary,
+        accent: AppColors.purpleAccent,
+        secondary: AppColors.purpleSecondary,
+        bg: AppColors.purpleBg,
+        surface: AppColors.purpleSurface,
+        ink: AppColors.purpleInk,
+        muted: AppColors.purpleMuted,
+        border: AppColors.purpleSecondary.withValues(alpha: 0.15),
+      );
+
+  static ThemeData get purpleDark => _buildCustomTheme(
+        isDark: true,
+        primary: AppColors.purplePrimary,
+        accent: AppColors.purpleAccent,
+        secondary: AppColors.purpleGlow,
+        bg: AppColors.purpleNight,
+        surface: AppColors.purpleEspresso,
+        ink: AppColors.purpleTextPrimaryDark,
+        muted: AppColors.purpleTextMutedDark,
+        border: AppColors.purplePlumDusk,
+      );
+
+  // ─────────────────────────────────────────────
+  // AMBER THEME
+  // ─────────────────────────────────────────────
+
+  static ThemeData get amberLight => _buildCustomTheme(
+        isDark: false,
+        primary: AppColors.amberPrimary,
+        accent: AppColors.amberAccent,
+        secondary: AppColors.amberSecondary,
+        bg: AppColors.amberBg,
+        surface: AppColors.amberSurface,
+        ink: AppColors.amberInk,
+        muted: AppColors.amberMuted,
+        border: AppColors.amberSecondary.withValues(alpha: 0.15),
+      );
+
+  static ThemeData get amberDark => _buildCustomTheme(
+        isDark: true,
+        primary: AppColors.amberPrimary,
+        accent: AppColors.amberAccent,
+        secondary: AppColors.amberGlow,
+        bg: AppColors.amberNight,
+        surface: AppColors.amberEspresso,
+        ink: AppColors.amberTextPrimaryDark,
+        muted: AppColors.amberTextMutedDark,
+        border: AppColors.amberPlumDusk,
+      );
+
+  // ─────────────────────────────────────────────
+  // THEME DISPATCHER
+  // ─────────────────────────────────────────────
+
+  static ThemeData getTheme(ColorThemeName themeName, {required bool isDark}) {
+    switch (themeName) {
+      case ColorThemeName.pink:
+        return isDark ? pinkDark : pinkLight;
+      case ColorThemeName.green:
+        return isDark ? greenDark : greenLight;
+      case ColorThemeName.blue:
+        return isDark ? blueDark : blueLight;
+      case ColorThemeName.purple:
+        return isDark ? purpleDark : purpleLight;
+      case ColorThemeName.amber:
+        return isDark ? amberDark : amberLight;
+      case ColorThemeName.defaultTheme:
+        return isDark ? dark : light;
+    }
+  }
 }

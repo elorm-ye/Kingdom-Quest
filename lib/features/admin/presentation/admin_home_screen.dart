@@ -20,6 +20,7 @@ class AdminHomeScreen extends ConsumerWidget {
     final advice = ref.watch(adviceNotifierProvider).value ?? [];
     final asyncUsers = ref.watch(adminUsersNotifierProvider);
     final members = asyncUsers.value?.length ?? 0;
+    final feedPosts = ref.watch(feedPostsNotifierProvider).value ?? [];
 
     final pendingPrayers = prayers.where((p) => p.status.name == 'pending').length;
     final pendingPetitions = petitions.where((p) => p.status.name == 'pending').length;
@@ -53,6 +54,13 @@ class AdminHomeScreen extends ConsumerWidget {
     ];
 
     final quickActions = [
+      (
+        label: 'Sunday Feed',
+        subtitle: '${feedPosts.length} posts',
+        icon: Icons.photo_camera_outlined,
+        color: AppColors.terracotta,
+        route: '/admin/feed',
+      ),
       (
         label: 'Prayers',
         subtitle: '$pendingPrayers pending',
@@ -248,7 +256,13 @@ class AdminHomeScreen extends ConsumerWidget {
                     childAspectRatio: 0.9,
                     children: quickActions.map((a) {
                       return InkWell(
-                        onTap: () => context.go(a.route),
+                        onTap: () {
+                          if (['/admin', '/admin/prayers', '/admin/petitions', '/admin/users', '/admin/more'].contains(a.route)) {
+                            context.go(a.route);
+                          } else {
+                            context.push(a.route);
+                          }
+                        },
                         borderRadius: BorderRadius.circular(AppSpacing.radiusCard),
                         child: Card(
                           child: Padding(

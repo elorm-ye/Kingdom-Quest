@@ -5,6 +5,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/providers/feature_providers.dart';
 import '../../../shared/models/prayer_request.dart';
+import '../../../shared/widgets/app_pop_scope.dart';
 
 class PrayerRequestsScreen extends ConsumerStatefulWidget {
   const PrayerRequestsScreen({super.key});
@@ -29,17 +30,13 @@ class _PrayerRequestsScreenState extends ConsumerState<PrayerRequestsScreen> {
         )
         .toList();
 
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(
-            Icons.arrow_back,
-            size: 20,
-          ),
-          onPressed: () => context.pop(),
+    return AppPopScope(
+      fallbackRoute: '/home',
+      child: Scaffold(
+        appBar: AppBar(
+          leading: const AppBackButton(fallbackRoute: '/home'),
+          title: const Text('Prayer Requests'),
         ),
-        title: const Text('Prayer Requests'),
-      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => context.push('/submit-prayer'),
         child: const Icon(Icons.add),
@@ -85,8 +82,9 @@ class _PrayerRequestsScreenState extends ConsumerState<PrayerRequestsScreen> {
           ),
         ],
       ),
-    );
-  }
+    ),
+  );
+}
 
   Widget _chip(String label, bool selected, VoidCallback onTap, ThemeData theme) {
     final colorScheme = theme.colorScheme;

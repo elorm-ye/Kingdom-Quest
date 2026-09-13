@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_spacing.dart';
-import '../../../core/theme/app_colors.dart';
+import '../../../shared/widgets/app_pop_scope.dart';
 
 class CreatePostScreen extends StatefulWidget {
   const CreatePostScreen({super.key});
@@ -41,14 +41,22 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
     final textTheme = theme.textTheme;
     final colorScheme = theme.colorScheme;
 
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.close, size: 22),
-          onPressed: () => context.pop(),
+    return AppPopScope(
+      fallbackRoute: '/community',
+      child: Scaffold(
+        appBar: AppBar(
+          leading: IconButton(
+            icon: const Icon(Icons.close, size: 22),
+            onPressed: () {
+              if (context.canPop()) {
+                context.pop();
+              } else {
+                context.go('/community');
+              }
+            },
+          ),
+          title: const Text('New Post'),
         ),
-        title: const Text('New Post'),
-      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(AppSpacing.xl),
         child: Form(
@@ -129,8 +137,9 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 
   Widget _label(String t, TextTheme textTheme, ColorScheme colorScheme) => Text(
     t,

@@ -571,8 +571,86 @@ class MockDataService {
   ];
 
   // ─────────────────────────────────────────────
-  // HELPER METHODS
+  // SUNDAY & MEETING FEED POSTS (INSTAGRAM FEED)
   // ─────────────────────────────────────────────
+
+  static final List<ChurchFeedPost> _feedPostsList = [
+    ChurchFeedPost(
+      id: 'feed_001',
+      churchId: 'church_001',
+      title: 'Sunday Celebration Service',
+      caption:
+          'What a glorious Sunday in God\'s presence! The choir led us into deep worship, and Pastor James delivered a transformative message on "Walking in Dominion". Praise God for the new souls won today! 🙌🔥✨\n\n#SundayService #KingdomQuest #WorshipInSpirit #SundayMoments',
+      imageUrls: [
+        'https://images.unsplash.com/photo-1438232992991-995b7058bbb3?w=800&q=80',
+        'https://images.unsplash.com/photo-1519491050282-cf00c82424b4?w=800&q=80',
+        'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=800&q=80',
+      ],
+      meetingDate: DateTime.now().subtract(Duration(days: (DateTime.now().weekday % 7))),
+      meetingType: 'Sunday Service',
+      authorName: 'ICGC Media Ministry',
+      authorAvatarUrl: null,
+      likesCount: 84,
+      isLiked: true,
+      createdAt: DateTime.now().subtract(const Duration(hours: 5)),
+    ),
+    ChurchFeedPost(
+      id: 'feed_002',
+      churchId: 'church_001',
+      title: 'Youth Ablaze Encounter',
+      caption:
+          'Friday night was absolutely electrifying at Youth Ablaze! Passionate worship, impactful peer sharing, and a heart for revival. God is stirring something mighty among our young people! ⚡🙏❤️\n\n#YouthAblaze #NextGenLeaders #FaithOnFire',
+      imageUrls: [
+        'https://images.unsplash.com/photo-1529070538774-1843cb3265df?w=800&q=80',
+        'https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=800&q=80',
+      ],
+      meetingDate: DateTime.now().subtract(const Duration(days: 2)),
+      meetingType: 'Youth Fellowship',
+      authorName: 'Kingdom Quest Youth',
+      authorAvatarUrl: null,
+      likesCount: 56,
+      isLiked: false,
+      createdAt: DateTime.now().subtract(const Duration(days: 2)),
+    ),
+    ChurchFeedPost(
+      id: 'feed_003',
+      churchId: 'church_001',
+      title: 'Midweek Communion & Intercession',
+      caption:
+          'Breaking bread together as one family. A powerful evening of prayer, breaking strongholds, and experiencing peace that surpasses understanding. See you this coming Sunday! 🍞🍷✨\n\n#MidweekService #Communion #PrayerBreakthrough',
+      imageUrls: [
+        'https://images.unsplash.com/photo-1507692049790-de58290a4334?w=800&q=80',
+      ],
+      meetingDate: DateTime.now().subtract(const Duration(days: 4)),
+      meetingType: 'Midweek Service',
+      authorName: 'Pastor James',
+      authorAvatarUrl: null,
+      likesCount: 42,
+      isLiked: false,
+      createdAt: DateTime.now().subtract(const Duration(days: 4)),
+    ),
+  ];
+
+  static List<ChurchFeedPost> get feedPosts => _feedPostsList;
+
+  static void addFeedPost(ChurchFeedPost post) {
+    _feedPostsList.insert(0, post);
+  }
+
+  static void toggleFeedPostLike(String id) {
+    final idx = _feedPostsList.indexWhere((p) => p.id == id);
+    if (idx != -1) {
+      final post = _feedPostsList[idx];
+      final newLiked = !post.isLiked;
+      final newCount = newLiked ? post.likesCount + 1 : (post.likesCount > 0 ? post.likesCount - 1 : 0);
+      _feedPostsList[idx] = post.copyWith(isLiked: newLiked, likesCount: newCount);
+    }
+  }
+
+  static void deleteFeedPost(String id) {
+    _feedPostsList.removeWhere((p) => p.id == id);
+  }
+
 
   static DateTime _nextSunday() {
     final now = DateTime.now();

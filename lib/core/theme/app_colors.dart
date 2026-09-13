@@ -131,4 +131,99 @@ class AppColors {
   static const Color pinkTextSecondaryDark = Color(0xFFC8B0BC);
   static const Color pinkTextMutedDark = Color(0xFF8A7580);
   static const Color pinkAccentLinkDark = Color(0xFFF5B0CC);
+
+  // ─────────────────────────────────────────────
+  // GREEN THEME (Sage / Emerald)
+  // ─────────────────────────────────────────────
+
+  static const Color greenPrimary = Color(0xFF2D6A4F);
+  static const Color greenAccent = Color(0xFF52B788);
+  static const Color greenSecondary = Color(0xFF40916C);
+  static const Color greenInk = Color(0xFF081C15);
+  static const Color greenBg = Color(0xFFF2F7F4);
+  static const Color greenSurface = Color(0xFFF8FCF9);
+  static const Color greenMuted = Color(0xFF4F775D);
+
+  static const Color greenNight = Color(0xFF08120B);
+  static const Color greenEspresso = Color(0xFF102115);
+  static const Color greenPlumDusk = Color(0xFF1B3623);
+  static const Color greenGlow = Color(0xFF95D5B2);
+  static const Color greenTextPrimaryDark = Color(0xFFEDF7F1);
+  static const Color greenTextSecondaryDark = Color(0xFFB7D5C2);
+  static const Color greenTextMutedDark = Color(0xFF759B82);
+
+  // ─────────────────────────────────────────────
+  // BLUE THEME (Ocean / Royal Sapphire)
+  // ─────────────────────────────────────────────
+
+  static const Color bluePrimary = Color(0xFF1D5A8A);
+  static const Color blueAccent = Color(0xFF4392C6);
+  static const Color blueSecondary = Color(0xFF52799A);
+  static const Color blueInk = Color(0xFF0A1926);
+  static const Color blueBg = Color(0xFFF1F6FB);
+  static const Color blueSurface = Color(0xFFF8FAFD);
+  static const Color blueMuted = Color(0xFF4D6C85);
+
+  static const Color blueNight = Color(0xFF071018);
+  static const Color blueEspresso = Color(0xFF0F1E2E);
+  static const Color bluePlumDusk = Color(0xFF1A314A);
+  static const Color blueGlow = Color(0xFFA8D5E5);
+  static const Color blueTextPrimaryDark = Color(0xFFEEF5FA);
+  static const Color blueTextSecondaryDark = Color(0xFFB4CDE0);
+  static const Color blueTextMutedDark = Color(0xFF6F8CA3);
+
+  // ─────────────────────────────────────────────
+  // PURPLE THEME (Royal Amethyst)
+  // ─────────────────────────────────────────────
+
+  static const Color purplePrimary = Color(0xFF704382);
+  static const Color purpleAccent = Color(0xFF9D65B2);
+  static const Color purpleSecondary = Color(0xFF865D94);
+  static const Color purpleInk = Color(0xFF1F0D29);
+  static const Color purpleBg = Color(0xFFF8F2FA);
+  static const Color purpleSurface = Color(0xFFFCF8FD);
+  static const Color purpleMuted = Color(0xFF71527D);
+
+  static const Color purpleNight = Color(0xFF120817);
+  static const Color purpleEspresso = Color(0xFF1F0F29);
+  static const Color purplePlumDusk = Color(0xFF331942);
+  static const Color purpleGlow = Color(0xFFE2B6F5);
+  static const Color purpleTextPrimaryDark = Color(0xFFF9F0FD);
+  static const Color purpleTextSecondaryDark = Color(0xFFD4B8DE);
+  static const Color purpleTextMutedDark = Color(0xFF91729E);
+
+  // ─────────────────────────────────────────────
+  // AMBER / GOLD THEME (Kingdom Harvest Gold)
+  // ─────────────────────────────────────────────
+
+  static const Color amberPrimary = Color(0xFFC06C00);
+  static const Color amberAccent = Color(0xFFE28B1E);
+  static const Color amberSecondary = Color(0xFF9E651E);
+  static const Color amberInk = Color(0xFF241500);
+  static const Color amberBg = Color(0xFFFAF5EC);
+  static const Color amberSurface = Color(0xFFFDFBF7);
+  static const Color amberMuted = Color(0xFF7E6649);
+
+  static const Color amberNight = Color(0xFF140D04);
+  static const Color amberEspresso = Color(0xFF24180A);
+  static const Color amberPlumDusk = Color(0xFF3B2812);
+  static const Color amberGlow = Color(0xFFFFD485);
+  static const Color amberTextPrimaryDark = Color(0xFFFAF4EB);
+  static const Color amberTextSecondaryDark = Color(0xFFE0CEB2);
+  static const Color amberTextMutedDark = Color(0xFF9C8769);
+}
+
+/// Supported color theme palettes
+enum ColorThemeName {
+  defaultTheme('Terracotta', AppColors.terracotta, Color(0xFFF3ECE0)),
+  pink('Blush Pink', AppColors.pinkPrimary, Color(0xFFFFF0F5)),
+  green('Forest Green', AppColors.greenPrimary, Color(0xFFF2F7F4)),
+  blue('Ocean Blue', AppColors.bluePrimary, Color(0xFFF1F6FB)),
+  purple('Royal Purple', AppColors.purplePrimary, Color(0xFFF8F2FA)),
+  amber('Kingdom Amber', AppColors.amberPrimary, Color(0xFFFAF5EC));
+
+  final String label;
+  final Color primaryColor;
+  final Color previewBg;
+  const ColorThemeName(this.label, this.primaryColor, this.previewBg);
 }

@@ -884,6 +884,107 @@ class SupabaseDataService {
     );
   }
 
+  static ChurchFeedPost _churchFeedPostFromMap(
+    Map<String, dynamic> m, {
+    bool isLiked = false,
+  }) {
+    return ChurchFeedPost.fromMap(m, isLiked: isLiked);
+  }
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // CHURCH FEED POSTS (SUNDAY & MEETINGS INSTAGRAM FEED)
+  // ─────────────────────────────────────────────────────────────────────────
+
+  Future<List<ChurchFeedPost>> fetchFeedPosts({String? churchId}) async {
+    final user = _client.auth.currentUser;
+    var query = _client.from('church_feed_posts').select('*, church_feed_likes(user_id)');
+
+    final List<dynamic> data;
+    if (churchId != null) {
+      data = await query
+          .eq('church_id', churchId)
+          .order('meeting_date', ascending: false)
+          .order('created_at', ascending: false);
+    } else {
+      data = await query
+          .order('meeting_date', ascending: false)
+          .order('created_at', ascending: false);
+    }
+
+    return data.map((m) {
+      final likes = m['church_feed_likes'] as List? ?? [];
+      final isLiked = user != null && likes.any((l) => l['user_id'] == user.id);
+      return _churchFeedPostFromMap(m as Map<String, dynamic>, isLiked: isLiked);
+    }).toList();
+  }
+
+  Future<ChurchFeedPost> createFeedPost({
+    required String title,
+    required String caption,
+    required List<String> imageUrls,
+    required DateTime meetingDate,
+    required String meetingType,
+    String? churchId,
+    String? authorName,
+    String? authorAvatarUrl,
+  }) async {
+    final user = _client.auth.currentUser;
+    final row = await _client.from('church_feed_posts').insert({
+      'church_id': churchId ?? SupabaseConfig.defaultChurchId,
+      'author_id': user?.id,
+      'author_name': authorName ?? 'Media Ministry',
+      'author_avatar_url': authorAvatarUrl,
+      'title': title,
+      'caption': caption,
+      'image_urls': imageUrls,
+      'meeting_date': meetingDate.toIso8601String().split('T').first,
+      'meeting_type': meetingType,
+    }).select().single();
+
+    return _churchFeedPostFromMap(row, isLiked: false);
+  }
+
+  Future<void> toggleFeedPostLike(String postId) async {
+    final user = _client.auth.currentUser;
+    if (user == null) return;
+
+    final existing = await _client
+        .from('church_feed_likes')
+        .select()
+        .eq('post_id', postId)
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+    if (existing != null) {
+      await _client
+          .from('church_feed_likes')
+          .delete()
+          .eq('post_id', postId)
+          .eq('user_id', user.id);
+      await _client.rpc('decrement_feed_likes', params: {'row_id': postId}).catchError((_) async {
+        // Fallback direct update
+        final post = await _client.from('church_feed_posts').select('likes_count').eq('id', postId).single();
+        final current = (post['likes_count'] as int? ?? 1);
+        await _client.from('church_feed_posts').update({'likes_count': current > 0 ? current - 1 : 0}).eq('id', postId);
+      });
+    } else {
+      await _client.from('church_feed_likes').insert({
+        'post_id': postId,
+        'user_id': user.id,
+      });
+      await _client.rpc('increment_feed_likes', params: {'row_id': postId}).catchError((_) async {
+        // Fallback direct update
+        final post = await _client.from('church_feed_posts').select('likes_count').eq('id', postId).single();
+        final current = (post['likes_count'] as int? ?? 0);
+        await _client.from('church_feed_posts').update({'likes_count': current + 1}).eq('id', postId);
+      });
+    }
+  }
+
+  Future<void> deleteFeedPost(String postId) async {
+    await _client.from('church_feed_posts').delete().eq('id', postId);
+  }
+
   // ── Enum parsers ─────────────────────────────────────────────────────────
 
   static PrayerCategory _parsePrayerCategory(String s) {
