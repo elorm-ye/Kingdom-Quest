@@ -651,6 +651,136 @@ class MockDataService {
     _feedPostsList.removeWhere((p) => p.id == id);
   }
 
+  // ─────────────────────────────────────────────
+  // TESTIMONIES & ANSWERED PRAYERS
+  // ─────────────────────────────────────────────
+  static final List<Testimony> _testimoniesList = [
+    Testimony(
+      id: 'testimony_1',
+      title: 'Healed from chronic migraines during all-night prayer!',
+      story: 'For over eight months I suffered from severe debilitating migraines. During our youth all-night vigil, Pastor prayed for us and the power of God filled the room. Since that night two weeks ago, I have been completely symptom-free and peaceful! Jesus is truly our Healer!',
+      authorName: 'Emmanuel K.',
+      createdAt: DateTime.now().subtract(const Duration(days: 2)),
+      category: 'Healing',
+      amenCount: 24,
+      praiseCount: 18,
+      heartCount: 15,
+    ),
+    Testimony(
+      id: 'testimony_2',
+      title: 'Full tuition fee cleared just 48 hours before deadline',
+      story: 'I was on the verge of deferring my semester because my family lacked the remaining tuition balance. I brought this to our Wednesday prayer meeting. The next evening, a scholarship foundation I had applied to 6 months ago emailed notifying me of a full grant! To God be the glory!',
+      authorName: 'Grace A.',
+      createdAt: DateTime.now().subtract(const Duration(days: 4)),
+      category: 'Provision',
+      amenCount: 38,
+      praiseCount: 31,
+      heartCount: 22,
+    ),
+    Testimony(
+      id: 'testimony_3',
+      title: 'Overcame severe panic attacks before my final exams',
+      story: 'Whenever exam season arrived, fear and panic would paralyze me. Following the "Overcoming Anxiety" reading plan and memorizing Philippians 4:6-7 gave me stillness and sharp focus. I wrote my finals with total clarity and peace!',
+      authorName: 'David K.',
+      createdAt: DateTime.now().subtract(const Duration(days: 7)),
+      category: 'Academics',
+      amenCount: 19,
+      praiseCount: 14,
+      heartCount: 11,
+    ),
+    Testimony(
+      id: 'testimony_4',
+      title: 'My older brother surrendered his life to Christ',
+      story: 'My brother resisted church and conversations about faith for four years. Last Sunday he agreed to join me for youth service and responded when the altar call was given with tears. God answers persevering prayer!',
+      authorName: 'Sarah M.',
+      createdAt: DateTime.now().subtract(const Duration(days: 9)),
+      category: 'Faith',
+      amenCount: 45,
+      praiseCount: 40,
+      heartCount: 33,
+    ),
+  ];
+
+  static List<Testimony> get testimonies => _testimoniesList;
+
+  static void addTestimony(Testimony testimony) {
+    _testimoniesList.insert(0, testimony);
+  }
+
+  static void reactToTestimony(String id, String reactionType) {
+    final idx = _testimoniesList.indexWhere((t) => t.id == id);
+    if (idx != -1) {
+      final t = _testimoniesList[idx];
+      final currentReactions = List<String>.from(t.userReactions);
+      final hasReacted = currentReactions.contains(reactionType);
+
+      int amen = t.amenCount;
+      int praise = t.praiseCount;
+      int heart = t.heartCount;
+
+      if (hasReacted) {
+        currentReactions.remove(reactionType);
+        if (reactionType == 'amen' && amen > 0) amen--;
+        if (reactionType == 'praise' && praise > 0) praise--;
+        if (reactionType == 'heart' && heart > 0) heart--;
+      } else {
+        currentReactions.add(reactionType);
+        if (reactionType == 'amen') amen++;
+        if (reactionType == 'praise') praise++;
+        if (reactionType == 'heart') heart++;
+      }
+
+      _testimoniesList[idx] = t.copyWith(
+        amenCount: amen,
+        praiseCount: praise,
+        heartCount: heart,
+        userReactions: currentReactions,
+      );
+    }
+  }
+
+  // ─────────────────────────────────────────────
+  // PERSONAL SERMON NOTES & DEVOTIONAL JOURNAL
+  // ─────────────────────────────────────────────
+  static final List<PersonalNote> _personalNotesList = [
+    PersonalNote(
+      id: 'note_1',
+      title: 'Walking in Kingdom Authority',
+      content: 'Key insights from Sunday Service:\n• Luke 10:19 — Jesus gave us authority to trample on scorpions and over all power of the enemy.\n• Authority is not our own muscle; it is our standing in Christ.\n• Real impact starts in the prayer secret place before public manifestation.\n• Action: Daily declare scripture over my fears and decisions.',
+      scriptureReferences: ['Luke 10:19', 'Ephesians 6:10'],
+      linkedSermonTitle: 'Standing Firm in Spiritual Warfare',
+      createdAt: DateTime.now().subtract(const Duration(days: 3)),
+      updatedAt: DateTime.now().subtract(const Duration(days: 3)),
+      colorIndex: 0,
+    ),
+    PersonalNote(
+      id: 'note_2',
+      title: 'The Posture of a True Servant',
+      content: 'Reflections on leadership:\n• True greatness in the Kingdom is measured by how humbly we serve others.\n• Avoid comparison; run the race set specifically before you.\n• "Let nothing be done through selfish ambition or conceit..." Philippians 2:3.',
+      scriptureReferences: ['Philippians 2:3-5', 'Mark 10:45'],
+      linkedSermonTitle: 'Leading Like the Master',
+      createdAt: DateTime.now().subtract(const Duration(days: 6)),
+      updatedAt: DateTime.now().subtract(const Duration(days: 6)),
+      colorIndex: 2,
+    ),
+  ];
+
+  static List<PersonalNote> get personalNotes => _personalNotesList;
+
+  static void addPersonalNote(PersonalNote note) {
+    _personalNotesList.insert(0, note);
+  }
+
+  static void updatePersonalNote(PersonalNote note) {
+    final idx = _personalNotesList.indexWhere((n) => n.id == note.id);
+    if (idx != -1) {
+      _personalNotesList[idx] = note;
+    }
+  }
+
+  static void deletePersonalNote(String id) {
+    _personalNotesList.removeWhere((n) => n.id == id);
+  }
 
   static DateTime _nextSunday() {
     final now = DateTime.now();

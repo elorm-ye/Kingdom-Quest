@@ -5,8 +5,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/providers/feature_providers.dart';
 import '../../../core/providers/app_providers.dart';
-import '../../../shared/models/event.dart';
-import '../../../shared/models/church_feed_post.dart';
+import '../../../shared/models/models.dart';
 import '../../events/presentation/widgets/event_details_sheet.dart';
 import '../../feed/presentation/widgets/church_feed_card.dart';
 
@@ -29,6 +28,9 @@ class HomeScreen extends ConsumerWidget {
     final announcements = asyncAnnouncements.value ?? [];
     final asyncFeed = ref.watch(feedPostsNotifierProvider);
     final feedPosts = asyncFeed.value ?? [];
+    final asyncGamification = ref.watch(gamificationNotifierProvider);
+    final streak = asyncGamification.value?.streak ??
+        const QuestStreak(currentStreak: 1, longestStreak: 1, xpPoints: 50);
 
     return Scaffold(
       body: CustomScrollView(
@@ -89,16 +91,26 @@ class HomeScreen extends ConsumerWidget {
                   style: textTheme.bodyLarge?.copyWith(color: colorScheme.onSurfaceVariant),
                 ),
 
-                const SizedBox(height: AppSpacing.xxl),
+                const SizedBox(height: AppSpacing.md),
+
+                // Daily Streak & Quest Banner
+                _streakHeroBanner(context, theme, streak),
+
+                const SizedBox(height: AppSpacing.xl),
 
                 // Verse of the day card
-                _verseCard(verse, theme),
+                _verseCard(context, ref, verse, theme),
+
+                const SizedBox(height: AppSpacing.xxl),
+
+                // Spiritual Growth & Word
+                _spiritualGrowthSection(context, theme),
 
                 const SizedBox(height: AppSpacing.xxl),
 
                 // Quick actions
                 Text(
-                  'QUICK ACTIONS',
+                  'COMMUNITY & MINISTRY',
                   style: textTheme.labelSmall?.copyWith(
                     color: colorScheme.onSurfaceVariant,
                     letterSpacing: 1.2,
@@ -194,7 +206,84 @@ class HomeScreen extends ConsumerWidget {
     ),
   );
 
-  Widget _verseCard(Map<String, String> verse, ThemeData theme) {
+  Widget _streakHeroBanner(BuildContext context, ThemeData theme, QuestStreak streak) {
+    return InkWell(
+      onTap: () => context.push('/quests'),
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            colors: [Color(0xFFB8614A), Color(0xFFC7784E)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.terracotta.withAlpha(50),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            const Text('🔥', style: TextStyle(fontSize: 28)),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Text(
+                        '${streak.currentStreak} Day Streak',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 15,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withAlpha(40),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(
+                          '⚡ ${streak.xpPoints} XP',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    streak.completedBibleReadingToday && streak.completedDevotionalToday
+                        ? 'All daily quests finished! Keep the fire burning.'
+                        : 'Tap to view daily quests & milestone badges',
+                    style: TextStyle(
+                      color: Colors.white.withAlpha(220),
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const Icon(Icons.arrow_forward_ios, size: 14, color: Colors.white),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _verseCard(BuildContext context, WidgetRef ref, Map<String, String> verse, ThemeData theme) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(AppSpacing.xxl),
@@ -229,20 +318,159 @@ class HomeScreen extends ConsumerWidget {
             const SizedBox(height: AppSpacing.xl),
             Row(
               children: [
-                ElevatedButton(
-                  onPressed: () {},
-                  child: const Text('Amen'),
+                ElevatedButton.icon(
+                  onPressed: () {
+                    ref.read(gamificationNotifierProvider.notifier).recordDailyAction(
+                          devotional: true,
+                          bonusXp: 10,
+                        );
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Amen! +10 XP added to your devotional streak 🔥'),
+                      ),
+                    );
+                  },
+                  icon: const Icon(Icons.favorite_rounded, size: 16),
+                  label: const Text('Amen'),
                 ),
                 const SizedBox(width: AppSpacing.md),
-                FilledButton.tonal(
-                  onPressed: () {},
-                  child: const Text('Save'),
+                FilledButton.tonalIcon(
+                  onPressed: () {
+                    context.push('/notes', extra: verse['reference']);
+                  },
+                  icon: const Icon(Icons.edit_note_rounded, size: 18),
+                  label: const Text('Journal Note'),
                 ),
               ],
             ),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _spiritualGrowthSection(BuildContext context, ThemeData theme) {
+    final features = [
+      (
+        icon: Icons.menu_book_rounded,
+        title: 'Bible Reader',
+        subtitle: '66 Books & Search',
+        route: '/bible',
+        color: AppColors.terracotta,
+      ),
+      (
+        icon: Icons.auto_stories_rounded,
+        title: 'Reading Plans',
+        subtitle: 'Youth Devotionals',
+        route: '/reading-plans',
+        color: AppColors.sage,
+      ),
+      (
+        icon: Icons.edit_note_rounded,
+        title: 'Sermon Notes',
+        subtitle: 'Personal Journal',
+        route: '/notes',
+        color: AppColors.burntAmber,
+      ),
+      (
+        icon: Icons.celebration_outlined,
+        title: 'Testimony Wall',
+        subtitle: 'Answered Prayers',
+        route: '/testimonies',
+        color: AppColors.oliveClay,
+      ),
+      (
+        icon: Icons.quiz_outlined,
+        title: 'Bible Trivia',
+        subtitle: 'Timed Challenges',
+        route: '/trivia',
+        color: const Color(0xFF6B5282),
+      ),
+    ];
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'SPIRITUAL GROWTH & WORD',
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+                letterSpacing: 1.2,
+              ),
+            ),
+            TextButton(
+              onPressed: () => context.push('/quests'),
+              style: TextButton.styleFrom(
+                visualDensity: VisualDensity.compact,
+                foregroundColor: AppColors.terracotta,
+              ),
+              child: const Text('View Quests'),
+            ),
+          ],
+        ),
+        const SizedBox(height: AppSpacing.sm),
+        SizedBox(
+          height: 105,
+          child: ListView.separated(
+            scrollDirection: Axis.horizontal,
+            itemCount: features.length,
+            separatorBuilder: (_, __) => const SizedBox(width: 12),
+            itemBuilder: (ctx, idx) {
+              final f = features[idx];
+              return InkWell(
+                onTap: () => context.push(f.route),
+                borderRadius: BorderRadius.circular(16),
+                child: Container(
+                  width: 140,
+                  padding: const EdgeInsets.all(AppSpacing.md),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.surfaceContainerHighest.withAlpha(70),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: theme.dividerColor.withAlpha(40),
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(6),
+                        decoration: BoxDecoration(
+                          color: f.color.withAlpha(30),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Icon(f.icon, size: 18, color: f.color),
+                      ),
+                      const Spacer(),
+                      Text(
+                        f.title,
+                        style: theme.textTheme.labelLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      Text(
+                        f.subtitle,
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          color: AppColors.muted,
+                          fontSize: 10,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      ],
     );
   }
 

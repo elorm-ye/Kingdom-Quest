@@ -19,8 +19,6 @@ class _PrayerRequestsScreenState extends ConsumerState<PrayerRequestsScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final textTheme = theme.textTheme;
-    final colorScheme = theme.colorScheme;
     
     final asyncRequests = ref.watch(prayerRequestsNotifierProvider);
     final allRequests = asyncRequests.value ?? [];
@@ -36,6 +34,13 @@ class _PrayerRequestsScreenState extends ConsumerState<PrayerRequestsScreen> {
         appBar: AppBar(
           leading: const AppBackButton(fallbackRoute: '/home'),
           title: const Text('Prayer Requests'),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.celebration_outlined),
+              tooltip: 'Answered Prayers / Testimonies',
+              onPressed: () => context.push('/testimonies'),
+            ),
+          ],
         ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => context.push('/submit-prayer'),
@@ -67,7 +72,50 @@ class _PrayerRequestsScreenState extends ConsumerState<PrayerRequestsScreen> {
               ],
             ),
           ),
-          const SizedBox(height: AppSpacing.md),
+          const SizedBox(height: AppSpacing.sm),
+
+          // Testimonies Cross-Link Banner
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
+            child: InkWell(
+              onTap: () => context.push('/testimonies'),
+              borderRadius: BorderRadius.circular(12),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                decoration: BoxDecoration(
+                  color: AppColors.burntAmber.withAlpha(20),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: AppColors.burntAmber.withAlpha(60)),
+                ),
+                child: Row(
+                  children: [
+                    const Text('🙌', style: TextStyle(fontSize: 20)),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Answered Prayers & Testimony Wall',
+                            style: theme.textTheme.labelLarge?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.burntAmber,
+                            ),
+                          ),
+                          Text(
+                            'Read how God moved mightily for our members!',
+                            style: theme.textTheme.bodySmall?.copyWith(fontSize: 11),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const Icon(Icons.arrow_forward_ios, size: 13, color: AppColors.burntAmber),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: AppSpacing.sm),
           Expanded(
             child: asyncRequests.isLoading && allRequests.isEmpty
                 ? const Center(child: CircularProgressIndicator())

@@ -11,6 +11,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../shared/models/models.dart';
 import '../../../core/providers/app_providers.dart';
 import '../../../shared/services/mock_data_service.dart';
+import '../../../shared/services/bible_service.dart';
+import '../../../shared/services/gamification_service.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // PRAYER REQUESTS
@@ -816,3 +818,332 @@ final feedPostsNotifierProvider =
 final dailyVerseProvider = Provider<Map<String, String>>((ref) {
   return ref.read(dataServiceProvider).getDailyVerse();
 });
+
+// ─────────────────────────────────────────────────────────────────────────────
+// BIBLE READER & READING PLANS
+// ─────────────────────────────────────────────────────────────────────────────
+
+class BibleSelectedBookNotifier extends Notifier<BibleBook> {
+  @override
+  BibleBook build() {
+    return BibleService.books.firstWhere(
+      (b) => b.name == 'John',
+      orElse: () => BibleService.books.first,
+    );
+  }
+
+  @override
+  set state(BibleBook book) => super.state = book;
+}
+
+final bibleSelectedBookProvider =
+    NotifierProvider<BibleSelectedBookNotifier, BibleBook>(
+  BibleSelectedBookNotifier.new,
+);
+
+class BibleSelectedChapterNotifier extends Notifier<int> {
+  @override
+  int build() => 1;
+
+  @override
+  set state(int chapter) => super.state = chapter;
+}
+
+final bibleSelectedChapterNumberProvider =
+    NotifierProvider<BibleSelectedChapterNotifier, int>(
+  BibleSelectedChapterNotifier.new,
+);
+
+class BibleFontSizeNotifier extends Notifier<double> {
+  @override
+  double build() => 17.0;
+
+  @override
+  set state(double size) => super.state = size;
+}
+
+final bibleFontSizeProvider =
+    NotifierProvider<BibleFontSizeNotifier, double>(
+  BibleFontSizeNotifier.new,
+);
+
+final bibleCurrentChapterProvider = Provider<BibleChapter>((ref) {
+  final book = ref.watch(bibleSelectedBookProvider);
+  final chapterNumber = ref.watch(bibleSelectedChapterNumberProvider);
+  return BibleService.getChapter(book.name, chapterNumber);
+});
+
+class ReadingPlanProgressNotifier extends Notifier<Map<String, List<int>>> {
+  @override
+  Map<String, List<int>> build() {
+    _loadAll();
+    return {};
+  }
+
+  Future<void> _loadAll() async {
+    final progressMap = <String, List<int>>{};
+    for (final plan in BibleService.readingPlans) {
+      final days = await BibleService.getCompletedDayNumbers(plan.id);
+      progressMap[plan.id] = days;
+    }
+    state = progressMap;
+  }
+
+  Future<void> toggleDay({
+    required String planId,
+    required int dayNumber,
+    required bool completed,
+  }) async {
+    await BibleService.toggleDayCompletion(planId, dayNumber, completed);
+    final current = Map<String, List<int>>.from(state);
+    final list = List<int>.from(current[planId] ?? []);
+    if (completed) {
+      if (!list.contains(dayNumber)) list.add(dayNumber);
+    } else {
+      list.remove(dayNumber);
+    }
+    current[planId] = list;
+    state = current;
+
+    if (completed) {
+      // Award devotional quest & check if plan finished
+      final plan = BibleService.readingPlans.firstWhere(
+        (p) => p.id == planId,
+        orElse: () => BibleService.readingPlans.first,
+      );
+      ref.read(gamificationNotifierProvider.notifier).recordDailyAction(
+            devotional: true,
+            bonusXp: 20,
+          );
+      if (list.length >= plan.days.length) {
+        ref.read(gamificationNotifierProvider.notifier).incrementBadge('wisdom_seeker');
+      }
+    }
+  }
+
+  Future<void> refresh() => _loadAll();
+}
+
+final readingPlanProgressNotifierProvider =
+    NotifierProvider<ReadingPlanProgressNotifier, Map<String, List<int>>>(
+  ReadingPlanProgressNotifier.new,
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PERSONAL SERMON NOTES & JOURNAL
+// ─────────────────────────────────────────────────────────────────────────────
+
+class PersonalNotesNotifier extends Notifier<AsyncValue<List<PersonalNote>>> {
+  @override
+  AsyncValue<List<PersonalNote>> build() {
+    _reload();
+    return const AsyncValue.loading();
+  }
+
+  Future<void> _reload() async {
+    try {
+      state = AsyncValue.data(List.from(MockDataService.personalNotes));
+    } catch (e, st) {
+      state = AsyncValue.error(e, st);
+    }
+  }
+
+  Future<void> addNote({
+    required String title,
+    required String content,
+    List<String> scriptures = const [],
+    String? linkedSermon,
+    int colorIndex = 0,
+  }) async {
+    final newNote = PersonalNote(
+      id: 'note_${DateTime.now().millisecondsSinceEpoch}',
+      title: title,
+      content: content,
+      scriptureReferences: scriptures,
+      linkedSermonTitle: linkedSermon,
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
+      colorIndex: colorIndex,
+    );
+
+    MockDataService.addPersonalNote(newNote);
+    await _reload();
+
+    // Gamification progress for Berean Mindset
+    ref.read(gamificationNotifierProvider.notifier).recordDailyAction(
+          devotional: true,
+          bonusXp: 15,
+        );
+    ref.read(gamificationNotifierProvider.notifier).incrementBadge('berean_mind');
+  }
+
+  Future<void> updateNote(PersonalNote note) async {
+    MockDataService.updatePersonalNote(note.copyWith(updatedAt: DateTime.now()));
+    await _reload();
+  }
+
+  Future<void> deleteNote(String id) async {
+    MockDataService.deletePersonalNote(id);
+    await _reload();
+  }
+
+  Future<void> refresh() => _reload();
+}
+
+final personalNotesNotifierProvider =
+    NotifierProvider<PersonalNotesNotifier, AsyncValue<List<PersonalNote>>>(
+  PersonalNotesNotifier.new,
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// TESTIMONIES & PRAISE WALL
+// ─────────────────────────────────────────────────────────────────────────────
+
+class TestimoniesNotifier extends Notifier<AsyncValue<List<Testimony>>> {
+  @override
+  AsyncValue<List<Testimony>> build() {
+    _reload();
+    return const AsyncValue.loading();
+  }
+
+  Future<void> _reload() async {
+    try {
+      state = AsyncValue.data(List.from(MockDataService.testimonies));
+    } catch (e, st) {
+      state = AsyncValue.error(e, st);
+    }
+  }
+
+  Future<void> addTestimony({
+    required String title,
+    required String story,
+    required String authorName,
+    required String category,
+    bool isAnonymous = false,
+    String? relatedPrayerId,
+  }) async {
+    final testimony = Testimony(
+      id: 'testimony_${DateTime.now().millisecondsSinceEpoch}',
+      title: title,
+      story: story,
+      authorName: isAnonymous ? 'Anonymous Disciple' : authorName,
+      isAnonymous: isAnonymous,
+      createdAt: DateTime.now(),
+      category: category,
+      relatedPrayerId: relatedPrayerId,
+      amenCount: 1,
+    );
+
+    MockDataService.addTestimony(testimony);
+    await _reload();
+
+    ref.read(gamificationNotifierProvider.notifier).recordDailyAction(bonusXp: 25);
+    ref.read(gamificationNotifierProvider.notifier).incrementBadge('living_testimony');
+  }
+
+  Future<void> react(String id, String reactionType) async {
+    MockDataService.reactToTestimony(id, reactionType);
+    await _reload();
+
+    ref.read(gamificationNotifierProvider.notifier).recordDailyAction(bonusXp: 5);
+    ref.read(gamificationNotifierProvider.notifier).incrementBadge('living_testimony');
+  }
+
+  Future<void> refresh() => _reload();
+}
+
+final testimoniesNotifierProvider =
+    NotifierProvider<TestimoniesNotifier, AsyncValue<List<Testimony>>>(
+  TestimoniesNotifier.new,
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// GAMIFICATION & YOUTH ENGAGEMENT (STREAKS & BADGES)
+// ─────────────────────────────────────────────────────────────────────────────
+
+class GamificationState {
+  final QuestStreak streak;
+  final List<MilestoneBadge> badges;
+
+  const GamificationState({
+    required this.streak,
+    required this.badges,
+  });
+
+  GamificationState copyWith({
+    QuestStreak? streak,
+    List<MilestoneBadge>? badges,
+  }) {
+    return GamificationState(
+      streak: streak ?? this.streak,
+      badges: badges ?? this.badges,
+    );
+  }
+}
+
+class GamificationNotifier extends Notifier<AsyncValue<GamificationState>> {
+  @override
+  AsyncValue<GamificationState> build() {
+    _reload();
+    return const AsyncValue.loading();
+  }
+
+  Future<void> _reload() async {
+    try {
+      final streak = await GamificationService.loadStreak();
+      final badges = await GamificationService.loadBadges();
+      state = AsyncValue.data(GamificationState(streak: streak, badges: badges));
+    } catch (e, st) {
+      state = AsyncValue.error(e, st);
+    }
+  }
+
+  Future<void> recordDailyAction({
+    bool devotional = false,
+    bool bibleReading = false,
+    bool prayer = false,
+    int bonusXp = 10,
+  }) async {
+    final updatedStreak = await GamificationService.recordDailyAction(
+      devotional: devotional,
+      bibleReading: bibleReading,
+      prayer: prayer,
+      bonusXp: bonusXp,
+    );
+
+    // Check streak badges
+    if (updatedStreak.currentStreak >= 3) {
+      await GamificationService.incrementBadgeProgress('fervent_spirit', 3);
+    }
+
+    final badges = await GamificationService.loadBadges();
+    state = AsyncValue.data(GamificationState(streak: updatedStreak, badges: badges));
+  }
+
+  Future<void> incrementBadge(String badgeId, [int amount = 1]) async {
+    final updatedBadges = await GamificationService.incrementBadgeProgress(badgeId, amount);
+    final streak = await GamificationService.loadStreak();
+    state = AsyncValue.data(GamificationState(streak: streak, badges: updatedBadges));
+  }
+
+  Future<void> submitTriviaScore({
+    required String quizId,
+    required int score,
+    required int totalQuestions,
+  }) async {
+    final xpEarned = score * 15;
+    await recordDailyAction(bibleReading: true, bonusXp: xpEarned);
+
+    if (score == totalQuestions && totalQuestions > 0) {
+      await incrementBadge('bible_scholar', 1);
+    }
+  }
+
+  Future<void> refresh() => _reload();
+}
+
+final gamificationNotifierProvider =
+    NotifierProvider<GamificationNotifier, AsyncValue<GamificationState>>(
+  GamificationNotifier.new,
+);
+

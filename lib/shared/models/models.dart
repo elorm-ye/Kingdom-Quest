@@ -10,3 +10,7 @@ export 'forum_post.dart';
 export 'event.dart';
 export 'sermon_note.dart';
 export 'church_feed_post.dart';
+export 'bible_models.dart';
+export 'testimony.dart';
+export 'personal_note.dart';
+export 'gamification_models.dart';

@@ -21,6 +21,12 @@ import '../../features/events/presentation/events_screen.dart';
 import '../../features/notifications/presentation/notifications_screen.dart';
 import '../../features/profile/presentation/profile_screen.dart';
 import '../../features/settings/presentation/settings_screen.dart';
+import '../../features/bible/presentation/bible_reader_screen.dart';
+import '../../features/bible/presentation/reading_plans_screen.dart';
+import '../../features/notes/presentation/personal_notes_screen.dart';
+import '../../features/testimonies/presentation/testimony_wall_screen.dart';
+import '../../features/gamification/presentation/quests_and_badges_screen.dart';
+import '../../features/gamification/presentation/trivia_quiz_screen.dart';
 
 // Admin
 import '../../features/admin/presentation/admin_shell.dart';
@@ -147,6 +153,15 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(path: '/settings', builder: (c, s) => const SettingsScreen()),
       GoRoute(path: '/feed', builder: (c, s) => const ChurchFeedScreen()),
+      GoRoute(path: '/bible', builder: (c, s) => const BibleReaderScreen()),
+      GoRoute(path: '/reading-plans', builder: (c, s) => const ReadingPlansScreen()),
+      GoRoute(
+        path: '/notes',
+        builder: (c, s) => PersonalNotesScreen(initialScripture: s.extra as String?),
+      ),
+      GoRoute(path: '/testimonies', builder: (c, s) => const TestimonyWallScreen()),
+      GoRoute(path: '/quests', builder: (c, s) => const QuestsAndBadgesScreen()),
+      GoRoute(path: '/trivia', builder: (c, s) => const TriviaQuizScreen()),
 
       // ── ADMIN SHELL ────────────────────────────────────────────────────
       ShellRoute(
