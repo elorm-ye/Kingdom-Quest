@@ -150,7 +150,7 @@ graph TB
 - **Capabilities**:
   - Public praise wall celebrating answered prayers and God's faithfulness.
   - Category filters: *Healing, Provision, Academics, Faith, Family, Deliverance*.
-  - Interactive reactions: 🙌 Amen! | 🔥 Praise God! | ❤️ Love.
+  - Interactive reactions: "🙌 Amen!" | "🔥 Praise God!" | "❤️ Love".
   - Anonymous testimony submission toggle.
   - Cross-link banner directly embedded in `PrayerRequestsScreen`.
 
@@ -162,11 +162,11 @@ graph TB
 - **Route**: `/quests`
 - **Files**: `lib/features/gamification/presentation/quests_and_badges_screen.dart`, `lib/shared/services/gamification_service.dart`
 - **Capabilities**:
-  - 🔥 Fire streak tracker with personal best record and total XP score.
+  - "🔥" Fire streak tracker with personal best record and total XP score.
   - Daily spiritual quests reset daily:
-    - 📖 Read Scripture in Bible Reader (+10 XP)
-    - 💭 Write Devotional or Sermon Reflection (+15 XP)
-    - 🙏 Lift Up a Brother or Sister on Prayer Wall (+10 XP)
+    -  Read Scripture in Bible Reader (+10 XP)
+    -  Write Devotional or Sermon Reflection (+15 XP)
+    -  Lift Up a Brother or Sister on Prayer Wall (+10 XP)
   - Interactive checklist that updates state and persists progress locally.
 
 ### B. Milestone Badges System
